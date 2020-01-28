@@ -1,0 +1,99 @@
+{
+	"info": {
+		"_postman_id": "e886af59-105d-486b-b710-6e848f14c39b",
+		"name": "Social Context Builder",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Social Relations",
+			"item": [
+				{
+					"name": "getSocialRelations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://82.116.211.130/social/relations/U100047",
+							"protocol": "http",
+							"host": [
+								"82",
+								"116",
+								"211",
+								"130"
+							],
+							"path": [
+								"social",
+								"relations",
+								"U100047"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Social User Ranking",
+			"item": [
+				{
+					"name": "getSocialPreferences",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://82.116.211.130/social/preferences/U100042/T100095",
+							"protocol": "http",
+							"host": [
+								"82",
+								"116",
+								"211",
+								"130"
+							],
+							"path": [
+								"social",
+								"preferences",
+								"U100042",
+								"T100095"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Social Explanations",
+			"item": [
+				{
+					"name": "getSocialExplanations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://82.116.211.130/social/explanations/U100047/T100093",
+							"protocol": "http",
+							"host": [
+								"82",
+								"116",
+								"211",
+								"130"
+							],
+							"path": [
+								"social",
+								"explanations",
+								"U100047",
+								"T100093"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
