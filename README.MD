@@ -1,7 +1,7 @@
 ## Social Context builder written in Python/Flask
 
 
-## Docker instructions for deploy of app to your environment:
+## Docker instructions for deployment of the app to your environment:
 In the directory of the DockerFile
 ---------------------------------------------
 To create a docker image execute: 
