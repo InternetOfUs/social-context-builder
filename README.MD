@@ -12,42 +12,42 @@ To run the docker image execute:
 
 `docker run -p 5000:5000 social-context-builder` and visit with your browser http://0.0.0.0:5000
 ## Deployed Endpoints
-Social Relations 
+###Social Relations 
 Description: The API accepts as minimum input the userID to return the social relationships of the user
 
-/social/relations/{userID}
+####/social/relations/{userID}
 
 Example call:
-http://0.0.0.0:5000/social/relations/U100042
+‘http://0.0.0.0:5000/social/relations/U100042'
 
-Social Preferences
+###Social Preferences
 Description: The API accepts a userID and taskID to return a ranked list of users based on the user’s social preferences.
 
-/social/preferences/{userID}/{taskID}/
+####/social/preferences/{userID}/{taskID}/
 
 Example call:
-http://0.0.0.0:5000/social/preferences/U100042/T100095/
+‘http://0.0.0.0:5000/social/preferences/U100042/T100095/'
 
-Social Explanations 
+###Social Explanations 
 Description: The API accepts a userID and taskID and returns an explanation of why a particular user is fit for the task
 
-/social/explanations/{userID}/{taskID}/
+####/social/explanations/{userID}/{taskID}/
 
 Example call: 
-http://0.0.0.0:5000/social/explanations/U100047/T100093/
+‘http://0.0.0.0:5000/social/explanations/U100047/T100093/'
 
 ## Live environment OUC endpoints
-Social relations : 
+###Social relations : 
 
-http://82.116.211.130/social/relations/U100047
+‘http://82.116.211.130/social/relations/U100047'
 
-Social preferences:
+###Social preferences:
 
-http://82.116.211.130/social/preferences/U100042/T100095/
+‘http://82.116.211.130/social/preferences/U100042/T100095/‘
 
-Social explanations:
+###Social explanations:
 
-http://82.116.211.130/social/explanations/U100047/T100093/
+‘http://82.116.211.130/social/explanations/U100047/T100093/'
 
 
 
