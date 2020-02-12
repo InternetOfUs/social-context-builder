@@ -25,7 +25,7 @@ Description: The API accepts a userID and taskID to return a ranked list of user
 
 http://0.0.0.0:5000/social/preferences/{userID}/{taskID}/
 
-Example call 
+Example call:
 http://0.0.0.0:5000/social/preferences/U100042/T100095/
 
 Social Explanations : 
