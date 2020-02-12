@@ -12,7 +12,7 @@ To run the docker image execute:
 
 `docker run -p 5000:5000 social-context-builder` and visit with your browser http://0.0.0.0:5000
 ## Deployed Endpoints
-Social Relations : 
+Social Relations 
 Description: The API accepts as minimum input the userID to return the social relationships of the user
 
 /social/relations/{userID}
@@ -20,7 +20,7 @@ Description: The API accepts as minimum input the userID to return the social re
 Example call:
 http://0.0.0.0:5000/social/relations/U100042
 
-Social Preferences : 
+Social Preferences
 Description: The API accepts a userID and taskID to return a ranked list of users based on the user’s social preferences.
 
 /social/preferences/{userID}/{taskID}/
@@ -28,7 +28,7 @@ Description: The API accepts a userID and taskID to return a ranked list of user
 Example call:
 http://0.0.0.0:5000/social/preferences/U100042/T100095/
 
-Social Explanations : 
+Social Explanations 
 Description: The API accepts a userID and taskID and returns an explanation of why a particular user is fit for the task
 
 /social/explanations/{userID}/{taskID}/
