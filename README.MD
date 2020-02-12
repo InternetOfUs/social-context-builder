@@ -10,9 +10,14 @@ To create a docker image execute:
 
 To run the docker image execute:
 
-`docker run -p 5000:5000 social-context-builder` and visit with your browser http://0.0.0.0:5000
+`docker run -p 5000:5000 social-context-builder`
+
+Visit with your browser: http://0.0.0.0:5000
+
 ## Deployed Endpoints
-###Social Relations 
+
+
+### Social Relations 
 Description: The API accepts as minimum input the userID to return the social relationships of the user
 
 #### /social/relations/{userID}
