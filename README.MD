@@ -15,7 +15,7 @@ To run the docker image execute:
 Social Relations : 
 Description: The API accepts as minimum input the userID to return the social relationships of the user
 
-http://0.0.0.0:5000/social/relations/{userID}
+/social/relations/{userID}
 
 Example call:
 http://0.0.0.0:5000/social/relations/U100042
@@ -23,7 +23,7 @@ http://0.0.0.0:5000/social/relations/U100042
 Social Preferences : 
 Description: The API accepts a userID and taskID to return a ranked list of users based on the user’s social preferences.
 
-http://0.0.0.0:5000/social/preferences/{userID}/{taskID}/
+/social/preferences/{userID}/{taskID}/
 
 Example call:
 http://0.0.0.0:5000/social/preferences/U100042/T100095/
@@ -31,7 +31,7 @@ http://0.0.0.0:5000/social/preferences/U100042/T100095/
 Social Explanations : 
 Description: The API accepts a userID and taskID and returns an explanation of why a particular user is fit for the task
 
-http://0.0.0.0:5000/social/explanations/{userID}/{taskID}/
+/social/explanations/{userID}/{taskID}/
 
 Example call: 
 http://0.0.0.0:5000/social/explanations/U100047/T100093/
