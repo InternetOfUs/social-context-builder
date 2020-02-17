@@ -6,90 +6,109 @@
 	},
 	"item": [
 		{
-			"name": "Social Relations",
+			"name": "social",
 			"item": [
 				{
-					"name": "getSocialRelations",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://82.116.211.130/social/relations/U100047",
-							"protocol": "http",
-							"host": [
-								"82",
-								"116",
-								"211",
-								"130"
-							],
-							"path": [
-								"social",
-								"relations",
-								"U100047"
-							]
+					"name": "relationships/{user_id}",
+					"item": [
+						{
+							"name": "getSocialRelations",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/social/relations/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"social",
+										"relations",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "preferences/{{user_id}}/{{task_id}}",
+					"item": [
+						{
+							"name": "getSocialPreferences",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/social/preferences/{{user_id}}/{{task_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"social",
+										"preferences",
+										"{{user_id}}",
+										"{{task_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "explanations/{{user_id}}/{{task_id}}",
+					"item": [
+						{
+							"name": "getSocialExplanations",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/social/explanations/{{user_id}}/{{task_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"social",
+										"explanations",
+										"{{user_id}}",
+										"{{task_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				}
 			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "Social User Ranking",
-			"item": [
+			"event": [
 				{
-					"name": "getSocialPreferences",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://82.116.211.130/social/preferences/U100042/T100095",
-							"protocol": "http",
-							"host": [
-								"82",
-								"116",
-								"211",
-								"130"
-							],
-							"path": [
-								"social",
-								"preferences",
-								"U100042",
-								"T100095"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "Social Explanations",
-			"item": [
+					"listen": "prerequest",
+					"script": {
+						"id": "659f9d6c-e897-4741-a21d-f0b2af3cefc7",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
 				{
-					"name": "getSocialExplanations",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://82.116.211.130/social/explanations/U100047/T100093",
-							"protocol": "http",
-							"host": [
-								"82",
-								"116",
-								"211",
-								"130"
-							],
-							"path": [
-								"social",
-								"explanations",
-								"U100047",
-								"T100093"
-							]
-						}
-					},
-					"response": []
+					"listen": "test",
+					"script": {
+						"id": "a99a0592-e84d-45d1-9ad5-04d3a7ea9556",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			],
 			"protocolProfileBehavior": {}
