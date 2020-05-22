@@ -6,6 +6,8 @@ import json
 import requests
 
 PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
+TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
+ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 
 class User(object):
     def __init__(self, user_id, name):
@@ -28,53 +30,6 @@ class Task(object):
         self.task_id, self.user_id, self.description =task_id, user_id, description
 
 
-def import_users():
-    users = []
-    try:
-        for i in range(1, 5):
-            r = requests.get(PROFILE_MANAGER_API+'/profiles/' + str(i))
-            users.append(User(user_id=r.json()['id'], name=r.json()['name']))
-    except Exception as e:
-        return 'Did not get user!'+ e
-    return users
-
-
-def import_tasks():
-    tasks = []
-    tasks.append(Task(task_id='5eb90acc7b39534433cc00e9', user_id='', description='Lets Have dinner'))
-    return tasks
-
-
-def build_relation_data():
-    users = import_users()
-    social_relations = []
-    relation_types = ['family', 'friend', 'contact', 'colleague', 'other']
-    sources = ['Facebook', 'LinkedIn', 'Instagram']
-    for i in range(random.randint(50, 80)):
-        weight = round(random.uniform(0.0, 1.0), 1)
-        user, friend = random.choice(users), random.choice(users)
-        type, source_id = random.choice(relation_types),random.choice(sources)
-        if user.user_id != friend.user_id:
-            social_relations.append(SocialRelation(user.user_id, friend.user_id,
-                                                   type, weight, source_id))
-    return social_relations
-
-
-def rank_users_for_task_classifier():
-    tasks = import_tasks()
-    users = import_users()
-    ranked_users_for_task = {}
-    for task in tasks:
-        ranked_users_for_task[task.task_id] = {'description': 'Ordered list of User IDs',
-                                               'schema': {'type': 'array',
-                                                          'items': [user.user_id for user in
-                                                                    random.sample(users, random.randint(2, 4))]}}
-    return ranked_users_for_task
-
-
-social_relations = build_relation_data()
-ranked_users_for_task = rank_users_for_task_classifier()
-
 
 @app.route("/")
 def home():
@@ -84,21 +39,26 @@ def home():
 @app.route("/social/relations/<user_id>", methods=['GET'])
 def show_social_relations(user_id):
     try:
-        user_social_relations = {user_id: {'description': 'User Relations',
-                                               'schema': {'type': 'array',
-                                                          'items': [sr.__dict__ for sr in social_relations
-                                                                    if user_id == sr.user_id]
-                                                          }
-                                           }
-                                 }
-        if user_social_relations[user_id]['schema']['items']:
+        try:
             r = requests.put(PROFILE_MANAGER_API+'/profiles/' + str(user_id),
                              json={'relationships': [{'userId': '1', 'type': 'friend'}]})
-            return jsonify(user_social_relations[user_id])
-        else:
-            return 'Not found!'
-    except Exception as e:
-        return 'Not found!'
+        except requests.exceptions.HTTPError as e:
+            print('Issue with Profile manager')
+        try:
+            headers = {'Authorization': 'test:testtoken'}
+            r = requests.get(ILOGBASE_API + str(user_id)+ '?experimentId=testtest&from=20200301&to=20200312&properties=tasksanswers', headers=headers)
+        except requests.exceptions.HTTPError as e:
+            print('Issue with ILOGBASE ')
+        try:
+            r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id))
+            return jsonify(r.json()['relationships'])
+        except requests.exceptions.HTTPError as e:
+            print('Issue with Profile manager')
+        return 'couldnt get relationships'
+        # else:
+        #     return 'Not found!'
+    except requests.exceptions.HTTPError as e:
+        print(e.response.text)
 
 
 @app.route("/social/explanations/<user_id>/<task_id>/", methods=['GET'])
@@ -106,23 +66,33 @@ def show_social_explanations(user_id, task_id):
     explanation = {"Summary":{"Explanation":{"Context":["relevant(development)"],"Facts":["worksOn(development, bob"],
                                              "Triggered rules":{"R1":"worksOn(X,Y) AND relevant(X)IMPLIES suggest(Y)"}}},
                    "description":"Social Explanation"}
+    try:
+        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id))
+    except requests.exceptions.HTTPError as e:
+        print('Issue with Profile manager')
+    try:
+        r = requests.get(TASK_MANAGER_API + '/tasks/' + str(task_id))
+    except requests.exceptions.HTTPError as e:
+        print(e.response.text)
     return jsonify(explanation)
 
 
 @app.route("/social/preferences/<user_id>/<task_id>/", methods=['GET','POST'])
 def show_social_preferences(user_id, task_id):
-    task_id ='5eb90acc7b39534433cc00e9'
+    try:
+        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id))
+    except requests.exceptions.HTTPError as e:
+        print('Issue with Profile manager')
+    try:
+        r = requests.get(TASK_MANAGER_API + '/tasks/' + str(task_id))
+    except requests.exceptions.HTTPError as e:
+        print('Issue with Profile manager')
     if request.method == "POST":
         data = request.json
         return jsonify(data)
     else:
-        try:
-            if ranked_users_for_task[task_id]:
-                return jsonify(ranked_users_for_task[task_id])
-            else:
-                return 'Not found!'
-        except Exception as e:
-            return 'Not found!'
+        return 'Need POST request with list of users'
+
 
 
 if __name__ == "__main__":
