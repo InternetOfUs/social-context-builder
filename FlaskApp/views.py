@@ -9,6 +9,7 @@ PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
 TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
 ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 
+
 class User(object):
     def __init__(self, user_id, name):
         self.user_id = user_id
@@ -39,26 +40,27 @@ def home():
 @app.route("/social/relations/<user_id>", methods=['GET'])
 def show_social_relations(user_id):
     try:
-        try:
-            r = requests.put(PROFILE_MANAGER_API+'/profiles/' + str(user_id),
-                             json={'relationships': [{'userId': '1', 'type': 'friend'}]})
-        except requests.exceptions.HTTPError as e:
-            print('Issue with Profile manager')
-        try:
-            headers = {'Authorization': 'test:testtoken'}
-            r = requests.get(ILOGBASE_API + str(user_id)+ '?experimentId=testtest&from=20200301&to=20200312&properties=tasksanswers', headers=headers)
-        except requests.exceptions.HTTPError as e:
-            print('Issue with ILOGBASE ')
-        try:
-            r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id))
-            return jsonify(r.json()['relationships'])
-        except requests.exceptions.HTTPError as e:
-            print('Issue with Profile manager')
-        return 'couldnt get relationships'
-        # else:
-        #     return 'Not found!'
+        data = json.dumps({'relationships': [{'userId': '1', 'type': 'friend'}]})
+        r = requests.put(PROFILE_MANAGER_API+'/profiles/' + str(user_id),
+                         json=data, verify=False)
     except requests.exceptions.HTTPError as e:
-        print(e.response.text)
+        print('Issue with Profile manager')
+    try:
+        headers = {'Authorization': 'test:testtoken'}
+        r = requests.get(ILOGBASE_API + str(user_id) +
+                         '?experimentId=testtest&from=20200301&to=20200312&properties=tasksanswers', headers=headers)
+    except requests.exceptions.HTTPError as e:
+        print('Issue with ILOGBASE ')
+    try:
+        headers = {
+            'content-type': "application/json",
+        }
+
+        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers)
+        return jsonify(r.json()['relationships'])
+    except requests.exceptions.HTTPError as e:
+        print('Issue with Profile manager')
+    return 'couldnt get relationships'
 
 
 @app.route("/social/explanations/<user_id>/<task_id>/", methods=['GET'])
@@ -92,7 +94,6 @@ def show_social_preferences(user_id, task_id):
         return jsonify(data)
     else:
         return 'Need POST request with list of users'
-
 
 
 if __name__ == "__main__":
