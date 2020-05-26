@@ -46,20 +46,28 @@ def show_social_relations(user_id):
     except requests.exceptions.HTTPError as e:
         print('Issue with Profile manager')
     try:
-        headers = {'Authorization': 'test:testtoken'}
+        headers = {'Authorization': 'test:testtoken', 'Content-Type': 'application/json;charset=UTF-8'}
         r = requests.get(ILOGBASE_API + str(user_id) +
-                         '?experimentId=testtest&from=20200301&to=20200312&properties=tasksanswers', headers=headers)
-    except requests.exceptions.HTTPError as e:
-        print('Issue with ILOGBASE ')
+                         '?experimentId=testtest&from=20200301&to=20200312&properties=tasksanswers', headers=headers, verify=False, timeout=2)
+    except requests.Timeout as err:
+        print('TIMEOUT ', err)
+    except requests.RequestException as err:
+        print(err)
     try:
         headers = {
             'content-type': "application/json",
         }
 
-        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers)
-        return jsonify(r.json()['relationships'])
-    except requests.exceptions.HTTPError as e:
-        print('Issue with Profile manager')
+        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers, verify=False)
+        relationships = r.json().get('relationships')
+        if relationships:
+            return jsonify(relationships)
+        else:
+            return 'no relationships'
+    except KeyError as e:
+        return 'no relationships exist'
+    except Exception as e:
+        return 'no relationships found'
     return 'couldnt get relationships'
 
 
@@ -69,11 +77,11 @@ def show_social_explanations(user_id, task_id):
                                              "Triggered rules":{"R1":"worksOn(X,Y) AND relevant(X)IMPLIES suggest(Y)"}}},
                    "description":"Social Explanation"}
     try:
-        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id))
+        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), verify=False)
     except requests.exceptions.HTTPError as e:
         print('Issue with Profile manager')
     try:
-        r = requests.get(TASK_MANAGER_API + '/tasks/' + str(task_id))
+        r = requests.get(TASK_MANAGER_API + '/tasks/' + str(task_id), verify=False)
     except requests.exceptions.HTTPError as e:
         print(e.response.text)
     return jsonify(explanation)
@@ -82,11 +90,11 @@ def show_social_explanations(user_id, task_id):
 @app.route("/social/preferences/<user_id>/<task_id>/", methods=['GET','POST'])
 def show_social_preferences(user_id, task_id):
     try:
-        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id))
+        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), verify=False)
     except requests.exceptions.HTTPError as e:
         print('Issue with Profile manager')
     try:
-        r = requests.get(TASK_MANAGER_API + '/tasks/' + str(task_id))
+        r = requests.get(TASK_MANAGER_API + '/tasks/' + str(task_id), verify=False)
     except requests.exceptions.HTTPError as e:
         print('Issue with Profile manager')
     if request.method == "POST":

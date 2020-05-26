@@ -44,15 +44,15 @@ Example call:
 ## Live environment OUC endpoints
 ### Social relations : 
 
-`http://82.116.211.130/social/relations/U100047`
+`http://82.116.211.98:8081/social/relations/2`
 
 ### Social preferences:
 
-`http://82.116.211.130/social/preferences/U100042/T100095`
+`http://82.116.211.98:8081/social/preferences/2/5ebd800528b21a1bc194e2c8`
 
 ### Social explanations:
 
-`http://82.116.211.130/social/explanations/U100047/T100093`
+`http://82.116.211.98:8081/social/explanations/2/5ebd800528b21a1bc194e2c8`
 
 
 
