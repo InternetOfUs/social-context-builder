@@ -10,6 +10,7 @@ TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
 ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 
 
+
 class User(object):
     def __init__(self, user_id, name):
         self.user_id = user_id
@@ -46,9 +47,9 @@ def show_social_relations(user_id):
     except requests.exceptions.HTTPError as e:
         print('Issue with Profile manager')
     try:
-        headers = {'Authorization': 'test:testtoken', 'Content-Type': 'application/json;charset=UTF-8'}
-        r = requests.get(ILOGBASE_API + str(user_id) +
-                         '?experimentId=testtest&from=20200301&to=20200312&properties=tasksanswers', headers=headers, verify=False, timeout=2)
+        headers = {'Authorization': 'test:wenet'}
+        url = ILOGBASE_API + str(user_id) + '?experimentId=wenetTest&from=20200521&to=20200521&properties=socialrelations'
+        r = requests.get(url, headers=headers, verify=False, timeout=2)
     except requests.Timeout as err:
         print('TIMEOUT ', err)
     except requests.RequestException as err:
