@@ -47,9 +47,9 @@ def show_social_relations(user_id):
     except requests.exceptions.HTTPError as e:
         print('Issue with Profile manager')
     try:
-        headers = {'Authorization': 'test:wenet'}
+        headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive', }
         url = ILOGBASE_API + str(user_id) + '?experimentId=wenetTest&from=20200521&to=20200521&properties=socialrelations'
-        r = requests.get(url, headers=headers, verify=False, timeout=2)
+        r = requests.get(url, headers=headers, verify=False)
     except requests.Timeout as err:
         print('TIMEOUT ', err)
     except requests.RequestException as err:
@@ -59,7 +59,7 @@ def show_social_relations(user_id):
             'content-type': "application/json",
         }
 
-        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers, verify=False)
+        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers, verify=False, timeout=1)
         relationships = r.json().get('relationships')
         if relationships:
             return jsonify(relationships)
