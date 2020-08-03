@@ -26,9 +26,8 @@ It implements a knowledge- based methodology that relies on rules to provide exp
 The social ranking component is responsible for ranking volunteers with respect to a specific task that a user poses. It analyzes the social and personal data of the volunteers, 
 the characteristics of the task and the information of the user that set the task and performs a personalized ranking of the users and implements a knowledge-based methodology that utilizes rules to perform the user ranking. 
 
-##Setup and configuration
+## Setup and configuration
 
-### Docker instructions for deployment of the app to your environment:
 In the directory of the DockerFile
 ---------------------------------------------
 To create a docker image execute: 
