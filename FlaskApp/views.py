@@ -36,7 +36,7 @@ class Task(object):
 
 @app.route("/")
 def home():
-    return 'Wenet Home V1.00'
+    return 'Wenet Home V2.00'
 
 
 @app.route("/social/relations/<user_id>", methods=['GET'])
