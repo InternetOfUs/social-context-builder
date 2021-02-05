@@ -8,6 +8,7 @@ import requests
 PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
 TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
 ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
+COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 
 
 
@@ -35,7 +36,7 @@ class Task(object):
 
 @app.route("/")
 def home():
-    return 'Wenet Home'
+    return 'Wenet Home V1.00'
 
 
 @app.route("/social/relations/<user_id>", methods=['GET'])
@@ -47,7 +48,7 @@ def show_social_relations(user_id):
     except requests.exceptions.HTTPError as e:
         print('Issue with Profile manager')
     try:
-        headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive', }
+        headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive', 'x-wenet-component-apikey': COMP_AUTH_KEY, }
         url = ILOGBASE_API + str(user_id) + '?experimentId=wenetTest&from=20200521&to=20200521&properties=socialrelations'
         r = requests.get(url, headers=headers, verify=False)
     except requests.Timeout as err:
@@ -57,6 +58,7 @@ def show_social_relations(user_id):
     try:
         headers = {
             'content-type': "application/json",
+            'x-wenet-component-apikey': COMP_AUTH_KEY,
         }
 
         r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers, verify=False, timeout=1)
