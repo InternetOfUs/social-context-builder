@@ -7,5 +7,5 @@ services:
     container_name: social-context-dev
     environment:
       FLASK_ENV: development
-      COMP_AUTH_KEY:zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      COMP_AUTH_KEY: zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
 
