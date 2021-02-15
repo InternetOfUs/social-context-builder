@@ -7,8 +7,8 @@ services:
       - "8081:5000"
     container_name: social-context-dev
     environment:
-      - FLASK_ENV: production
-      - COMP_AUTH_KEY: zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - FLASK_ENV= production
+      - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
     env_file:
       - ./prod.env
 
