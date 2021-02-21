@@ -3,7 +3,7 @@ services:
   web:
     build: .
     ports:
-      - "8085:5000"
+      - "8081:5000"
     container_name: social-context-dev
     environment:
       - FLASK_ENV= development
