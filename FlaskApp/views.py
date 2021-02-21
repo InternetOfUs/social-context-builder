@@ -38,12 +38,14 @@ class Task(object):
 
 @app.route("/")
 def home():
-    return 'Wenet Home V2.00'
+    return 'Wenet Home V3.00'
 
 
-@app.route("/social/relations/<user_id>", methods=['GET'])
+@app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
 def show_social_relations(user_id):
     try:
+        if request.method == 'POST':
+            print(request.json)
         data = json.dumps({'relationships': [{'userId': '1', 'type': 'friend'}]})
         r = requests.put(PROFILE_MANAGER_API+'/profiles/' + str(user_id),
                          json=data, verify=False)
