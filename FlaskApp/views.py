@@ -41,6 +41,11 @@ def home():
     return 'Wenet Home V3.00'
 
 
+@app.route("/social/relations/streambase", methods=['POST'])
+def social_relations_streambase():
+    print(request.json)
+    return request.json
+
 @app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
 def show_social_relations(user_id):
     try:
