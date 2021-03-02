@@ -1,0 +1,26 @@
+{
+  "id": "",
+  "description": "DEV stream for socialrelations events",
+  "entity": {
+    "id": "wenet",
+    "type": "experiment"
+  },
+  "notification": {
+    "url": "http://cognition-srv2.ouc.ac.cy:8081/social/relations/streambase",
+    "properties": [
+      "socialrelations"
+    ]
+  },
+  "condition": {
+    "properties": [
+      "socialrelations"
+      ]
+  }
+}
+
+
+
+GIVEN ID FOR ABOVE 
+{
+    "id": "078468c850bd40cea5eca7f2ac6be50e"
+}
