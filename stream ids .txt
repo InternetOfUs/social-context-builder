@@ -24,3 +24,33 @@ GIVEN ID FOR ABOVE
 {
     "id": "078468c850bd40cea5eca7f2ac6be50e"
 }
+
+
+
+{
+  "id": "",
+  "description": "DEV stream for socialprofile events",
+  "entity": {
+    "id": "wenet",
+    "type": "experiment"
+  },
+  "notification": {
+    "url": "http://cognition-srv2.ouc.ac.cy:8081/social/profile/streambase",
+    "properties": [
+      "socialprofile"
+    ]
+  },
+  "condition": {
+    "properties": [
+      "socialprofile"
+      ]
+  }
+}
+
+GIVEN ID FOR ABOVE 
+{
+    "id": "a6fbd6ad37ed4cf6be34b023cc34c03c"
+}
+
+
+
