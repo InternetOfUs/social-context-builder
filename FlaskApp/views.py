@@ -5,6 +5,8 @@ import csv
 import json
 import requests
 import os
+from .models import *
+
 
 PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
 TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
@@ -44,7 +46,10 @@ def home():
 @app.route("/social/profile/streambase", methods=['POST'])
 def social_profile_streambase():
     print(request.json)
-    return request.json
+    test = SocialProfile(userId='2', source='facebook', sourceId='test')
+    db.session.add(test)
+    db.session.commit()
+    return SocialProfile.query.all()
 
 @app.route("/social/relations/streambase", methods=['POST'])
 def social_relations_streambase():
