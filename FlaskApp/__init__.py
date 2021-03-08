@@ -1,4 +1,8 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
-from FlaskApp import views, models
-models.db.create_all()
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db = SQLAlchemy(app)
+from FlaskApp import views
+db.create_all()
+

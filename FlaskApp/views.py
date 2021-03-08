@@ -1,9 +1,8 @@
 from flask import jsonify, request
-from FlaskApp import app
+from FlaskApp import app, models, db
 import json
 import requests
 import os
-from .models import *
 
 
 PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
@@ -14,27 +13,6 @@ COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 
 
 
-class User(object):
-    def __init__(self, user_id, name):
-        self.user_id = user_id
-        self.name = name
-
-
-class SocialRelation(object):
-    def __init__(self, user_id, friend_id, relation_type, weight, source):
-        self.user_id, self.friend_id = user_id, friend_id
-        self.relation_type, self.weight = relation_type, weight
-        self.source = source
-
-    def __str__(self):
-        return '%s %s %s' % (self.user_id, self.friend_id, self.relation_type)
-
-
-class Task(object):
-    def __init__(self,task_id, user_id, description):
-        self.task_id, self.user_id, self.description =task_id, user_id, description
-
-
 
 @app.route("/")
 def home():
@@ -43,16 +21,17 @@ def home():
 
 @app.route("/social/profile/streambase", methods=['POST'])
 def social_profile_streambase():
-    print(request.json)
-    test = SocialProfile(userId='2', source='facebook', sourceId='test')
-    db.session.add(test)
-    db.session.commit()
-    return SocialProfile.query.all()
+    data = request.json
+    models.SocialProfile().parse(data)
+    return {}
 
 @app.route("/social/relations/streambase", methods=['POST'])
 def social_relations_streambase():
-    print(request.json)
-    return request.json
+    data = request.json
+    models.SocialRelations().parse(data)
+    temp = models.SocialRelations()
+    temp.weigh_social_relations(data['userId'])
+    return {}
 
 @app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
 def show_social_relations(user_id):
