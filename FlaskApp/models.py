@@ -70,8 +70,9 @@ class SocialRelations(db.Model):
                            'x-wenet-component-apikey': COMP_AUTH_KEY,
                            'Content-Type': 'application/json'}
                 r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(userId) + '/relationships', data=data, headers=headers)
+                print('sent to PROFILE MANAGER', data, flush=True)
             except requests.exceptions.HTTPError as e:
-                print('Issue with Profile manager', r.status_code)
+                print('Issue with Profile manager', r.status_code, flush=True)
         return {}
 
     @staticmethod

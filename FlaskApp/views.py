@@ -29,7 +29,6 @@ def social_profile_streambase():
 @app.route("/social/relations/streambase", methods=['POST'])
 def social_relations_streambase():
     data = request.json
-    app.logger.error('Received stream - socialrelation', data)
     print(data, flush=True)
     models.SocialRelations().parse(data)
     temp = models.SocialRelations()
