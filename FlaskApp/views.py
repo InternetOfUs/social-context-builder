@@ -32,7 +32,11 @@ def social_relations_streambase():
     print('Received stream - socialrelation', data)
     models.SocialRelations().parse(data)
     temp = models.SocialRelations()
-    temp.weigh_social_relations(data['userId'])
+    try:
+        temp.weigh_social_relations(data['userId'])
+    except Exception as e:
+        print(data, e)
+
     return {}
 
 @app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
