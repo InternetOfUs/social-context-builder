@@ -29,15 +29,33 @@ def social_profile_streambase():
 @app.route("/social/relations/streambase", methods=['POST'])
 def social_relations_streambase():
     data = request.json
-    print('Received stream - socialrelation', data)
+    app.logger.info('Received stream - socialrelation', data)
     models.SocialRelations().parse(data)
     temp = models.SocialRelations()
     try:
         temp.weigh_social_relations(data['userId'])
     except Exception as e:
-        print(data, e)
+        app.logger.info('exception', data, e)
 
     return {}
+
+
+@app.route("/social/relations/streambase", methods=['GET'])
+def social_relations_streambase():
+    sr = models.SocialRelations.query.order_by(models.SocialRelations.userId).all()
+    sr_out = []
+    for profile in sr:
+        sr_out.append({'name': profile.__dict__['userId'], 'id': profile.__dict__['userDestinationId']})
+    return jsonify(sr_out)
+
+
+@app.route("/social/profile/streambase", methods=['GET'])
+def social_relations_streambase():
+    sp = models.SocialProfile.query.order_by(models.SocialProfile.userId).all()
+    sp_out = []
+    for profile in sp:
+        sp_out.append({'name': profile.__dict__['userId'], 'id': profile.__dict__['sourceId']})
+    return jsonify(sp_out)
 
 @app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
 def show_social_relations(user_id):
