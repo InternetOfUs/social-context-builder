@@ -22,14 +22,15 @@ def home():
 @app.route("/social/profile/streambase", methods=['POST'])
 def social_profile_streambase():
     data = request.json
-    print('Received stream - socialprofile', data)
+    print('Received stream - socialprofile', data, flush=True)
     models.SocialProfile().parse(data)
     return {}
 
 @app.route("/social/relations/streambase", methods=['POST'])
 def social_relations_streambase():
     data = request.json
-    app.logger.info('Received stream - socialrelation', data)
+    app.logger.error('Received stream - socialrelation', data)
+    print(data, flush=True)
     models.SocialRelations().parse(data)
     temp = models.SocialRelations()
     try:
