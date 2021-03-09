@@ -26,20 +26,20 @@ class SocialProfile(db.Model):
     @staticmethod
     def parse(streamdata):
         try:
-            for profile in streamdata['data']['socialprofile']:
-                social_profile = SocialProfile(userId=profile['userId'], source=profile['payload']['source'],
-                                               sourceId=profile['payload']['sourceId'], gender=profile['payload']['gender'],
-                                               hometown=profile['payload']['hometown'], ts=int(profile['ts']))
-                try:
-                    profile_already_in_db = SocialProfile.query.filter((SocialProfile.userId == social_profile.userId)
-                                                                       & (SocialProfile.sourceId == social_profile.sourceId)).first()
-                    if not profile_already_in_db:
-                        db.session.add(social_profile)
-                except Exception as error:
-                    print('exception while trying to add to db ', error)
+            profile = streamdata['socialprofile']
+            social_profile = SocialProfile(userId=profile['userId'], source=profile['payload']['source'],
+                                           sourceId=profile['payload']['sourceid'], gender=profile['payload']['gender'],
+                                           hometown=profile['payload']['hometown'], ts=int(profile['ts']))
+            try:
+                profile_already_in_db = SocialProfile.query.filter((SocialProfile.userId == social_profile.userId)
+                                                                   & (SocialProfile.sourceId == social_profile.sourceId)).first()
+                if not profile_already_in_db:
+                    db.session.add(social_profile)
+            except Exception as error:
+                print('exception while trying to add to db session ', error)
             db.session.commit()
         except Exception as error:
-            print('exception !!! ', error)
+            print('exception in parsing social profile in db commit!!! ', error)
 
         return {}
 
@@ -77,21 +77,21 @@ class SocialRelations(db.Model):
     @staticmethod
     def parse(streamdata):
         try:
-            for social_relation in streamdata['data']['socialrelations']:
-                social_relation = SocialRelations(userId=social_relation['userId'],
-                                               source=social_relation['payload']['source'],
-                                               userDestinationId=social_relation['payload']['content']['userDestinationId'],
-                                               eventType=social_relation['payload']['content']['eventType'],
-                                               value=social_relation['payload']['content']['value'],
-                                               ts=int(social_relation['ts']))
-                try:
-                    relation_already_in_db = SocialRelations.query.filter((SocialRelations.userId == social_relation.userId)
-                                                                          &(SocialRelations.userDestinationId == social_relation.userDestinationId)
-                                                                          & (SocialRelations.source == social_relation.source)).first()
-                    if not relation_already_in_db:
-                        db.session.add(social_relation)
-                except Exception as error:
-                    print('exception while trying to add to db ', error)
+            social_relation = streamdata['socialrelations']
+            social_relation = SocialRelations(userId=social_relation['userId'],
+                                           source=social_relation['payload']['source'],
+                                           userDestinationId=social_relation['payload']['content']['userdestinationid'],
+                                           eventType=social_relation['payload']['content']['eventtype'],
+                                           value=social_relation['payload']['content']['value'],
+                                           ts=int(social_relation['ts']))
+            try:
+                relation_already_in_db = SocialRelations.query.filter((SocialRelations.userId == social_relation.userId)
+                                                                      &(SocialRelations.userDestinationId == social_relation.userDestinationId)
+                                                                      & (SocialRelations.source == social_relation.source)).first()
+                if not relation_already_in_db:
+                    db.session.add(social_relation)
+            except Exception as error:
+                print('exception while trying to add to db ', error)
             db.session.commit()
         except Exception as error:
             print('exception !!! ', error )
