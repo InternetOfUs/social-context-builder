@@ -41,7 +41,7 @@ def social_relations_streambase():
 
 
 @app.route("/social/relations/all", methods=['GET'])
-def social_relations_streambase():
+def social_relations_all():
     sr = models.SocialRelations.query.order_by(models.SocialRelations.userId).all()
     sr_out = []
     for profile in sr:
@@ -50,7 +50,7 @@ def social_relations_streambase():
 
 
 @app.route("/social/profile/all", methods=['GET'])
-def social_relations_streambase():
+def social_profiles_all():
     sp = models.SocialProfile.query.order_by(models.SocialProfile.userId).all()
     sp_out = []
     for profile in sp:
