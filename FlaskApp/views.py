@@ -33,7 +33,8 @@ def social_relations_streambase():
     models.SocialRelations().parse(data)
     temp = models.SocialRelations()
     try:
-        temp.weigh_social_relations(data['userId'])
+        temp.weigh_social_relations(data['socialrelations']['userId'])
+
     except Exception as e:
         app.logger.info('exception', data, e)
 

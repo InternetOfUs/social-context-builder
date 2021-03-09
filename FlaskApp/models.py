@@ -58,6 +58,7 @@ class SocialRelations(db.Model):
     def weigh_social_relations(self, userId):
         social_relations = SocialRelations.query.filter((SocialRelations.userId == userId)
                                                               & (SocialRelations.eventType == 'friend')).all()
+        print('woohooo', social_relations)
         relationships=[]
         sp = SocialProfile()
         for social_relation in social_relations:
@@ -69,8 +70,9 @@ class SocialRelations(db.Model):
                 headers = {'connection': 'keep-alive',
                            'x-wenet-component-apikey': COMP_AUTH_KEY,
                            'Content-Type': 'application/json'}
-                r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(userId) + '/relationships', data=data, headers=headers)
-                print('sent to PROFILE MANAGER', data, flush=True)
+                if relationship['userId']:
+                    r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(userId) + '/relationships', data=data, headers=headers)
+                    print('sent to PROFILE MANAGER', data, flush=True)
             except requests.exceptions.HTTPError as e:
                 print('Issue with Profile manager', r.status_code, flush=True)
         return {}
