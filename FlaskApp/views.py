@@ -22,12 +22,14 @@ def home():
 @app.route("/social/profile/streambase", methods=['POST'])
 def social_profile_streambase():
     data = request.json
+    print('Received stream - socialprofile', data)
     models.SocialProfile().parse(data)
     return {}
 
 @app.route("/social/relations/streambase", methods=['POST'])
 def social_relations_streambase():
     data = request.json
+    print('Received stream - socialrelation', data)
     models.SocialRelations().parse(data)
     temp = models.SocialRelations()
     temp.weigh_social_relations(data['userId'])
