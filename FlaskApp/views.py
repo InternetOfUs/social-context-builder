@@ -40,7 +40,7 @@ def social_relations_streambase():
     return {}
 
 
-@app.route("/social/relations/streambase", methods=['GET'])
+@app.route("/social/relations/all", methods=['GET'])
 def social_relations_streambase():
     sr = models.SocialRelations.query.order_by(models.SocialRelations.userId).all()
     sr_out = []
@@ -49,7 +49,7 @@ def social_relations_streambase():
     return jsonify(sr_out)
 
 
-@app.route("/social/profile/streambase", methods=['GET'])
+@app.route("/social/profile/all", methods=['GET'])
 def social_relations_streambase():
     sp = models.SocialProfile.query.order_by(models.SocialProfile.userId).all()
     sp_out = []
