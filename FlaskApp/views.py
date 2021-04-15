@@ -16,7 +16,7 @@ COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 
 @app.route("/")
 def home():
-    return 'Wenet Home V3.00'
+    return 'Wenet Home V3.01'
 
 
 @app.route("/social/profile/streambase", methods=['POST'])
