@@ -11,5 +11,7 @@ services:
     env_file:
       - ./dev.env
     volumes:
-      - datavolume:/data
+      - scbdatavolume:/data
+volumes:
+  scbdatavolume:
 
