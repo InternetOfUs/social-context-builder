@@ -1,0 +1,21 @@
+docker-compose -f docker-compose.dev.yml up -d --build
+**** use sudo for above to make sure you can write to volumes
+ docker-compose -f docker-compose.prod.yml logs -f
+
+
+
+
+--- 
+
+Fb login dev 
+docker build https://github.com/Christos-Michail/facebook-login.git  -t facebook-login
+
+ sudo docker build . -t facebook-login-dev
+docker run -p 8082:8000 -t facebook-login-dev
+
+
+Old docker ab94d407b8e4
+
+
+Go into container shell
+docker exec -it social-context-dev sh
