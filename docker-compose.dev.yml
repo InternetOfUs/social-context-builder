@@ -11,7 +11,7 @@ services:
     env_file:
       - ./dev.env
     volumes:
-      - scbdatavolume:/FlaskApp
+      - scbdatavolume:/FlaskApp/db
 volumes:
   scbdatavolume:
 

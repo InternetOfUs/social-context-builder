@@ -1,0 +1,58 @@
+{
+  "id": "",
+  "description": "DEV stream for socialrelations events",
+  "entity": {
+    "id": "wenet",
+    "type": "experiment"
+  },
+  "notification": {
+    "url": "http://cognition-srv2.ouc.ac.cy:8081/social/relations/streambase",
+    "properties": [
+      "socialrelations"
+    ]
+  },
+  "condition": {
+    "properties": [
+      "socialrelations"
+      ]
+  }
+}
+
+
+
+GIVEN ID FOR ABOVE 
+{
+    "id": "078468c850bd40cea5eca7f2ac6be50e"
+}
+
+NEW ID "id": "c452c11f1c5549b2860810eab4b4ded3"
+
+{
+  "id": "",
+  "description": "DEV stream for socialprofile events",
+  "entity": {
+    "id": "wenet",
+    "type": "experiment"
+  },
+  "notification": {
+    "url": "http://cognition-srv2.ouc.ac.cy:8081/social/profile/streambase",
+    "properties": [
+      "socialprofile"
+    ]
+  },
+  "condition": {
+    "properties": [
+      "socialprofile"
+      ]
+  }
+}
+
+GIVEN ID FOR ABOVE 
+{
+    "id": "a6fbd6ad37ed4cf6be34b023cc34c03c"
+}
+
+NEW ID "id": "88a27a234f034407a90c5d49a216c148"
+
+
+
