@@ -29,7 +29,7 @@ def social_profile_streambase():
 @app.route("/social/relations/streambase", methods=['POST'])
 def social_relations_streambase():
     data = request.json
-    print(data, flush=True)
+    print('Received sream - Social relation', data, flush=True)
     models.SocialRelations().parse(data)
     temp = models.SocialRelations()
     try:

@@ -18,4 +18,10 @@ Old docker ab94d407b8e4
 
 
 Go into container shell
-docker exec -it social-context-dev sh
+docker exec -it facebook-login-dev sh
+
+
+Upload image to docker hub
+
+docker commit a4d5108fb351 internetofus/social-context-builder:latest
+docker push internetofus/social-context-builder:tagname
