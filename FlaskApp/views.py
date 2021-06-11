@@ -1,17 +1,15 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
+from Ranking.ranking import parser, rank_entities, file_parser
 import json
 import requests
 import os
-
 
 PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
 TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
 ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 #COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
-
-
 
 
 @app.route("/")
@@ -114,18 +112,43 @@ def show_social_explanations(user_id, task_id):
 @app.route("/social/preferences/<user_id>/<task_id>/", methods=['GET','POST'])
 def show_social_preferences(user_id, task_id):
     try:
-        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), verify=False)
+        if request.method == "POST":
+            print('post method')
+            return jsonify({"users_IDs": rank_profiles(request.json)})
+        else:
+            return jsonify(request.json)
     except requests.exceptions.HTTPError as e:
-        print('Issue with Profile manager')
-    try:
-        r = requests.get(TASK_MANAGER_API + '/tasks/' + str(task_id), verify=False)
-    except requests.exceptions.HTTPError as e:
-        print('Issue with Profile manager')
-    if request.method == "POST":
-        data = request.json
-        return jsonify(data)
+        print('Exception social preferences, returning not ranked user list', e)
+        return jsonify(request.json)
+
+
+def rank_profiles(user_ids):
+    MODEL = [0.5] * 5
+    DIVERSITY_COEFFICIENT = 0.4
+    profiles = get_profiles_from_profile_manager(user_ids)
+    if profiles:
+        dict_of_entities = parser(profiles)
+        ranked = rank_entities(dict_of_entities, MODEL, DIVERSITY_COEFFICIENT)
+        return ranked
     else:
-        return 'Need POST request with list of users'
+        print('Could not get profiles')
+        return False
+
+def get_profiles_from_profile_manager(user_ids):
+    entities = []
+    try:
+        for user_id in user_ids['users_IDs']:
+            try:
+                headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
+                           'x-wenet-component-apikey': COMP_AUTH_KEY, }
+                r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers)
+                entities.append(r.json())
+            except requests.exceptions.HTTPError as e:
+                print('Cannot get entity from  Profile manager', e)
+        return entities
+    except requests.exceptions.HTTPError as e:
+        print('Something wrong with user list IDs received from Profile Manager', e)
+        return False
 
 
 if __name__ == "__main__":
