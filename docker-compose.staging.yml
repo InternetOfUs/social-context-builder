@@ -1,0 +1,17 @@
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "8086:5000"
+    container_name: social-context-staging
+    environment:
+      - FLASK_ENV= development
+      - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+    env_file:
+      - ./dev.env
+    volumes:
+      - dbvolumestaging:/app/FlaskApp/db
+volumes:
+  dbvolumestaging:
+
