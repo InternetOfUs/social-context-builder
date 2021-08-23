@@ -1,7 +1,7 @@
 version: "3"
 services:
   web:
-    build: .
+    build: socialcontextbuilderdev
     ports:
       - "8081:5000"
     container_name: social-context-dev
