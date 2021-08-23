@@ -121,18 +121,6 @@ def show_social_preferences(user_id, task_id):
         print('Exception social preferences, returning not ranked user list', e)
         return jsonify(request.json)
 
-@app.route("/social/preferences/answers/<user_id>/<task_id>/", methods=['GET','POST'])
-def show_social_preferences(user_id, task_id):
-    try:
-        if request.method == "POST":
-            print('post method')
-            return jsonify({"users_IDs": rank_profiles(request.json)})
-        else:
-            return jsonify(request.json)
-    except requests.exceptions.HTTPError as e:
-        print('Exception social preferences, returning not ranked user list', e)
-        return jsonify(request.json)
-
 
 def rank_profiles(user_ids):
     MODEL = [0.5] * 5
