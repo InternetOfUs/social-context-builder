@@ -153,6 +153,14 @@ def rank_entities(dict_of_entities, model, diversity_coefficient):
     ranked_list = list({key: value for key, value in sorted(scores.items(), key=lambda item: item[1])}.keys())
     return ranked_list[::-1]
 
+def order_answers(answers_dict, vols):
+    output = []
+    for vol in vols:
+        output.append({
+            "user": vol,
+            "answer": answers_dict[vol],
+        })
+    return output
 if __name__ == '__main__':
     path_to_json = 'test_vols.json'
     model = [0.5]*5
