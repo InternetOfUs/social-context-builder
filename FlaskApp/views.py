@@ -1,6 +1,6 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
-from Ranking.ranking import parser, rank_entities, file_parser
+from Ranking.ranking import parser, rank_entities, file_parser, order_answers
 import json
 import requests
 import os
@@ -115,6 +115,29 @@ def show_social_preferences(user_id, task_id):
         if request.method == "POST":
             print('post method')
             return jsonify({"users_IDs": rank_profiles(request.json)})
+        else:
+            return jsonify(request.json)
+    except requests.exceptions.HTTPError as e:
+        print('Exception social preferences, returning not ranked user list', e)
+        return jsonify(request.json)
+
+@app.route("/social/preferences/answers/<user_id>/<task_id>/", methods=['GET','POST'])
+def show_social_preferences_answer(user_id, task_id):
+    try:
+        data={}
+        data['users_IDs']=[]
+        answers = {}
+        if request.method == "POST":
+            print(request.json)
+            
+            for answer in request.json['data']:
+                print(answer)
+                data['users_IDs'].append(answer['userId'])
+                answers[answer['userId']] = answer['answer']
+            print(answers)
+            ranked_users = rank_profiles(data)
+
+            return jsonify(order_answers(answers, ranked_users))
         else:
             return jsonify(request.json)
     except requests.exceptions.HTTPError as e:
