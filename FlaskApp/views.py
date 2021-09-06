@@ -83,7 +83,13 @@ def initialize_social_relations(user_id):
 
 @app.route("/social/relations/initialize/test/<user_id>", methods=['POST'])
 def initialize_social_relations_test(user_id):
-    user_ids = {'users_IDs': ['14', '56', '54', '40'], }
+    #user_ids = {'users_IDs': ['14', '56', '54', '40'], }
+    x = range(30)
+    user_ids={}
+    values=[]
+    for n in x:
+        values.append(str(n))
+    user_ids = {'users_IDs': values }
     all_users = get_profiles_from_profile_manager(user_ids)
     print("******user######")
     print(all_users[0])

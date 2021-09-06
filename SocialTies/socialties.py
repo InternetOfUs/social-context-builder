@@ -79,10 +79,18 @@ def similarity(x, y, weights=[1/7]*7): # x, y are users as described in the curr
             similarity_metric += weights[2] * 1
     except:
         pass
-    similarity_metric += weights[3] * (1 - mean_relevant_locations_distance(x['relevantLocations'], y['relevantLocations']))
-    similarity_metric += weights[4] * (1 - common_planned_activities(x['plannedActivities'], y['plannedActivities']))
-    similarity_metric += weights[5] * (1 - competences_distance(x['competences'], y['competences']))
-    similarity_metric += weights[6] * (1 - meanings_distance(x['meanings'], y['meanings']))
+    try:
+        if x.get('relevantLocations') is not None and y.get('relevantLocations') is not None:
+            similarity_metric += weights[3] * (1 - mean_relevant_locations_distance(x['relevantLocations'], y['relevantLocations']))
+        if x.get('plannedActivities') is not None and y.get('plannedActivities') is not None:
+            similarity_metric += weights[4] * (1 - common_planned_activities(x['plannedActivities'], y['plannedActivities']))
+        if x.get('competences') is not None and y.get('competences') is not None:
+            similarity_metric += weights[5] * (1 - competences_distance(x['competences'], y['competences']))
+        if x.get('competences') is not None and y.get('competences') is not None:
+            similarity_metric += weights[6] * (1 - meanings_distance(x['meanings'], y['meanings']))
+    except:
+        pass
+
     return similarity_metric
 
 def tie_strength_init(new_user, existing_user, all_users):
@@ -96,6 +104,8 @@ def tie_strength_init(new_user, existing_user, all_users):
         for relationship in related:
             other_user = relationship['user']
             weight = relationship['weight']
+            if weight == None:
+                continue
             # other_user = GET/profiles/{relationship['userId']} #FIXME This needs to be converted to a call to the existing WeNet API.
             new_similarity = similarity(new_user, other_user)
             existing_similarity = similarity(existing_user, user)
