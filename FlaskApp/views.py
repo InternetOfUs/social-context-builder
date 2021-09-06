@@ -1,6 +1,7 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
+from SocialTies.socialties import update_all
 import json
 import requests
 import os
@@ -56,6 +57,47 @@ def social_profiles_all():
         sp_out.append({'name': profile.__dict__['userId'], 'id': profile.__dict__['sourceId']})
     return jsonify(sp_out)
 
+
+@app.route("/social/relations/initialize/<user_id>", methods=['POST'])
+def initialize_social_relations(user_id):
+    try:
+        if request.method == 'POST':
+            new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
+            offset = 0
+            number_of_profiles = 20
+            more_profiles_left = True
+            while more_profiles_left:
+                all_users_test = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+                print(all_users_test)
+                if all_users_test is None:
+                    more_profiles_left = False
+                else:
+                    relationships = update_all(new_user[0], all_users_test[1:])
+                    add_profiles_to_profile_manager(relationships)
+                    offset = offset + 20
+    except Exception as e:
+        print('exception happened!!', e)
+
+    return {}
+
+
+@app.route("/social/relations/initialize/test/<user_id>", methods=['POST'])
+def initialize_social_relations_test(user_id):
+    #user_ids = {'users_IDs': ['14', '56', '54', '40'], }
+    x = range(30)
+    user_ids={}
+    values=[]
+    for n in x:
+        values.append(str(n))
+    user_ids = {'users_IDs': values }
+    all_users = get_profiles_from_profile_manager(user_ids)
+    print("******user######")
+    print(all_users[0])
+    print('^^^^^^^^^^^^')
+    print(all_users[1:])
+    relationships = update_all(all_users[0], all_users[1:])
+    add_profiles_to_profile_manager(relationships)
+    return {}
 @app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
 def show_social_relations(user_id):
     try:
@@ -173,6 +215,44 @@ def get_profiles_from_profile_manager(user_ids):
         print('Something wrong with user list IDs received from Profile Manager', e)
         return False
 
+def get_N_profiles_from_profile_manager(offset, number_of_profiles):
+    entities = []
+    try:
+        try:
+            headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
+                       'x-wenet-component-apikey': COMP_AUTH_KEY, }
+            r = requests.get(PROFILE_MANAGER_API + 'profiles?offset=' + str(offset)+ '&limit=' + str(number_of_profiles), headers=headers)
+            entities = r.json().get('profiles')
+        except requests.exceptions.HTTPError as e:
+            print('Cannot get entity from  Profile manager', e)
+        return entities
+    except requests.exceptions.HTTPError as e:
+        print('Something wrong with user list IDs received from Profile Manager', e)
+        return False
+
+def add_profiles_to_profile_manager(relationships):
+    # [{
+    #     newUserId: "123",
+    #     existingUserId: "456",
+    #     weight: 0.49,
+    # }]
+    try:
+        if request.method == 'POST':
+            headers = { 'Content-Type': 'application/json', 'connection': 'keep-alive',
+                       'x-wenet-component-apikey': COMP_AUTH_KEY, }
+            for relationship in relationships:
+                data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': relationship['weight']})
+                print(data)
+                r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
+                                 data=data, headers=headers)
+                print(r.status_code,r.content)
+                data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': relationship['weight']})
+                print(data)
+                r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
+                                 data=data, headers=headers)
+                print(r.status_code, r.text)
+    except requests.exceptions.HTTPError as e:
+        print('Issue with Profile manager')
 
 if __name__ == "__main__":
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
