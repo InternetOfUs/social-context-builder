@@ -28,7 +28,9 @@ def async_initialize(user_id):
         number_of_profiles = 20
         more_profiles_left = True
         while more_profiles_left:
+            print('into the while clause')
             all_users_test = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+            print ('got N profiles')
             if all_users_test is None:
                 more_profiles_left = False
             else:
@@ -72,3 +74,26 @@ def get_N_profiles_from_profile_manager(offset, number_of_profiles):
     except requests.exceptions.HTTPError as e:
         print('Something wrong with user list IDs received from Profile Manager', e)
         return False
+    
+def add_profiles_to_profile_manager(relationships):
+    # [{
+    #     newUserId: "123",
+    #     existingUserId: "456",
+    #     weight: 0.49,
+    # }]
+    try:
+        headers = { 'Content-Type': 'application/json', 'connection': 'keep-alive',
+                   'x-wenet-component-apikey': COMP_AUTH_KEY, }
+        for relationship in relationships:
+            data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': relationship['weight']})
+            print(data)
+            r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
+                             data=data, headers=headers)
+            print(r.status_code,r.content)
+            data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': relationship['weight']})
+            print(data)
+            r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
+                             data=data, headers=headers)
+            print(r.status_code, r.text)
+    except requests.exceptions.HTTPError as e:
+        print('Issue with Profile manager')
