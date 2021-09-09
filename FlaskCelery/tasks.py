@@ -17,13 +17,14 @@ COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 @celery.task()
 def add_together(a, b):
     print(a+b)
-    return a + b
+    return {}
 
 @celery.task()
 def async_initialize(user_id):
     try:
         if request.method == 'POST':
             new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
+            print ('Got the profiles')
             offset = 0
             number_of_profiles = 20
             more_profiles_left = True
@@ -43,6 +44,7 @@ def async_initialize(user_id):
 
 def get_profiles_from_profile_manager(user_ids):
     entities = []
+    print('started the get profiles')
     try:
         for user_id in user_ids['users_IDs']:
             try:

@@ -104,7 +104,7 @@ def initialize_social_relations_test(user_id):
     # relationships = update_all(all_users[0], all_users[1:])
     # add_profiles_to_profile_manager(relationships)
     result = add_together.delay(23, 42)
-    return {'result':result}
+    return {}
 @app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
 def show_social_relations(user_id):
     try:
