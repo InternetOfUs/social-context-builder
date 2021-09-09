@@ -23,7 +23,7 @@ services:
     build:
       context: .
     image: flask_celery_example_celery_worker
-    command: celery -A FlaskCelery.flask_celery worker -l INFO
+    command: celery -A FlaskCelery.tasks worker -l INFO
     env_file:
       - ./dev.env
     environment:
