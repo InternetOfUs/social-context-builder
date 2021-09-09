@@ -1,7 +1,6 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
-from FlaskCelery.socialties import update_all
 from FlaskCelery.tasks import async_initialize, add_together
 import json
 import requests
