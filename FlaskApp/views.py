@@ -2,7 +2,7 @@ from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
 from SocialTies.socialties import update_all
-from FlaskCelery.flask_celery import make_celery
+from FlaskCelery.tasks import add_together
 import json
 import requests
 import os
@@ -12,28 +12,29 @@ TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
 ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 #COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
-celery = make_celery(app)
+result = add_together.delay(23, 42)
+print(result.wait())
 
-
-@celery.task()
-def initialize(user_id):
-    try:
-        if request.method == 'POST':
-            new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
-            offset = 0
-            number_of_profiles = 20
-            more_profiles_left = True
-            while more_profiles_left:
-                all_users_test = get_N_profiles_from_profile_manager(offset, number_of_profiles)
-                if all_users_test is None:
-                    more_profiles_left = False
-                else:
-                    relationships = update_all(new_user[0], all_users_test[1:])
-                    add_profiles_to_profile_manager(relationships)
-                    offset = offset + 20
-    except Exception as e:
-        print('exception happened!!', e)
-    return {}
+#
+# @celery.task()
+# def initialize(user_id):
+#     try:
+#         if request.method == 'POST':
+#             new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
+#             offset = 0
+#             number_of_profiles = 20
+#             more_profiles_left = True
+#             while more_profiles_left:
+#                 all_users_test = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+#                 if all_users_test is None:
+#                     more_profiles_left = False
+#                 else:
+#                     relationships = update_all(new_user[0], all_users_test[1:])
+#                     add_profiles_to_profile_manager(relationships)
+#                     offset = offset + 20
+#     except Exception as e:
+#         print('exception happened!!', e)
+#     return {}
 
 
 @app.route("/")
