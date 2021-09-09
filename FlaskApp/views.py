@@ -2,7 +2,7 @@ from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
 from SocialTies.socialties import update_all
-from FlaskCelery.tasks import add_together
+from FlaskCelery.tasks import async_initialize
 import json
 import requests
 import os
@@ -12,8 +12,7 @@ TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
 ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 #COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
-result = add_together.delay(23, 42)
-print(result.wait())
+
 
 #
 # @celery.task()
@@ -84,7 +83,7 @@ def social_profiles_all():
 
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
-    result = initialize.delay(user_id)
+    result = async_initialize.delay(user_id)
     result.wait()
     return {}
 
