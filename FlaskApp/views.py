@@ -2,6 +2,7 @@ from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
 from SocialTies.socialties import update_all
+from flask_celery import make_celery
 import json
 import requests
 import os
@@ -11,6 +12,12 @@ TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
 ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 #COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
+celery = make_celery(flask_app)
+
+
+@celery.task()
+def add_together(a, b):
+    return a + b
 
 
 @app.route("/")
@@ -83,20 +90,22 @@ def initialize_social_relations(user_id):
 
 @app.route("/social/relations/initialize/test/<user_id>", methods=['POST'])
 def initialize_social_relations_test(user_id):
-    #user_ids = {'users_IDs': ['14', '56', '54', '40'], }
-    x = range(30)
-    user_ids={}
-    values=[]
-    for n in x:
-        values.append(str(n))
-    user_ids = {'users_IDs': values }
-    all_users = get_profiles_from_profile_manager(user_ids)
-    print("******user######")
-    print(all_users[0])
-    print('^^^^^^^^^^^^')
-    print(all_users[1:])
-    relationships = update_all(all_users[0], all_users[1:])
-    add_profiles_to_profile_manager(relationships)
+    # x = range(30)
+    # user_ids={}
+    # values=[]
+    # for n in x:
+    #     values.append(str(n))
+    # user_ids = {'users_IDs': values }
+    # all_users = get_profiles_from_profile_manager(user_ids)
+    # print("******user######")
+    # print("******user######")
+    # print(all_users[0])
+    # print('^^^^^^^^^^^^')
+    # print(all_users[1:])
+    # relationships = update_all(all_users[0], all_users[1:])
+    # add_profiles_to_profile_manager(relationships)
+    result = add_together.delay(23, 42)
+    result.wait()
     return {}
 @app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
 def show_social_relations(user_id):

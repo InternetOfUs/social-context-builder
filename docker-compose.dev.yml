@@ -13,6 +13,23 @@ services:
       - ./dev.env
     volumes:
       - dbvolume:/app/FlaskApp/db
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:6-alpine
+
+  celery_worker:
+    build:
+      context: .
+    image: flask_celery_example_celery_worker
+    command: /start-celeryworker
+    env_file:
+      - ./dev.env
+    environment:
+      - FLASK_APP=app
+    depends_on:
+      - redis
 volumes:
   dbvolume:
 
