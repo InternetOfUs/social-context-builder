@@ -1,5 +1,10 @@
 from flask import Flask
+from flask import jsonify, request
 from FlaskCelery.flask_celery import make_celery
+from SocialTies.socialties import update_all
+import json
+import requests
+import os
 flask_app = Flask(__name__)
 flask_app.config.update(
     CELERY_BROKER_URL='redis://redis:6379')
