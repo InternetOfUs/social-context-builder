@@ -2,7 +2,7 @@ from flask import Flask
 from FlaskCelery.flask_celery import make_celery
 flask_app = Flask(__name__)
 flask_app.config.update(
-    CELERY_BROKER_URL='redis://localhost:6379')
+    CELERY_BROKER_URL='redis://redis:6379')
 celery = make_celery(flask_app)
 PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
 TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
