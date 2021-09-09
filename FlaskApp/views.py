@@ -2,7 +2,7 @@ from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
 from SocialTies.socialties import update_all
-from flask_celery import make_celery
+from FlaskCelery.flask_celery import make_celery
 import json
 import requests
 import os
