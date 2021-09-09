@@ -16,8 +16,24 @@ celery = make_celery(flask_app)
 
 
 @celery.task()
-def add_together(a, b):
-    return a + b
+def initialize(user_id):
+    try:
+        if request.method == 'POST':
+            new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
+            offset = 0
+            number_of_profiles = 20
+            more_profiles_left = True
+            while more_profiles_left:
+                all_users_test = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+                if all_users_test is None:
+                    more_profiles_left = False
+                else:
+                    relationships = update_all(new_user[0], all_users_test[1:])
+                    add_profiles_to_profile_manager(relationships)
+                    offset = offset + 20
+    except Exception as e:
+        print('exception happened!!', e)
+    return {}
 
 
 @app.route("/")
@@ -67,24 +83,8 @@ def social_profiles_all():
 
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
-    try:
-        if request.method == 'POST':
-            new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
-            offset = 0
-            number_of_profiles = 20
-            more_profiles_left = True
-            while more_profiles_left:
-                all_users_test = get_N_profiles_from_profile_manager(offset, number_of_profiles)
-                print(all_users_test)
-                if all_users_test is None:
-                    more_profiles_left = False
-                else:
-                    relationships = update_all(new_user[0], all_users_test[1:])
-                    add_profiles_to_profile_manager(relationships)
-                    offset = offset + 20
-    except Exception as e:
-        print('exception happened!!', e)
-
+    result = initialize.delay(user_id)
+    result.wait()
     return {}
 
 
