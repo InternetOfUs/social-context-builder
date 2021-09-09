@@ -22,21 +22,20 @@ def add_together(a, b):
 @celery.task()
 def async_initialize(user_id):
     try:
-        if request.method == 'POST':
-            new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
-            print ('Got the profiles')
-            offset = 0
-            number_of_profiles = 20
-            more_profiles_left = True
-            while more_profiles_left:
-                all_users_test = get_N_profiles_from_profile_manager(offset, number_of_profiles)
-                if all_users_test is None:
-                    more_profiles_left = False
-                else:
-                    relationships = update_all(new_user[0], all_users_test[1:])
-                    print(relationships)
-                    add_profiles_to_profile_manager(relationships)
-                    offset = offset + 20
+        new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
+        print ('Got the profiles')
+        offset = 0
+        number_of_profiles = 20
+        more_profiles_left = True
+        while more_profiles_left:
+            all_users_test = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+            if all_users_test is None:
+                more_profiles_left = False
+            else:
+                relationships = update_all(new_user[0], all_users_test[1:])
+                print(relationships)
+                add_profiles_to_profile_manager(relationships)
+                offset = offset + 20
     except Exception as e:
         print('exception happened!!', e)
     return {}
