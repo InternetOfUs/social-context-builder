@@ -2,7 +2,7 @@ from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
 from SocialTies.socialties import update_all
-from FlaskCelery.tasks import async_initialize
+from FlaskCelery.tasks import async_initialize, add_together
 import json
 import requests
 import os
@@ -104,8 +104,7 @@ def initialize_social_relations_test(user_id):
     # relationships = update_all(all_users[0], all_users[1:])
     # add_profiles_to_profile_manager(relationships)
     result = add_together.delay(23, 42)
-    result.wait()
-    return {}
+    return {'result':result}
 @app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
 def show_social_relations(user_id):
     try:

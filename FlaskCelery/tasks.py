@@ -16,6 +16,7 @@ COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 
 @celery.task()
 def add_together(a, b):
+    print(a+b)
     return a + b
 
 @celery.task()
@@ -32,7 +33,7 @@ def async_initialize(user_id):
                     more_profiles_left = False
                 else:
                     relationships = update_all(new_user[0], all_users_test[1:])
-                    print (relationships)
+                    print(relationships)
                     add_profiles_to_profile_manager(relationships)
                     offset = offset + 20
     except Exception as e:
