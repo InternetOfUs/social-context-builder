@@ -118,14 +118,16 @@ def tie_strength_init(new_user, existing_user, all_users):
 
 def update_all(new_user, all_users):
     weights = []
-    for user in all_users:
-        weight = tie_strength_init(new_user, user, all_users)
-        weights.append({
-            'newUserId': new_user['id'],
-            'existingUserId': user['id'],
-            'weight': weight,
-        })
-    return weights
+    if new_user:
+        for user in all_users:
+            weight = tie_strength_init(new_user, user, all_users)
+            weights.append({
+                'newUserId': new_user['id'],
+                'existingUserId': user['id'],
+                'weight': weight,
+            })
+        return weights
+    return None
     # returns list of {userID, userID_new, tie_strength}
 
 #################
@@ -136,25 +138,29 @@ def get_related_profiles(user):
     """
     {user_id: [profile.json], weight: 0.5}
     """
-    user_ids = []
-    weights = []
     try:
-        relationships = user['relationships']
-    except:
+        user_ids = []
+        weights = []
+        try:
+            relationships = user['relationships']
+        except:
+            return None
+        if relationships == None:
+            return None
+        for relationship in relationships:
+            user_ids.append(relationship['userId'])
+            weights.append(relationship['weight'])
+        profiles = get_profiles_from_profile_manager({'users_IDs': user_ids})
+        related = []
+        for i in range(len(profiles)):
+            related.append({
+                'user': profiles[i],
+                'weight': weights[i],
+            })
+        return related   # returns whole json profile along with weights
+    except Exception as e:
+        print('Cannot get related relations from  Profile manager', e)
         return None
-    if relationships == None:
-        return None
-    for relationship in relationships:
-        user_ids.append(relationship['userId'])
-        weights.append(relationship['weight'])
-    profiles = get_profiles_from_profile_manager({'users_IDs': user_ids})
-    related = []
-    for i in range(len(profiles)):
-        related.append({
-            'user': profiles[i],
-            'weight': weights[i],
-        })
-    return related
 
 def get_profiles_from_profile_manager(user_ids):
     PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
@@ -166,7 +172,8 @@ def get_profiles_from_profile_manager(user_ids):
                 headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
                            'x-wenet-component-apikey': COMP_AUTH_KEY, }
                 r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers)
-                entities.append(r.json())
+                if r.status_code==200:
+                    entities.append(r.json())
             except requests.exceptions.HTTPError as e:
                 print('Cannot get entity from  Profile manager', e)
         return entities
@@ -175,9 +182,15 @@ def get_profiles_from_profile_manager(user_ids):
         return False
 
 if __name__ == '__main__':
-    user_ids = {
-        'users_IDs': ['14', '36', '37', '38'],
-    }
+    x = range(30)
+    user_ids={}
+    values=[]
+    for n in x:
+        values.append(str(n))
+    user_ids = {'users_IDs': values }
+    # user_ids = {
+    #     'users_IDs': ['17', '36', '37', '38', '16'],
+    # }
     all_users = get_profiles_from_profile_manager(user_ids)
     output = update_all(all_users[0], all_users[1:])
     print(output)
