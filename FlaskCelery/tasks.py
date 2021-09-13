@@ -31,7 +31,6 @@ def async_initialize(user_id):
             print('into the while clause')
             all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
             print ('got N profiles')
-            print (all_users_in_range)
             if all_users_in_range is None:
                 more_profiles_left = False
                 print('no more profiles left')
@@ -89,14 +88,13 @@ def add_profiles_to_profile_manager(relationships):
         headers = { 'Content-Type': 'application/json', 'connection': 'keep-alive',
                    'x-wenet-component-apikey': COMP_AUTH_KEY, }
         for relationship in relationships:
-            data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': round(relationship['weight'], 4)})
-            print(data)
-            r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
-                             data=data, headers=headers)
-            data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(relationship['weight'], 4)})
-            print(data)
-            r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
-                             data=data, headers=headers)
-            print(r.status_code, r.text)
+            if str(relationship['existingUserId']) != str(relationship['newUserId']):
+                data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': round(relationship['weight'], 4)})
+                print(data)
+                r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
+                                 data=data, headers=headers)
+                data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(relationship['weight'], 4)})
+                r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
+                                 data=data, headers=headers)
     except requests.exceptions.HTTPError as e:
         print('Issue with Profile manager')

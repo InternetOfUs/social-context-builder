@@ -179,10 +179,8 @@ def show_social_preferences_answer(user_id, task_id):
             print(request.json)
             
             for answer in request.json['data']:
-                print(answer)
                 data['users_IDs'].append(answer['userId'])
                 answers[answer['userId']] = answer['answer']
-            print(answers)
             ranked_users = rank_profiles(data)
 
             return jsonify(order_answers(answers, ranked_users))
@@ -247,16 +245,15 @@ def add_profiles_to_profile_manager(relationships):
             headers = { 'Content-Type': 'application/json', 'connection': 'keep-alive',
                        'x-wenet-component-apikey': COMP_AUTH_KEY, }
             for relationship in relationships:
-                data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': relationship['weight']})
-                print(data)
-                r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
-                                 data=data, headers=headers)
-                print(r.status_code,r.content)
-                data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': relationship['weight']})
-                print(data)
-                r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
-                                 data=data, headers=headers)
-                print(r.status_code, r.text)
+                if str(relationship['existingUserId']) != str(relationship['newUserId']):
+                    data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': relationship['weight']})
+                    print(data)
+                    r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
+                                     data=data, headers=headers)
+                    data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': relationship['weight']})
+                    print(data)
+                    r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
+                                     data=data, headers=headers)
     except requests.exceptions.HTTPError as e:
         print('Issue with Profile manager')
 
