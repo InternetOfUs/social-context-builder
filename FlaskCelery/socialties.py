@@ -102,8 +102,8 @@ def tie_strength_init(new_user, existing_user, all_users):
         if related == None:
             continue
         for relationship in related:
-            other_user = relationship.get(['user'])
-            weight = relationship.get(['weight'])
+            other_user = relationship['user']
+            weight = relationship['weight']
             if weight == None:
                 continue
             # other_user = GET/profiles/{relationship['userId']} #FIXME This needs to be converted to a call to the existing WeNet API.
@@ -180,7 +180,7 @@ def get_profiles_from_profile_manager(user_ids):
 
 if __name__ == '__main__':
     user_ids = {
-        'users_IDs': ['14', '36', '37', '38'],
+        'users_IDs': ['17', '36', '37', '38', '16'],
     }
     all_users = get_profiles_from_profile_manager(user_ids)
     output = update_all(all_users[0], all_users[1:])
