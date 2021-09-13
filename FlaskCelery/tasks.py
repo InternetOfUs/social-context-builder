@@ -36,8 +36,9 @@ def async_initialize(user_id):
                 print('no more profiles left')
             else:
                 print ('going to update relations')
+                print (new_user[0])
                 relationships = update_all(new_user[0], all_users_in_range)
-                print('$$$$$$$ success')
+                print('$$$$$$$ success', relationships)
                 add_profiles_to_profile_manager(relationships)
                 print ('PROFILES ADDED')
                 offset = offset + 20
@@ -85,15 +86,16 @@ def add_profiles_to_profile_manager(relationships):
     #     weight: 0.49,
     # }]
     try:
+        print ('got into add profiles')
         headers = { 'Content-Type': 'application/json', 'connection': 'keep-alive',
                    'x-wenet-component-apikey': COMP_AUTH_KEY, }
         for relationship in relationships:
             if str(relationship['existingUserId']) != str(relationship['newUserId']):
-                data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': round(relationship['weight'], 4)})
+                data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': relationship['weight']})
                 print(data)
                 r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
                                  data=data, headers=headers)
-                data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(relationship['weight'], 4)})
+                data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': relationship['weight']})
                 r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
                                  data=data, headers=headers)
     except requests.exceptions.HTTPError as e:
