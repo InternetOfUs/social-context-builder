@@ -89,11 +89,11 @@ def add_profiles_to_profile_manager(relationships):
                    'x-wenet-component-apikey': COMP_AUTH_KEY, }
         for relationship in relationships:
             if str(relationship['existingUserId']) != str(relationship['newUserId']):
-                data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': round(relationship['weight'], 4)})
+                data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': relationship['weight']})
                 print(data)
                 r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
                                  data=data, headers=headers)
-                data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(relationship['weight'], 4)})
+                data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': relationship['weight']})
                 r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
                                  data=data, headers=headers)
     except requests.exceptions.HTTPError as e:
