@@ -36,7 +36,6 @@ def async_initialize(user_id):
                 print('no more profiles left')
             else:
                 print ('going to update relations')
-                print (new_user[0])
                 relationships = update_all(new_user[0], all_users_in_range)
                 print('$$$$$$$ success', relationships)
                 add_profiles_to_profile_manager(relationships)

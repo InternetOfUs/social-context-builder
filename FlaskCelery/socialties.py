@@ -102,8 +102,8 @@ def tie_strength_init(new_user, existing_user, all_users):
         if related == None:
             continue
         for relationship in related:
-            other_user = relationship['user']
-            weight = relationship['weight']
+            other_user = relationship.get(['user'])
+            weight = relationship.get(['weight'])
             if weight == None:
                 continue
             # other_user = GET/profiles/{relationship['userId']} #FIXME This needs to be converted to a call to the existing WeNet API.
@@ -136,25 +136,29 @@ def get_related_profiles(user):
     """
     {user_id: [profile.json], weight: 0.5}
     """
-    user_ids = []
-    weights = []
     try:
-        relationships = user['relationships']
-    except:
+        user_ids = []
+        weights = []
+        try:
+            relationships = user['relationships']
+        except:
+            return None
+        if relationships == None:
+            return None
+        for relationship in relationships:
+            user_ids.append(relationship['userId'])
+            weights.append(relationship['weight'])
+        profiles = get_profiles_from_profile_manager({'users_IDs': user_ids})
+        related = []
+        for i in range(len(profiles)):
+            related.append({
+                'user': profiles[i],
+                'weight': weights[i],
+            })
+        return related   # returns whole json profile along with weights
+    except Exception as e:
+        print('Cannot get related relations from  Profile manager', e)
         return None
-    if relationships == None:
-        return None
-    for relationship in relationships:
-        user_ids.append(relationship['userId'])
-        weights.append(relationship['weight'])
-    profiles = get_profiles_from_profile_manager({'users_IDs': user_ids})
-    related = []
-    for i in range(len(profiles)):
-        related.append({
-            'user': profiles[i],
-            'weight': weights[i],
-        })
-    return related
 
 def get_profiles_from_profile_manager(user_ids):
     PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
