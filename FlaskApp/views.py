@@ -220,43 +220,6 @@ def get_profiles_from_profile_manager(user_ids):
         print('Something wrong with user list IDs received from Profile Manager', e)
         return False
 
-def get_N_profiles_from_profile_manager(offset, number_of_profiles):
-    entities = []
-    try:
-        try:
-            headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
-                       'x-wenet-component-apikey': COMP_AUTH_KEY, }
-            r = requests.get(PROFILE_MANAGER_API + 'profiles?offset=' + str(offset)+ '&limit=' + str(number_of_profiles), headers=headers)
-            entities = r.json().get('profiles')
-        except requests.exceptions.HTTPError as e:
-            print('Cannot get entity from  Profile manager', e)
-        return entities
-    except requests.exceptions.HTTPError as e:
-        print('Something wrong with user list IDs received from Profile Manager', e)
-        return False
-
-def add_profiles_to_profile_manager(relationships):
-    # [{
-    #     newUserId: "123",
-    #     existingUserId: "456",
-    #     weight: 0.49,
-    # }]
-    try:
-        if request.method == 'POST':
-            headers = { 'Content-Type': 'application/json', 'connection': 'keep-alive',
-                       'x-wenet-component-apikey': COMP_AUTH_KEY, }
-            for relationship in relationships:
-                if str(relationship['existingUserId']) != str(relationship['newUserId']):
-                    data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': relationship['weight']})
-                    print(data)
-                    r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
-                                     data=data, headers=headers)
-                    data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': relationship['weight']})
-                    print(data)
-                    r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
-                                     data=data, headers=headers)
-    except requests.exceptions.HTTPError as e:
-        print('Issue with Profile manager')
 
 if __name__ == "__main__":
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
