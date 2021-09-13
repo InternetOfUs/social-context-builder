@@ -211,7 +211,8 @@ def get_profiles_from_profile_manager(user_ids):
                 headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
                            'x-wenet-component-apikey': COMP_AUTH_KEY, }
                 r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers)
-                entities.append(r.json())
+                if r.status_code == 200:
+                    entities.append(r.json())
             except requests.exceptions.HTTPError as e:
                 print('Cannot get entity from  Profile manager', e)
         return entities

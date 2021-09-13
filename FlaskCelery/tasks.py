@@ -27,20 +27,22 @@ def async_initialize(user_id):
         offset = 0
         number_of_profiles = 20
         more_profiles_left = True
-        while more_profiles_left:
-            print('into the while clause')
-            all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
-            print ('got N profiles')
-            if all_users_in_range is None:
-                more_profiles_left = False
-                print('no more profiles left')
-            else:
-                print ('going to update relations')
-                relationships = update_all(new_user[0], all_users_in_range)
-                print('$$$$$$$ success', relationships)
-                add_profiles_to_profile_manager(relationships)
-                print ('PROFILES ADDED')
-                offset = offset + 20
+        if new_user:
+            while more_profiles_left:
+                print('into the while clause')
+                all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+                print ('got N profiles')
+                if all_users_in_range is None:
+                    more_profiles_left = False
+                    print('no more profiles left')
+                else:
+                    print ('going to update relations')
+                    relationships = update_all(new_user[0], all_users_in_range)
+                    print('$$$$$$$ success', relationships)
+                    if relationships:
+                        add_profiles_to_profile_manager(relationships)
+                        print ('PROFILES ADDED')
+                    offset = offset + 20
     except Exception as e:
         print('exception happened!!', e)
     return {}
