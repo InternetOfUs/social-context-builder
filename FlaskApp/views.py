@@ -187,7 +187,7 @@ def show_social_preferences_selection(user_id, task_id, selection):
 
 
 @app.route("/social/preferences/answers/ranking", methods=['GET'])
-def social_profiles_all():
+def ranking_all():
     sp = models.DiversityRanking.query.order_by(models.DiversityRanking.userId).all()
     sp_out = []
     for profile in sp:
