@@ -2,7 +2,7 @@ from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
 from FlaskCelery.tasks import async_initialize, add_together
-from FlaskCelery.ranking_learning import ranking_model
+from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
 import requests
 import os
@@ -178,11 +178,9 @@ def show_social_preferences_selection(user_id, task_id, selection):
     if request.method == "PUT":
         for answer in request.json['data']:
             data['users_IDs'].append(answer['userId'])
-        suggested_entities = get_profiles_from_profile_manager(data)
-    print(suggested_entities)
+        entities = get_profiles_from_profile_manager(data)
+    suggested_entities = jsonparser(entities)
     user_preference = suggested_entities[int(selection)] #dummy, as for now
-    print('**************************')
-    print(user_preference)
     model = ranking_model(user_preference, suggested_entities)
     print(model)
     return model

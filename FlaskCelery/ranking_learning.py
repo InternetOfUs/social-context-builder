@@ -33,6 +33,13 @@ def parser(path_to_json):
         list_of_entities.append(parse_entity(entity))
     return list_of_entities
 
+
+def jsonparser(entities):
+    list_of_entities = []
+    for entity in entities:
+        list_of_entities.append(parse_entity(entity))
+    return list_of_entities
+
 ################
 ### Learning ###
 ################
@@ -92,6 +99,8 @@ def ranking_model(user_preference, suggested_entities):
 if __name__ == '__main__':
     path_to_suggestions = 'suggestions.json'
     suggested_entities = parser(path_to_suggestions)
+    print( suggested_entities)
     user_preference = suggested_entities[0] #dummy, as for now
+    print (user_preference)
     model = ranking_model(user_preference, suggested_entities)
     print(model)
