@@ -179,7 +179,7 @@ def show_social_preferences_selection(user_id, task_id, selection):
         for answer in request.json['data']:
             data['users_IDs'].append(answer['userId'])
         suggested_entities = get_profiles_from_profile_manager(data)
-    user_preference = selection #dummy, as for now
+    user_preference = suggested_entities[selection] #dummy, as for now
     model = ranking_model(user_preference, suggested_entities)
     print(model)
 
