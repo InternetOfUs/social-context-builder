@@ -34,7 +34,6 @@ def async_initialize(user_id):
                 print ('got N profiles')
                 if all_users_in_range is None:
                     more_profiles_left = False
-                    print('no more profiles left')
                 else:
                     print ('going to update relations')
                     relationships = update_all(new_user[0], all_users_in_range)

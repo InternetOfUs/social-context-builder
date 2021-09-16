@@ -2,6 +2,7 @@ from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
 from FlaskCelery.tasks import async_initialize, add_together
+from FlaskCelery.ranking_learning import ranking_model
 import json
 import requests
 import os
@@ -12,27 +13,6 @@ ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 #COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 
-
-#
-# @celery.task()
-# def initialize(user_id):
-#     try:
-#         if request.method == 'POST':
-#             new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
-#             offset = 0
-#             number_of_profiles = 20
-#             more_profiles_left = True
-#             while more_profiles_left:
-#                 all_users_test = get_N_profiles_from_profile_manager(offset, number_of_profiles)
-#                 if all_users_test is None:
-#                     more_profiles_left = False
-#                 else:
-#                     relationships = update_all(new_user[0], all_users_test[1:])
-#                     add_profiles_to_profile_manager(relationships)
-#                     offset = offset + 20
-#     except Exception as e:
-#         print('exception happened!!', e)
-#     return {}
 
 
 @app.route("/")
@@ -169,7 +149,7 @@ def show_social_preferences(user_id, task_id):
         print('Exception social preferences, returning not ranked user list', e)
         return jsonify(request.json)
 
-@app.route("/social/preferences/answers/<user_id>/<task_id>/", methods=['GET','POST'])
+@app.route("/social/preferences/answers/<user_id>/<task_id>/", methods=['POST'])
 def show_social_preferences_answer(user_id, task_id):
     try:
         data={}
@@ -190,6 +170,17 @@ def show_social_preferences_answer(user_id, task_id):
         print('Exception social preferences, returning not ranked user list', e)
         return jsonify(request.json)
 
+
+@app.route("/social/preferences/answers/<user_id>/<task_id>/<selection>/update", methods=['PUT'])
+def show_social_preferences_selection(user_id, task_id, selection):
+    if request.method == "PUT":
+        user_ids = []
+        for answer in request.json():
+            user_ids.append(answer['userId'])
+        suggested_entities = get_profiles_from_profile_manager(user_ids)
+    user_preference = selection #dummy, as for now
+    model = ranking_model(user_preference, suggested_entities)
+    print(model)
 
 def rank_profiles(user_ids):
     MODEL = [0.5] * 5
