@@ -1,6 +1,7 @@
 from FlaskApp import db
 import json
 import requests
+import time
 
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
@@ -58,7 +59,6 @@ class SocialRelations(db.Model):
     def weigh_social_relations(self, userId):
         social_relations = SocialRelations.query.filter((SocialRelations.userId == userId)
                                                               & (SocialRelations.eventType == 'friend')).all()
-        print('woohooo', social_relations)
         relationships=[]
         sp = SocialProfile()
         for social_relation in social_relations:
@@ -93,6 +93,46 @@ class SocialRelations(db.Model):
                                                                       & (SocialRelations.source == social_relation.source)).first()
                 if not relation_already_in_db:
                     db.session.add(social_relation)
+            except Exception as error:
+                print('exception while trying to add to db ', error)
+            db.session.commit()
+        except Exception as error:
+            print('exception !!! ', error )
+        return {}
+
+
+class DiversityRanking(db.Model):
+    userId = db.Column(db.String(80), primary_key=True) #wenetid
+    openess = db.Column(db.Real, nullable=False)
+    consientiousness = db.Column(db.Real, primary_key=True, unique=True, nullable=False)
+    extraversion = db.Column(db.Real, nullable=False)
+    agreeableness = db.Column(db.Real, nullable=False)
+    neuroticism = db.Column(db.Real, nullable=False)
+    ts = db.Column(db.Real, nullable=False)
+
+    @staticmethod
+    def parse(user_id, new_model):
+        try:
+            new_ranking = DiversityRanking(userId=user_id,
+                                           openess=new_model[0],
+                                           consientiousness=new_model[1],
+                                           extraversion=new_model[2],
+                                           agreeableness=new_model[3],
+                                           neuroticism=new_model[4],
+                                           ts=time.time)
+            try:
+                ranking_already_in_db = DiversityRanking.query.filter(DiversityRanking.userId == new_ranking.userId).first()
+                if not ranking_already_in_db:
+
+                    db.session.add(new_ranking)
+                else:
+                    ranking_already_in_db.openess=new_ranking.openess
+                    ranking_already_in_db.consientiousness = new_ranking.consientiousness
+                    ranking_already_in_db.extraversion = new_ranking.extraversion
+                    ranking_already_in_db.agreeableness = new_ranking.agreeableness
+                    ranking_already_in_db.neuroticism = new_ranking.neuroticism
+                    ranking_already_in_db.ts = new_ranking.ts
+
             except Exception as error:
                 print('exception while trying to add to db ', error)
             db.session.commit()

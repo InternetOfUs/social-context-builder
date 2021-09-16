@@ -181,9 +181,10 @@ def show_social_preferences_selection(user_id, task_id, selection):
         entities = get_profiles_from_profile_manager(data)
     suggested_entities = jsonparser(entities)
     user_preference = suggested_entities[int(selection)] #dummy, as for now
-    model = ranking_model(user_preference, suggested_entities)
-    print(model)
-    return jsonify(model)
+    new_model = ranking_model(user_preference, suggested_entities)
+    new_diversity_ranking = DiversityRanking()
+    new_diversity_ranking.parse(new_model)
+    return jsonify(new_model)
 
 def rank_profiles(user_ids):
     MODEL = [0.5] * 5
