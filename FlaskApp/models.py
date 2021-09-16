@@ -103,12 +103,12 @@ class SocialRelations(db.Model):
 
 class DiversityRanking(db.Model):
     userId = db.Column(db.String(80), primary_key=True) #wenetid
-    openess = db.Column(db.Real, nullable=False)
-    consientiousness = db.Column(db.Real, primary_key=True, unique=True, nullable=False)
-    extraversion = db.Column(db.Real, nullable=False)
-    agreeableness = db.Column(db.Real, nullable=False)
-    neuroticism = db.Column(db.Real, nullable=False)
-    ts = db.Column(db.Real, nullable=False)
+    openess = db.Column(db.Float, nullable=False)
+    consientiousness = db.Column(db.Float, primary_key=True, unique=True, nullable=False)
+    extraversion = db.Column(db.Float, nullable=False)
+    agreeableness = db.Column(db.Float, nullable=False)
+    neuroticism = db.Column(db.Float, nullable=False)
+    ts = db.Column(db.Float, nullable=False)
 
     @staticmethod
     def parse(user_id, new_model):
