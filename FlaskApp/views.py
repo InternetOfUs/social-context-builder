@@ -183,7 +183,7 @@ def show_social_preferences_selection(user_id, task_id, selection):
     user_preference = suggested_entities[int(selection)] #dummy, as for now
     model = ranking_model(user_preference, suggested_entities)
     print(model)
-    return model
+    return jsonify(model)
 
 def rank_profiles(user_ids):
     MODEL = [0.5] * 5
