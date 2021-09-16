@@ -175,7 +175,7 @@ def show_social_preferences_answer(user_id, task_id):
 def show_social_preferences_selection(user_id, task_id, selection):
     if request.method == "PUT":
         user_ids = []
-        for answer in request.json():
+        for answer in request.json['data']:
             user_ids.append(answer['userId'])
         suggested_entities = get_profiles_from_profile_manager(user_ids)
     user_preference = selection #dummy, as for now
