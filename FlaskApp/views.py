@@ -173,11 +173,12 @@ def show_social_preferences_answer(user_id, task_id):
 
 @app.route("/social/preferences/answers/<user_id>/<task_id>/<selection>/update", methods=['PUT'])
 def show_social_preferences_selection(user_id, task_id, selection):
+    data = {}
+    data['users_IDs'] = []
     if request.method == "PUT":
-        user_ids = []
         for answer in request.json['data']:
-            user_ids.append(answer['userId'])
-        suggested_entities = get_profiles_from_profile_manager(user_ids)
+            data['users_IDs'].append(answer['userId'])
+        suggested_entities = get_profiles_from_profile_manager(data)
     user_preference = selection #dummy, as for now
     model = ranking_model(user_preference, suggested_entities)
     print(model)
