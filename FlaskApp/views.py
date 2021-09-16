@@ -182,9 +182,18 @@ def show_social_preferences_selection(user_id, task_id, selection):
     suggested_entities = jsonparser(entities)
     user_preference = suggested_entities[int(selection)] #dummy, as for now
     new_model = ranking_model(user_preference, suggested_entities)
-    new_diversity_ranking = DiversityRanking()
-    new_diversity_ranking.parse(new_model)
+    models.DiversityRanking().parse(new_model)
     return jsonify(new_model)
+
+
+@app.route("/social/preferences/answers/ranking", methods=['GET'])
+def social_profiles_all():
+    sp = models.DiversityRanking.query.order_by(models.DiversityRanking.userId).all()
+    sp_out = []
+    for profile in sp:
+        sp_out.append({'id': profile.__dict__['userId'], 'openess': profile.__dict__['openess'],'consientiousness': profile.__dict__['consientiousness'],'extraversion': profile.__dict__['extraversion'],'agreeableness': profile.__dict__['agreeableness'],'neuroticism': profile.__dict__['neuroticism']})
+    return jsonify(sp_out)
+
 
 def rank_profiles(user_ids):
     MODEL = [0.5] * 5
