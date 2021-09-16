@@ -182,7 +182,7 @@ def show_social_preferences_selection(user_id, task_id, selection):
     suggested_entities = jsonparser(entities)
     user_preference = suggested_entities[int(selection)] #dummy, as for now
     new_model = ranking_model(user_preference, suggested_entities)
-    models.DiversityRanking().parse(new_model)
+    models.DiversityRanking().parse(user_id,new_model)
     return jsonify(new_model)
 
 
