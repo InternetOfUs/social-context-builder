@@ -141,7 +141,6 @@ def show_social_explanations(user_id, task_id):
 def show_social_preferences(user_id, task_id):
     try:
         if request.method == "POST":
-            print('post method')
             return jsonify({"users_IDs": rank_profiles(request.json)})
         else:
             return jsonify(request.json)
@@ -182,13 +181,13 @@ def show_social_preferences_selection(user_id, task_id, selection):
     suggested_entities = jsonparser(entities)
     user_preference = suggested_entities[int(selection)] #dummy, as for now
     new_model = ranking_model(user_preference, suggested_entities)
-    models.DiversityRanking().parse(user_id,new_model)
+    models.DiversityRanking().parse(user_id, new_model, task_id)
     return jsonify(new_model)
 
 
-@app.route("/social/preferences/answers/ranking", methods=['GET'])
-def ranking_all():
-    sp = models.DiversityRanking.query.order_by(models.DiversityRanking.userId).all()
+@app.route("/social/preferences/answers/ranking/<user_id>", methods=['GET'])
+def ranking_all(user_id):
+    sp = models.DiversityRanking.query.order_by(models.DiversityRanking.userId == user_id).all()
     sp_out = []
     for profile in sp:
         sp_out.append({'id': profile.__dict__['userId'], 'openess': profile.__dict__['openess'],'consientiousness': profile.__dict__['consientiousness'],'extraversion': profile.__dict__['extraversion'],'agreeableness': profile.__dict__['agreeableness'],'neuroticism': profile.__dict__['neuroticism']})

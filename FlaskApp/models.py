@@ -103,17 +103,19 @@ class SocialRelations(db.Model):
 
 class DiversityRanking(db.Model):
     userId = db.Column(db.String(80), primary_key=True) #wenetid
+    taskId = db.Column(db.String(80), primary_key=True) #wenetid
     openess = db.Column(db.Float, nullable=False)
     consientiousness = db.Column(db.Float, primary_key=True, unique=True, nullable=False)
     extraversion = db.Column(db.Float, nullable=False)
     agreeableness = db.Column(db.Float, nullable=False)
     neuroticism = db.Column(db.Float, nullable=False)
-    ts = db.Column(db.Float, nullable=False)
+    ts = db.Column(db.Integer, nullable=False)
 
     @staticmethod
-    def parse(user_id, new_model):
+    def parse(user_id, new_model, task_id):
         try:
             new_ranking = DiversityRanking(userId=user_id,
+                                           taskId=task_id,
                                            openess=new_model[0],
                                            consientiousness=new_model[1],
                                            extraversion=new_model[2],
@@ -121,18 +123,20 @@ class DiversityRanking(db.Model):
                                            neuroticism=new_model[4],
                                            ts=time.time)
             try:
-                ranking_already_in_db = DiversityRanking.query.filter(DiversityRanking.userId == new_ranking.userId).first()
+                ranking_already_in_db = DiversityRanking.query.filter((DiversityRanking.userId == new_ranking.userId) &
+                                                                      (DiversityRanking.taskId == new_ranking.taskId)).first()
                 if not ranking_already_in_db:
 
                     db.session.add(new_ranking)
-                else:
+                    print("new ranking added")
+                else: #update ranking
                     ranking_already_in_db.openess=new_ranking.openess
                     ranking_already_in_db.consientiousness = new_ranking.consientiousness
                     ranking_already_in_db.extraversion = new_ranking.extraversion
                     ranking_already_in_db.agreeableness = new_ranking.agreeableness
                     ranking_already_in_db.neuroticism = new_ranking.neuroticism
                     ranking_already_in_db.ts = new_ranking.ts
-
+                    print(" ranking updated")
             except Exception as error:
                 print('exception while trying to add to db ', error)
             db.session.commit()
