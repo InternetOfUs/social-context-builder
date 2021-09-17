@@ -5,5 +5,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/database.db'
 app.config['CELERY_BROKER_URL'] = 'redis://redis:6379'
 db = SQLAlchemy(app)
 from FlaskApp import views
+db.drop_all()
 db.create_all()
 
