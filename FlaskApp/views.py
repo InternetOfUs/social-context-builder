@@ -187,7 +187,7 @@ def show_social_preferences_selection(user_id, task_id, selection):
 
 @app.route("/social/preferences/answers/ranking/<user_id>", methods=['GET'])
 def ranking_all(user_id):
-    sp = models.DiversityRanking.query.order_by(models.DiversityRanking.userId == user_id).all()
+    sp = models.DiversityRanking.query.filter(models.DiversityRanking.userId == user_id).all()
     sp_out = []
     for profile in sp:
         sp_out.append({'id': profile.__dict__['userId'], 'openess': profile.__dict__['openess'],'consientiousness': profile.__dict__['consientiousness'],'extraversion': profile.__dict__['extraversion'],'agreeableness': profile.__dict__['agreeableness'],'neuroticism': profile.__dict__['neuroticism']})
