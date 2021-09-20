@@ -154,15 +154,16 @@ def show_social_preferences_answer(user_id, task_id):
         data={}
         data['users_IDs']=[]
         answers = {}
-        if request.method == "POST":
-            print(request.json)
-            
-            for answer in request.json['data']:
-                data['users_IDs'].append(answer['userId'])
-                answers[answer['userId']] = answer['answer']
-            ranked_users = rank_profiles(data)
+        if request.method == "POST" and request.json.get('data') is not None:
+            if len(request.json.get('data')) > 1:
+                for answer in request.json['data']:
+                    data['users_IDs'].append(answer['userId'])
+                    answers[answer['userId']] = answer['answer']
+                ranked_users = rank_profiles(data)
 
-            return jsonify(order_answers(answers, ranked_users))
+                return jsonify(order_answers(answers, ranked_users))
+            else:
+                return jsonify(request.json)
         else:
             return jsonify(request.json)
     except requests.exceptions.HTTPError as e:
