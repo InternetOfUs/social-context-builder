@@ -190,6 +190,9 @@ def show_social_preferences_selection(user_id, task_id, selection):
 def ranking_all(user_id):
     sp = models.DiversityRanking.query.filter(models.DiversityRanking.userId == user_id).all()
     app.logger.info('GOT THIS ', sp)
+    app.logger.debug('GOT THIS ', sp)
+    app.logger.error('GOT THIS ', sp)
+
     sp_out = []
     for profile in sp:
         app.logger.info(profile.__dict__)
