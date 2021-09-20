@@ -140,6 +140,7 @@ class DiversityRanking(db.Model):
             except Exception as error:
                 print('exception while trying to add to db ', error)
             db.session.commit()
+            app.logger.info('commited to db')
         except Exception as error:
             print('exception !!! ', error )
         return {}
