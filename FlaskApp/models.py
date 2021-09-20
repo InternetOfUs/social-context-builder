@@ -128,7 +128,7 @@ class DiversityRanking(db.Model):
                 if not ranking_already_in_db:
 
                     db.session.add(new_ranking)
-                    print("new ranking added")
+                    app.logger.info('new ranking to db', new_ranking)
                 else: #update ranking
                     ranking_already_in_db.openess=new_ranking.openess
                     ranking_already_in_db.consientiousness = new_ranking.consientiousness
@@ -136,7 +136,7 @@ class DiversityRanking(db.Model):
                     ranking_already_in_db.agreeableness = new_ranking.agreeableness
                     ranking_already_in_db.neuroticism = new_ranking.neuroticism
                     ranking_already_in_db.ts = new_ranking.ts
-                    print(" ranking updated")
+                    app.logger.info('ranking already exist',ranking_already_in_db)
             except Exception as error:
                 print('exception while trying to add to db ', error)
             db.session.commit()
