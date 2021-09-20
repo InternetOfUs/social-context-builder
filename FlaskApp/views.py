@@ -161,7 +161,7 @@ def show_social_preferences_answer(user_id, task_id):
                     answers[answer['userId']] = answer['answer']
                 ranked_users = rank_profiles(data)
 
-                return jsonify(order_answers(answers, ranked_users))
+                return jsonify(order_answers(answers, ranked_users)[0:10])
             else:
                 return jsonify(request.json)
         else:
