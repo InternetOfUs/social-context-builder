@@ -179,10 +179,10 @@ def show_social_preferences_selection(user_id, task_id, selection):
         for answer in request.json['data']:
             data['users_IDs'].append(answer['userId'])
         entities = get_profiles_from_profile_manager(data)
-    suggested_entities = jsonparser(entities)
-    user_preference = suggested_entities[int(selection)] #dummy, as for now
-    new_model = ranking_model(user_preference, suggested_entities)
-    models.DiversityRanking().parse(user_id, new_model, task_id)
+        suggested_entities = jsonparser(entities)
+        user_preference = suggested_entities[int(selection)] #dummy, as for now
+        new_model = ranking_model(user_preference, suggested_entities)
+        models.DiversityRanking().parse(user_id, new_model, task_id)
     return jsonify(new_model)
 
 
