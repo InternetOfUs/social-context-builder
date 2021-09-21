@@ -2,7 +2,6 @@ from flask import Flask
 from flask import jsonify, request
 from FlaskCelery.flask_celery import make_celery
 from FlaskCelery.socialties import update_all
-from FlaskApp import app
 import json
 import requests
 import os
@@ -72,10 +71,10 @@ def async_ranking_learning(user_id, new_model, task_id):
                 ranking_already_in_db.neuroticism = new_ranking.neuroticism
                 ranking_already_in_db.ts = new_ranking.ts
         except Exception as error:
-            app.logger.error('exception while trying to query ranking from DB ', error)
+            print('exception while trying to query ranking from DB ', error)
         db.session.commit()
     except Exception as error:
-        app.logger.error('exception , could not add ranking to DB for user ' + str(user_id), error )
+        print('exception , could not add ranking to DB for user ' + str(user_id), error )
     return {}
 
 def get_profiles_from_profile_manager(user_ids):
