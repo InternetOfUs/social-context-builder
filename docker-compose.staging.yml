@@ -12,6 +12,7 @@ services:
       - ./dev.env
     volumes:
       - dbvolumestaging:/app/FlaskApp/db
+      - dbvolumestaging:/app/FlaskApp/social_context_builder.log
 volumes:
   dbvolumestaging:
 
