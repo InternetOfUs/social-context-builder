@@ -184,7 +184,7 @@ def show_social_preferences_selection(user_id, task_id, selection):
         user_preference = suggested_entities[int(selection)] #dummy, as for now
         new_model = ranking_model(user_preference, suggested_entities)
         #models.DiversityRanking().parse(user_id, new_model, task_id)
-        result = async_ranking_learning.delay(user_id, new_model, task_id)
+        result = FlaskCelery.tasks.async_ranking_learning.delay(user_id, new_model, task_id)
     return jsonify(new_model)
 
 
