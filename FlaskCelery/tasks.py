@@ -2,8 +2,7 @@ from flask import Flask
 from flask import jsonify, request
 from FlaskCelery.flask_celery import make_celery
 from FlaskCelery.socialties import update_all
-import FlaskApp.models.DiversityRanking as DiversityRanking
-import FlaskApp.db as db
+import FlaskApp
 import json
 import requests
 import os
@@ -60,7 +59,7 @@ def async_ranking_learning(user_id, new_model, task_id):
                                        neuroticism=round(new_model[4],4),
                                        ts=int(time.time() * 1000))
         try:
-            ranking_already_in_db = models.DiversityRanking.query.filter((DiversityRanking.userId == new_ranking.userId) &
+            ranking_already_in_db = FlaskApp.models.DiversityRanking.query.filter((DiversityRanking.userId == new_ranking.userId) &
                                                                   (DiversityRanking.taskId == new_ranking.taskId)).first()
             if not ranking_already_in_db:
 
@@ -74,7 +73,7 @@ def async_ranking_learning(user_id, new_model, task_id):
                 ranking_already_in_db.ts = new_ranking.ts
         except Exception as error:
             print('exception while trying to query ranking from DB ', error)
-        db.session.commit()
+            FlaskApp.db.session.commit()
     except Exception as error:
         print('exception , could not add ranking to DB for user ' + str(user_id), error )
     return {}
