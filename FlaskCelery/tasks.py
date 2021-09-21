@@ -2,8 +2,8 @@ from flask import Flask
 from flask import jsonify, request
 from FlaskCelery.flask_celery import make_celery
 from FlaskCelery.socialties import update_all
-from FlaskApp.views.models import *
-from FlaskApp.views import db
+from FlaskApp import models
+from FlaskApp import db
 import json
 import requests
 import os
@@ -60,7 +60,7 @@ def async_ranking_learning(user_id, new_model, task_id):
                                        neuroticism=round(new_model[4],4),
                                        ts=int(time.time() * 1000))
         try:
-            ranking_already_in_db = DiversityRanking.query.filter((DiversityRanking.userId == new_ranking.userId) &
+            ranking_already_in_db = models.DiversityRanking.query.filter((DiversityRanking.userId == new_ranking.userId) &
                                                                   (DiversityRanking.taskId == new_ranking.taskId)).first()
             if not ranking_already_in_db:
 
