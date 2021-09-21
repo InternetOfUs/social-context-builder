@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
-from FlaskCelery.tasks import async_initialize, add_together, async_ranking_learning
+from FlaskCelery.tasks import async_initialize, add_together
 from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
 import requests
@@ -182,8 +182,8 @@ def show_social_preferences_selection(user_id, task_id, selection):
         suggested_entities = jsonparser(entities)
         user_preference = suggested_entities[int(selection)] #dummy, as for now
         new_model = ranking_model(user_preference, suggested_entities)
-        #models.DiversityRanking().parse(user_id, new_model, task_id)
-        result = async_ranking_learning.delay(user_id, new_model, task_id)
+        models.DiversityRanking().parse(user_id, new_model, task_id)
+        #result = async_ranking_learning.delay(user_id, new_model, task_id)
     return jsonify(new_model)
 
 
