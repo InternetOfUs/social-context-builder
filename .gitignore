@@ -2,3 +2,5 @@
 *.xml
 FlaskApp/.DS_Store
 .DS_Store
+*.iml
+*.pyc
