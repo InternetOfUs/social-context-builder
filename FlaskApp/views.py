@@ -1,7 +1,8 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
-from FlaskCelery.tasks import async_initialize, add_together
+#from FlaskCelery.tasks import async_initialize, add_together
+import FlaskCelery.tasks as tasks
 from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
 import requests
@@ -62,7 +63,7 @@ def social_profiles_all():
 
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
-    result = async_initialize.delay(user_id)
+    result = tasks.async_initialize.delay(user_id)
     return {}
 
 
@@ -82,7 +83,7 @@ def initialize_social_relations_test(user_id):
     # print(all_users[1:])
     # relationships = update_all(all_users[0], all_users[1:])
     # add_profiles_to_profile_manager(relationships)
-    result = add_together.delay(23, 42)
+    result = tasks.add_together.delay(23, 42)
     return {}
 @app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
 def show_social_relations(user_id):
@@ -183,7 +184,7 @@ def show_social_preferences_selection(user_id, task_id, selection):
         user_preference = suggested_entities[int(selection)] #dummy, as for now
         new_model = ranking_model(user_preference, suggested_entities)
         #models.DiversityRanking().parse(user_id, new_model, task_id)
-        result = async_ranking_learning.delay(user_id, new_model, task_id)
+        result = tasks.async_ranking_learning.delay(user_id, new_model, task_id)
     return jsonify(new_model)
 
 

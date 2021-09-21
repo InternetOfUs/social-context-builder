@@ -2,8 +2,8 @@ from flask import Flask
 from flask import jsonify, request
 from FlaskCelery.flask_celery import make_celery
 from FlaskCelery.socialties import update_all
-from FlaskApp import models
-from FlaskApp import db
+import FlaskApp.models.DiversityRanking as DiversityRanking
+import FlaskApp.db as db
 import json
 import requests
 import os
