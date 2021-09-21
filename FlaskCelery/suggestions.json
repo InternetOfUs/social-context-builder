@@ -1,0 +1,290 @@
+[
+    {
+        "name": {
+            "first": "John",
+            "middle": "Francis",
+            "last": "Doe",
+            "prefix": "Dr.",
+            "suffix": "Jr."
+        },
+        "dateOfBirth": {
+            "year": 1976,
+            "month": 4,
+            "day": 23
+        },
+        "gender": "F",
+        "email": "john.doe@gmail.com",
+        "phoneNumber": "+34 6888233133",
+        "locale": "es_ES",
+        "avatar": "string",
+        "nationality": "Spanish",
+        "occupation": "nurse",
+        "_creationTs": 1563871899,
+        "_lastUpdateTs": 1563898764,
+        "id": "15837028-645a-4a55-9aaf-ceb846439eba",
+        "norms": [
+            {
+            "id": "15837028-645a-4a55-9aaf-ceb846439eba",
+            "attribute": "has_car",
+            "operator": "EQUALS",
+            "comparison": true,
+            "negation": true
+            }
+        ],
+        "plannedActivities": [
+            {
+            "id": "hfdsfs888",
+            "startTime": {},
+            "endTime": {},
+            "description": "A few beers for relaxing",
+            "attendees": [
+                "15d85f1d-b1ce-48de-b221-bec9ae954a88"
+            ],
+            "status": "confirmed"
+            }
+        ],
+        "relevantLocations": [
+            {
+            "id": "kdjfghd8hikdfg",
+            "label": "Home",
+            "latitude": 40.388756,
+            "longitude": -3.588622
+            }
+        ],
+        "relationships": [
+            {
+            "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
+            "type": "friend",
+            "weight": 0.2
+            }
+        ],
+        "personalBehaviors": [
+            {
+            "user_id": "string",
+            "weekday": "string",
+            "label_distribution": {
+                "additionalProp1": [
+                {
+                    "label": {
+                    "name": "string",
+                    "semantic_class": 0,
+                    "latitude": 0,
+                    "longitude": 0
+                    },
+                    "score": 0
+                }
+                ],
+                "additionalProp2": [
+                {
+                    "label": {
+                    "name": "string",
+                    "semantic_class": 0,
+                    "latitude": 0,
+                    "longitude": 0
+                    },
+                    "score": 0
+                }
+                ],
+                "additionalProp3": [
+                {
+                    "label": {
+                    "name": "string",
+                    "semantic_class": 0,
+                    "latitude": 0,
+                    "longitude": 0
+                    },
+                    "score": 0
+                }
+                ]
+            },
+            "confidence": 0
+            }
+        ],
+        "materials": [
+            {
+            "name": "car",
+            "description": "Fiat 500",
+            "quantity": 1,
+            "classification": "nice"
+            }
+        ],
+        "competences": [
+            {
+            "name": "language_Italian_C1",
+            "ontology": "esco",
+            "level": 0.8
+            }
+        ],
+        "meanings": [
+            {
+                "name": "extraversion",
+                "category": "big_five",
+                "level": 0.5
+            },
+            {
+                "name": "openess",
+                "category": "big_five",
+                "level": 0.5
+            },
+            {
+                "name": "conscientiousness",
+                "category": "big_five",
+                "level": 0.5
+            },
+            {
+                "name": "agreeableness",
+                "category": "big_five",
+                "level": 0.9
+            },
+            {
+                "name": "neuroticism",
+                "category": "big_five",
+                "level": 0.9
+            }
+        ]
+    },
+    {
+        "name": {
+            "first": "John",
+            "middle": "Francis",
+            "last": "Doe",
+            "prefix": "Dr.",
+            "suffix": "Jr."
+        },
+        "dateOfBirth": {
+            "year": 1976,
+            "month": 4,
+            "day": 23
+        },
+        "gender": "F",
+        "email": "john.doe@gmail.com",
+        "phoneNumber": "+34 6888233133",
+        "locale": "es_ES",
+        "avatar": "string",
+        "nationality": "Spanish",
+        "occupation": "nurse",
+        "_creationTs": 1563871899,
+        "_lastUpdateTs": 1563898764,
+        "id": "15837028-645a-4a55-9aaf-ceb846439ebb",
+        "norms": [
+            {
+            "id": "15837028-645a-4a55-9aaf-ceb846439eba",
+            "attribute": "has_car",
+            "operator": "EQUALS",
+            "comparison": true,
+            "negation": true
+            }
+        ],
+        "plannedActivities": [
+            {
+            "id": "hfdsfs888",
+            "startTime": {},
+            "endTime": {},
+            "description": "A few beers for relaxing",
+            "attendees": [
+                "15d85f1d-b1ce-48de-b221-bec9ae954a88"
+            ],
+            "status": "confirmed"
+            }
+        ],
+        "relevantLocations": [
+            {
+            "id": "kdjfghd8hikdfg",
+            "label": "Home",
+            "latitude": 40.388756,
+            "longitude": -3.588622
+            }
+        ],
+        "relationships": [
+            {
+            "userId": "4c51ee0b-b7ec-4577-9b21-ae6832656e33",
+            "type": "friend",
+            "weight": 0.2
+            }
+        ],
+        "personalBehaviors": [
+            {
+            "user_id": "string",
+            "weekday": "string",
+            "label_distribution": {
+                "additionalProp1": [
+                {
+                    "label": {
+                    "name": "string",
+                    "semantic_class": 0,
+                    "latitude": 0,
+                    "longitude": 0
+                    },
+                    "score": 0
+                }
+                ],
+                "additionalProp2": [
+                {
+                    "label": {
+                    "name": "string",
+                    "semantic_class": 0,
+                    "latitude": 0,
+                    "longitude": 0
+                    },
+                    "score": 0
+                }
+                ],
+                "additionalProp3": [
+                {
+                    "label": {
+                    "name": "string",
+                    "semantic_class": 0,
+                    "latitude": 0,
+                    "longitude": 0
+                    },
+                    "score": 0
+                }
+                ]
+            },
+            "confidence": 0
+            }
+        ],
+        "materials": [
+            {
+            "name": "car",
+            "description": "Fiat 500",
+            "quantity": 1,
+            "classification": "nice"
+            }
+        ],
+        "competences": [
+            {
+            "name": "language_Italian_C1",
+            "ontology": "esco",
+            "level": 0.8
+            }
+        ],
+        "meanings": [
+            {
+                "name": "extraversion",
+                "category": "big_five",
+                "level": 0.8
+            },
+            {
+                "name": "openess",
+                "category": "big_five",
+                "level": 0.6
+            },
+            {
+                "name": "conscientiousness",
+                "category": "big_five",
+                "level": 0.7
+            },
+            {
+                "name": "agreeableness",
+                "category": "big_five",
+                "level": 0.4
+            },
+            {
+                "name": "neuroticism",
+                "category": "big_five",
+                "level": 0.5
+            }
+        ]
+    }
+]

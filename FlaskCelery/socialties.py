@@ -124,7 +124,7 @@ def update_all(new_user, all_users):
             weights.append({
                 'newUserId': new_user['id'],
                 'existingUserId': user['id'],
-                'weight': weight,
+                'weight': round(weight, 4),
             })
         return weights
     return None

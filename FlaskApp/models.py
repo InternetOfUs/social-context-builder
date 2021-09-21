@@ -1,6 +1,8 @@
-from FlaskApp import db
+from FlaskApp import db, app
 import json
 import requests
+import time
+
 
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
@@ -17,7 +19,6 @@ class SocialProfile(db.Model):
         return '<User %r>' % self.userId
 
     def get_userId_from_sourceId(self, sourceId):
-        print('searching for', sourceId)
         user = SocialProfile.query.filter(SocialProfile.sourceId == sourceId).first()
         if user:
             return user.userId
@@ -36,10 +37,10 @@ class SocialProfile(db.Model):
                 if not profile_already_in_db:
                     db.session.add(social_profile)
             except Exception as error:
-                print('exception while trying to add to db session ', error)
+                app.logger.error('exception while trying to add to db session ', error)
             db.session.commit()
         except Exception as error:
-            print('exception in parsing social profile in db commit!!! ', error)
+            app.logger.error('exception in parsing social profile in db commit!!! ', error)
 
         return {}
 
@@ -58,7 +59,6 @@ class SocialRelations(db.Model):
     def weigh_social_relations(self, userId):
         social_relations = SocialRelations.query.filter((SocialRelations.userId == userId)
                                                               & (SocialRelations.eventType == 'friend')).all()
-        print('woohooo', social_relations)
         relationships=[]
         sp = SocialProfile()
         for social_relation in social_relations:
@@ -72,9 +72,8 @@ class SocialRelations(db.Model):
                            'Content-Type': 'application/json'}
                 if relationship['userId']:
                     r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(userId) + '/relationships', data=data, headers=headers)
-                    print('sent to PROFILE MANAGER', data, flush=True)
             except requests.exceptions.HTTPError as e:
-                print('Issue with Profile manager', r.status_code, flush=True)
+                app.logger.error('Issue with Profile manager', r.status_code, flush=True)
         return {}
 
     @staticmethod
@@ -94,8 +93,50 @@ class SocialRelations(db.Model):
                 if not relation_already_in_db:
                     db.session.add(social_relation)
             except Exception as error:
-                print('exception while trying to add to db ', error)
+                app.logger.error('exception while trying to add to db ', error)
             db.session.commit()
         except Exception as error:
-            print('exception !!! ', error )
+            app.logger.error('exception !!! ', error )
+        return {}
+
+
+class DiversityRanking(db.Model):
+    userId = db.Column(db.String(80), primary_key=True) #wenetid
+    taskId = db.Column(db.String(80), primary_key=True) #wenetid
+    openess = db.Column(db.Float, nullable=False)
+    consientiousness = db.Column(db.Float, primary_key=True, unique=True, nullable=False)
+    extraversion = db.Column(db.Float, nullable=False)
+    agreeableness = db.Column(db.Float, nullable=False)
+    neuroticism = db.Column(db.Float, nullable=False)
+    ts = db.Column(db.Integer, nullable=False)
+
+    @staticmethod
+    def parse(user_id, new_model, task_id):
+        try:
+            new_ranking = DiversityRanking(userId=user_id,
+                                           taskId=task_id,
+                                           openess=round(new_model[0],4),
+                                           consientiousness=round(new_model[1],4),
+                                           extraversion=round(new_model[2],4),
+                                           agreeableness=round(new_model[3],4),
+                                           neuroticism=round(new_model[4],4),
+                                           ts=int(time.time() * 1000))
+            try:
+                ranking_already_in_db = DiversityRanking.query.filter((DiversityRanking.userId == new_ranking.userId) &
+                                                                      (DiversityRanking.taskId == new_ranking.taskId)).first()
+                if not ranking_already_in_db:
+
+                    db.session.add(new_ranking)
+                else: #update ranking
+                    ranking_already_in_db.openess=new_ranking.openess
+                    ranking_already_in_db.consientiousness = new_ranking.consientiousness
+                    ranking_already_in_db.extraversion = new_ranking.extraversion
+                    ranking_already_in_db.agreeableness = new_ranking.agreeableness
+                    ranking_already_in_db.neuroticism = new_ranking.neuroticism
+                    ranking_already_in_db.ts = new_ranking.ts
+            except Exception as error:
+                app.logger.error('exception while trying to query ranking from DB ', error)
+            db.session.commit()
+        except Exception as error:
+            app.logger.error('exception , could not add ranking to DB for user ' + str(user_id), error )
         return {}

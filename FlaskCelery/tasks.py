@@ -2,6 +2,8 @@ from flask import Flask
 from flask import jsonify, request
 from FlaskCelery.flask_celery import make_celery
 from FlaskCelery.socialties import update_all
+#from FlaskApp.views.models import DiversityRanking
+#from FlaskApp.views import db
 import json
 import requests
 import os
@@ -34,11 +36,9 @@ def async_initialize(user_id):
                 print ('got N profiles')
                 if all_users_in_range is None:
                     more_profiles_left = False
-                    print('no more profiles left')
                 else:
                     print ('going to update relations')
                     relationships = update_all(new_user[0], all_users_in_range)
-                    print('$$$$$$$ success', relationships)
                     if relationships:
                         add_profiles_to_profile_manager(relationships)
                         print ('PROFILES ADDED')
@@ -47,6 +47,37 @@ def async_initialize(user_id):
         print('exception happened!!', e)
     return {}
 
+
+@celery.task()
+def async_ranking_learning(user_id, new_model, task_id):
+    try:
+        new_ranking = DiversityRanking(userId=user_id,
+                                       taskId=task_id,
+                                       openess=round(new_model[0],4),
+                                       consientiousness=round(new_model[1],4),
+                                       extraversion=round(new_model[2],4),
+                                       agreeableness=round(new_model[3],4),
+                                       neuroticism=round(new_model[4],4),
+                                       ts=int(time.time() * 1000))
+        try:
+            ranking_already_in_db = DiversityRanking.query.filter((DiversityRanking.userId == new_ranking.userId) &
+                                                                  (DiversityRanking.taskId == new_ranking.taskId)).first()
+            if not ranking_already_in_db:
+
+                db.session.add(new_ranking)
+            else: #update ranking
+                ranking_already_in_db.openess=new_ranking.openess
+                ranking_already_in_db.consientiousness = new_ranking.consientiousness
+                ranking_already_in_db.extraversion = new_ranking.extraversion
+                ranking_already_in_db.agreeableness = new_ranking.agreeableness
+                ranking_already_in_db.neuroticism = new_ranking.neuroticism
+                ranking_already_in_db.ts = new_ranking.ts
+        except Exception as error:
+            print('exception while trying to query ranking from DB ', error)
+        db.session.commit()
+    except Exception as error:
+        print('exception , could not add ranking to DB for user ' + str(user_id), error )
+    return {}
 
 def get_profiles_from_profile_manager(user_ids):
     entities = []

@@ -2,6 +2,7 @@ from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
 from FlaskCelery.tasks import async_initialize, add_together
+from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
 import requests
 import os
@@ -12,27 +13,6 @@ ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 #COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 
-
-#
-# @celery.task()
-# def initialize(user_id):
-#     try:
-#         if request.method == 'POST':
-#             new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
-#             offset = 0
-#             number_of_profiles = 20
-#             more_profiles_left = True
-#             while more_profiles_left:
-#                 all_users_test = get_N_profiles_from_profile_manager(offset, number_of_profiles)
-#                 if all_users_test is None:
-#                     more_profiles_left = False
-#                 else:
-#                     relationships = update_all(new_user[0], all_users_test[1:])
-#                     add_profiles_to_profile_manager(relationships)
-#                     offset = offset + 20
-#     except Exception as e:
-#         print('exception happened!!', e)
-#     return {}
 
 
 @app.route("/")
@@ -161,7 +141,6 @@ def show_social_explanations(user_id, task_id):
 def show_social_preferences(user_id, task_id):
     try:
         if request.method == "POST":
-            print('post method')
             return jsonify({"users_IDs": rank_profiles(request.json)})
         else:
             return jsonify(request.json)
@@ -169,26 +148,55 @@ def show_social_preferences(user_id, task_id):
         print('Exception social preferences, returning not ranked user list', e)
         return jsonify(request.json)
 
-@app.route("/social/preferences/answers/<user_id>/<task_id>/", methods=['GET','POST'])
+@app.route("/social/preferences/answers/<user_id>/<task_id>/", methods=['POST'])
 def show_social_preferences_answer(user_id, task_id):
     try:
         data={}
         data['users_IDs']=[]
         answers = {}
-        if request.method == "POST":
-            print(request.json)
-            
-            for answer in request.json['data']:
-                data['users_IDs'].append(answer['userId'])
-                answers[answer['userId']] = answer['answer']
-            ranked_users = rank_profiles(data)
+        if request.method == "POST" and request.json.get('data') is not None:
+            if len(request.json.get('data')) > 1:
+                for answer in request.json['data']:
+                    data['users_IDs'].append(answer['userId'])
+                    answers[answer['userId']] = answer['answer']
+                ranked_users = rank_profiles(data)
 
-            return jsonify(order_answers(answers, ranked_users))
+                return jsonify(order_answers(answers, ranked_users)[0:10])
+            else:
+                return jsonify(request.json)
         else:
             return jsonify(request.json)
     except requests.exceptions.HTTPError as e:
         print('Exception social preferences, returning not ranked user list', e)
         return jsonify(request.json)
+
+
+@app.route("/social/preferences/answers/<user_id>/<task_id>/<selection>/update", methods=['PUT'])
+def show_social_preferences_selection(user_id, task_id, selection):
+    data = {}
+    data['users_IDs'] = []
+    if request.method == "PUT":
+        for answer in request.json['data']:
+            data['users_IDs'].append(answer['userId'])
+        entities = get_profiles_from_profile_manager(data)
+        suggested_entities = jsonparser(entities)
+        user_preference = suggested_entities[int(selection)] #dummy, as for now
+        new_model = ranking_model(user_preference, suggested_entities)
+        models.DiversityRanking().parse(user_id, new_model, task_id)
+        #result = async_ranking_learning.delay(user_id, new_model, task_id)
+    return jsonify(new_model)
+
+
+@app.route("/social/preferences/answers/ranking/<user_id>", methods=['GET'])
+def ranking_all(user_id):
+    sp = models.DiversityRanking.query.filter(models.DiversityRanking.userId == user_id).all()
+    app.logger.info('User '+str(user_id)+' ranking model is updated')
+
+    sp_out = []
+    for profile in sp:
+        app.logger.info(profile.__dict__)
+        sp_out.append({'id': profile.__dict__['userId'], 'openess': profile.__dict__['openess'],'consientiousness': profile.__dict__['consientiousness'],'extraversion': profile.__dict__['extraversion'],'agreeableness': profile.__dict__['agreeableness'],'neuroticism': profile.__dict__['neuroticism'], 'ts': profile.__dict__['ts']})
+    return jsonify(sp_out)
 
 
 def rank_profiles(user_ids):
