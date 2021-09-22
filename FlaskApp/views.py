@@ -155,7 +155,7 @@ def show_social_preferences_answer(user_id, task_id):
         data={}
         data['users_IDs']=[]
         answers = {}
-        if request.method == "POST" and request.json.get('data') is not None:
+        if request.method == "POST" and request.json().get('data') is not None:
             if len(request.json.get('data')) > 1:
                 for answer in request.json['data']:
                     data['users_IDs'].append(answer['userId'])
@@ -176,16 +176,19 @@ def show_social_preferences_answer(user_id, task_id):
 def show_social_preferences_selection(user_id, task_id, selection):
     data = {}
     data['users_IDs'] = []
-    if request.method == "PUT":
-        for answer in request.json['data']:
-            data['users_IDs'].append(answer['userId'])
-        entities = get_profiles_from_profile_manager(data)
-        suggested_entities = jsonparser(entities)
-        user_preference = suggested_entities[int(selection)] #dummy, as for now
-        new_model = ranking_model(user_preference, suggested_entities)
-        #models.DiversityRanking().parse(user_id, new_model, task_id)
-        result = FlaskCelery.tasks.async_ranking_learning.delay(user_id, new_model, task_id)
-    return jsonify(new_model)
+    try:
+        if request.method == "PUT":
+            for answer in request.json['data']:
+                data['users_IDs'].append(answer['userId'])
+            entities = get_profiles_from_profile_manager(data)
+            suggested_entities = jsonparser(entities)
+            user_preference = suggested_entities[int(selection)] #dummy, as for now
+            new_model = ranking_model(user_preference, suggested_entities)
+            #models.DiversityRanking().parse(user_id, new_model, task_id)
+            result = FlaskCelery.tasks.async_ranking_learning.delay(user_id, new_model, task_id)
+        return jsonify(new_model)
+    except:
+        return {}
 
 
 @app.route("/social/preferences/answers/ranking/<user_id>", methods=['GET'])
