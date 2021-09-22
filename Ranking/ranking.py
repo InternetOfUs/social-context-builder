@@ -157,8 +157,8 @@ def order_answers(answers_dict, vols):
     output = []
     for vol in vols:
         output.append({
-            "user": vol,
-            "answer": answers_dict[vol],
+            "user": str(vol),
+            "answer": answers_dict[str(vol)],
         })
     return output
 if __name__ == '__main__':

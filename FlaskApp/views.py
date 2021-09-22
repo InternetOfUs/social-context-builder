@@ -148,19 +148,20 @@ def show_social_preferences(user_id, task_id):
         print('Exception social preferences, returning not ranked user list', e)
         return jsonify(request.json)
 
-@app.route("/social/preferences/answers/<user_id>/<task_id>/", methods=['POST'])
+@app.route("/social/preferences/answers/<user_id>/<task_id>", methods=['POST'])
 def show_social_preferences_answer(user_id, task_id):
     try:
-        data={}
-        data['users_IDs']=[]
+        data = {}
+        data['users_IDs'] = []
         answers = {}
-        if request.method == "POST" and request.json().get('data') is not None:
+        if request.method == "POST" and request.json.get('data') is not None:
             if len(request.json.get('data')) > 1:
                 for answer in request.json['data']:
-                    data['users_IDs'].append(answer['userId'])
-                    answers[answer['userId']] = answer['answer']
+                    data['users_IDs'].append(str(answer['userId']))
+                    answers[str(answer['userId'])] = answer['answer']
                 ranked_users = rank_profiles(data)
-
+                print(ranked_users)
+                print(answers)
                 return jsonify(order_answers(answers, ranked_users))
             else:
                 return jsonify(request.json)
