@@ -2,8 +2,7 @@ from flask import Flask
 from flask import jsonify, request
 from FlaskCelery.flask_celery import make_celery
 from FlaskCelery.socialties import update_all
-#from FlaskApp.views.models import DiversityRanking
-#from FlaskApp.views import db
+import FlaskCelery.social_ties_learning as social_ties_learning
 import json
 import requests
 import os
@@ -47,6 +46,14 @@ def async_initialize(user_id):
         print('exception happened!!', e)
     return {}
 
+@celery.task()
+def async_social_ties_learning(data):
+
+    type_of_interaction = data['message']['label']
+    user_id = data['senderId']
+    current_weight = 0.3
+    new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight)
+    print ('New Weight', new_weight)
 
 @celery.task()
 def async_ranking_learning(user_id, new_model, task_id):
@@ -102,7 +109,7 @@ def get_N_profiles_from_profile_manager(offset, number_of_profiles):
         try:
             headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
                        'x-wenet-component-apikey': COMP_AUTH_KEY, }
-            r = requests.get(PROFILE_MANAGER_API + 'profiles?offset=' + str(offset)+ '&limit=' + str(number_of_profiles), headers=headers)
+            r = requests.get(PROFILE_MANAGER_API + '/profiles?offset=' + str(offset) + '&limit=' + str(number_of_profiles), headers=headers)
             entities = r.json().get('profiles')
         except requests.exceptions.HTTPError as e:
             print('Cannot get entity from  Profile manager', e)
@@ -132,3 +139,19 @@ def add_profiles_to_profile_manager(relationships):
                                  data=data, headers=headers)
     except requests.exceptions.HTTPError as e:
         print('Issue with Profile manager')
+
+
+def get_relationships_from_profile_manager(user_id):
+    entities = []
+    try:
+        try:
+            headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
+                       'x-wenet-component-apikey': COMP_AUTH_KEY, }
+            r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', headers=headers)
+            relationships = r.json()
+        except requests.exceptions.HTTPError as e:
+            print('Cannot get relationships from  Profile manager', e)
+        return None
+    except requests.exceptions.HTTPError as e:
+        print('Something wrong with user list IDs received from Profile Manager', e)
+        return None
