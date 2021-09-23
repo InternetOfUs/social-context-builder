@@ -54,7 +54,7 @@ def async_social_ties_learning(data):
     current_weight = 0.3
     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight)
     print ('New Weight', new_weight)
-
+    return{}
 @celery.task()
 def async_ranking_learning(user_id, new_model, task_id):
     try:

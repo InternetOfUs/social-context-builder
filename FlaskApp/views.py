@@ -1,6 +1,7 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
+from FlaskCelery.tasks import async_initialize, add_together, async_social_ties_learning
 from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
 import requests
@@ -201,11 +202,11 @@ def ranking_all(user_id):
         sp_out.append({'id': profile.__dict__['userId'], 'openess': profile.__dict__['openess'],'consientiousness': profile.__dict__['consientiousness'],'extraversion': profile.__dict__['extraversion'],'agreeableness': profile.__dict__['agreeableness'],'neuroticism': profile.__dict__['neuroticism'], 'ts': profile.__dict__['ts']})
     return jsonify(sp_out)
 
-@app.route("/social/notification/interaction", methods=['GET'])
+@app.route("/social/notification/interaction", methods=['POST'])
 def social_notification_interaction():
-    data = request.json()
+    data = request.json
     async_social_ties_learning.delay(data)
-
+    return{}
 def rank_profiles(user_ids):
     MODEL = [0.5] * 5
     DIVERSITY_COEFFICIENT = 0.4
