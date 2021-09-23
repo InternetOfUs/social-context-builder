@@ -51,8 +51,18 @@ def async_social_ties_learning(data):
 
     type_of_interaction = data['message']['label']
     user_id = data['senderId']
+    receiver_id = data['receiverId']
     current_weight = 0.3
     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight)
+    if new_weight != current_weight and new_weight>=0 and new_weight<=1:
+        relationship={}
+        relationship['userId'] = receiver_id
+        relationship['type'] = 'friend'
+        relationship['weight'] = round(float(new_weight), 4)
+        add_relationship_to_profile_manager(user_id, relationship)
+
+
+
     print ('New Weight', new_weight)
     return{}
 @celery.task()
@@ -155,3 +165,16 @@ def get_relationships_from_profile_manager(user_id):
     except requests.exceptions.HTTPError as e:
         print('Something wrong with user list IDs received from Profile Manager', e)
         return None
+
+
+def add_relationship_to_profile_manager(user_id, relationship):
+    try:
+        data = json.dumps(relationship)
+        headers = {'connection': 'keep-alive',
+                   'x-wenet-component-apikey': COMP_AUTH_KEY,
+                   'Content-Type': 'application/json'}
+        if relationship['userId']:
+            r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', data=data,
+                              headers=headers)
+    except requests.exceptions.HTTPError as e:
+        print ('exception')
