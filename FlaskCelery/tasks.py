@@ -51,7 +51,7 @@ def async_social_ties_learning(data):
 
     type_of_interaction = data['message']['label']
     user_id = data['senderId']
-    receiver_id = data['receiverId']
+    receiver_id = data['message']['receiverId']
     current_weight = 0.3
     relationships = get_relationships_from_profile_manager(user_id)
     for relationship in relationships:
