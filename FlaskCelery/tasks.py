@@ -163,6 +163,8 @@ def get_relationships_from_profile_manager(user_id):
                        'x-wenet-component-apikey': COMP_AUTH_KEY, }
             r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', headers=headers)
             relationships = r.json()
+            print relationships
+            return relationships
         except requests.exceptions.HTTPError as e:
             print('Cannot get relationships from  Profile manager', e)
         return None
