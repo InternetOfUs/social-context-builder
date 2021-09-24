@@ -180,7 +180,7 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
                    'x-wenet-component-apikey': COMP_AUTH_KEY,
                    'Content-Type': 'application/json'}
         if relationship['userId']:
-            r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/'+ index, data=data,
+            r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/'+ str(index), data=data,
                               headers=headers)
     except requests.exceptions.HTTPError as e:
         print('exception')
