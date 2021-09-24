@@ -53,18 +53,22 @@ def async_social_ties_learning(data):
     user_id = data['senderId']
     receiver_id = data['receiverId']
     current_weight = 0.3
-    new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight)
-    if new_weight != current_weight and new_weight>=0 and new_weight<=1:
-        relationship={}
-        relationship['userId'] = receiver_id
-        relationship['type'] = 'friend'
-        relationship['weight'] = round(float(new_weight), 4)
-        add_relationship_to_profile_manager(user_id, relationship)
+    relationships = get_relationships_from_profile_manager(user_id)
+    for relationship in relationships:
+        if relationship['userId'] == receiver_id:
+            index = relationships.index(relationship)
+            new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight)
+            if new_weight != current_weight and new_weight>=0 and new_weight<=1:
+                relationship={}
+                relationship['userId'] = receiver_id
+                relationship['type'] = 'friend'
+                relationship['weight'] = round(float(new_weight), 4)
+                update_relationship_to_profile_manager(user_id, relationship, index)
 
 
 
-    print ('New Weight', new_weight)
-    return{}
+    print ( new_weight)
+    print (index)
 @celery.task()
 def async_ranking_learning(user_id, new_model, task_id):
     try:
@@ -167,14 +171,16 @@ def get_relationships_from_profile_manager(user_id):
         return None
 
 
-def add_relationship_to_profile_manager(user_id, relationship):
+def update_relationship_to_profile_manager(user_id, relationship, index):
     try:
         data = json.dumps(relationship)
         headers = {'connection': 'keep-alive',
                    'x-wenet-component-apikey': COMP_AUTH_KEY,
                    'Content-Type': 'application/json'}
         if relationship['userId']:
-            r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', data=data,
+            r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/'+ index, data=data,
                               headers=headers)
     except requests.exceptions.HTTPError as e:
-        print ('exception')
+        print('exception')
+
+
