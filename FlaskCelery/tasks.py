@@ -49,26 +49,26 @@ def async_initialize(user_id):
 @celery.task()
 def async_social_ties_learning(data):
 
-    type_of_interaction = data['message']['label']
-    user_id = data['senderId']
-    receiver_id = data['message']['receiverId']
-    current_weight = 0.3
-    relationships = get_relationships_from_profile_manager(user_id)
-    for relationship in relationships:
-        if relationship['userId'] == receiver_id:
-            index = relationships.index(relationship)
-            new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight)
-            if new_weight != current_weight and new_weight>=0 and new_weight<=1:
-                relationship={}
-                relationship['userId'] = receiver_id
-                relationship['type'] = 'friend'
-                relationship['weight'] = round(float(new_weight), 4)
-                update_relationship_to_profile_manager(user_id, relationship, index)
+    try:
+        type_of_interaction = data['message']['label']
+        user_id = data['senderId']
+        receiver_id = data['message']['receiverId']
+        current_weight = 0.3
+        relationships = get_relationships_from_profile_manager(user_id)
+        if relationships is not None:
+            for relationship in relationships:
+                if relationship['userId'] == receiver_id:
+                    index = relationships.index(relationship)
+                    new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight)
+                    if new_weight != current_weight and new_weight>=0 and new_weight<=1:
+                        relationship={}
+                        relationship['userId'] = receiver_id
+                        relationship['type'] = 'friend'
+                        relationship['weight'] = round(float(new_weight), 4)
+                        update_relationship_to_profile_manager(user_id, relationship, index)
+    except:
+        pass
 
-
-
-    print ( new_weight)
-    print (index)
 @celery.task()
 def async_ranking_learning(user_id, new_model, task_id):
     try:
@@ -163,7 +163,6 @@ def get_relationships_from_profile_manager(user_id):
                        'x-wenet-component-apikey': COMP_AUTH_KEY, }
             r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', headers=headers)
             relationships = r.json()
-            print (relationships)
             return relationships
         except requests.exceptions.HTTPError as e:
             print('Cannot get relationships from  Profile manager', e)

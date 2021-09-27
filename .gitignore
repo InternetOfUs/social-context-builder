@@ -4,3 +4,5 @@ FlaskApp/.DS_Store
 .DS_Store
 *.iml
 *.pyc
+social_context_builder.log
+*.db

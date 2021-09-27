@@ -2,7 +2,7 @@ version: "3"
 services:
   web:
     build: .
-    command: gunicorn --bind 0.0.0.0:5000 FlaskApp:app --timeout 600
+    command: gunicorn --workers 4 --bind 0.0.0.0:5000 FlaskApp:app
     ports:
       - "8081:5000"
     container_name: social-context-prod
