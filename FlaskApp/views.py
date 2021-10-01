@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
-from FlaskCelery.tasks import async_initialize, add_together, async_social_ties_learning
+from FlaskCelery.tasks import async_initialize, async_social_ties_learning
 from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
 import requests
@@ -66,24 +66,6 @@ def initialize_social_relations(user_id):
     return {}
 
 
-@app.route("/social/relations/initialize/test/<user_id>", methods=['POST'])
-def initialize_social_relations_test(user_id):
-    # x = range(30)
-    # user_ids={}
-    # values=[]
-    # for n in x:
-    #     values.append(str(n))
-    # user_ids = {'users_IDs': values }
-    # all_users = get_profiles_from_profile_manager(user_ids)
-    # print("******user######")
-    # print("******user######")
-    # print(all_users[0])
-    # print('^^^^^^^^^^^^')
-    # print(all_users[1:])
-    # relationships = update_all(all_users[0], all_users[1:])
-    # add_profiles_to_profile_manager(relationships)
-    result = tasks.add_together.delay(23, 42)
-    return {}
 @app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
 def show_social_relations(user_id):
     try:

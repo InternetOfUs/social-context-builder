@@ -50,7 +50,12 @@ def async_initialize(user_id):
 def async_social_ties_learning(data):
 
     try:
+        negative_verbs =['reject','report','decline','refuse','ignore']
         type_of_interaction = data['message']['label']
+        if type_of_interaction in ['volunteerForTask','acceptVolunteer','AnsweredPickedMessage','AnsweredQuestionMessage']:
+            type_of_interaction ='positive'
+        if any(x in type_of_interaction for x in negative_verbs):
+            type_of_interaction = 'negative'
         user_id = data['senderId']
         receiver_id = data['message']['receiverId']
         current_weight = 0.3
@@ -144,11 +149,11 @@ def add_profiles_to_profile_manager(relationships):
                    'x-wenet-component-apikey': COMP_AUTH_KEY, }
         for relationship in relationships:
             if str(relationship['existingUserId']) != str(relationship['newUserId']):
-                data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': relationship['weight']})
+                data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4)})
                 print(data)
                 r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
                                  data=data, headers=headers)
-                data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': relationship['weight']})
+                data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4)})
                 r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
                                  data=data, headers=headers)
     except requests.exceptions.HTTPError as e:

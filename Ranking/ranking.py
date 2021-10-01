@@ -25,8 +25,6 @@ def parse_entity(entity):
 
 
 def parser(entities):
-    #with open(path_to_json, 'r') as file:
-     #   entities = json.load(file)
     dict_of_entities = {}
     for entity in entities:
         dict_of_entities[entity['id']] = parse_entity(entity)

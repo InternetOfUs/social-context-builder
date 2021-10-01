@@ -6,6 +6,7 @@ services:
     ports:
       - "8081:8000"
     container_name: social-context-dev
+    restart: always
     environment:
       - FLASK_ENV= development
       - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
@@ -19,12 +20,14 @@ services:
 
   redis:
     image: redis:6-alpine
+    restart: unless-stopped
 
   celery_worker:
     build:
       context: .
     image: flask_celery_example_celery_worker
     command: celery -A FlaskCelery.tasks.celery worker -l INFO
+    restart: always
     env_file:
       - ./dev.env
     environment:
