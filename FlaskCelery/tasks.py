@@ -59,18 +59,19 @@ def async_social_ties_learning(data):
         user_id = data['senderId']
         receiver_id = data['message']['receiverId']
         current_weight = 0.3
-        relationships = get_relationships_from_profile_manager(user_id)
-        if relationships is not None:
-            for relationship in relationships:
-                if relationship['userId'] == receiver_id:
-                    index = relationships.index(relationship)
-                    new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight)
-                    if new_weight != current_weight and new_weight>=0 and new_weight<=1:
-                        relationship={}
-                        relationship['userId'] = receiver_id
-                        relationship['type'] = 'friend'
-                        relationship['weight'] = round(float(new_weight), 4)
-                        update_relationship_to_profile_manager(user_id, relationship, index)
+        if type_of_interaction in ['negative', 'positive']:
+            relationships = get_relationships_from_profile_manager(user_id)
+            if relationships is not None:
+                for relationship in relationships:
+                    if relationship['userId'] == receiver_id:
+                        index = relationships.index(relationship)
+                        new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight)
+                        if new_weight != current_weight and new_weight>=0 and new_weight<=1:
+                            relationship={}
+                            relationship['userId'] = receiver_id
+                            relationship['type'] = 'friend'
+                            relationship['weight'] = round(float(new_weight), 4)
+                            update_relationship_to_profile_manager(user_id, relationship, index)
     except:
         pass
 

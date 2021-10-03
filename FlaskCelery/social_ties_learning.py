@@ -1,6 +1,6 @@
 def compute_tie_strength(data, type_of_interaction, old_tie_strength):
     sign = 1
-    if (type_of_interaction == "rejection"):
+    if (type_of_interaction == "negative"):
         sign = -1
     total_interactions = 40#data["total"]
     first = 1457166440#data["firstTs"]
