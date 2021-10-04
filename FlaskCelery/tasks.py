@@ -54,7 +54,7 @@ def async_social_ties_learning(data):
         type_of_interaction = data['message']['label']
         if type_of_interaction in ['volunteerForTask','acceptVolunteer','AnsweredPickedMessage','AnsweredQuestionMessage']:
             type_of_interaction = 'positive'
-        if any(x in type_of_interaction for x in negative_verbs):
+        if any(x in type_of_interaction.lower() for x in negative_verbs):
             type_of_interaction = 'negative'
         user_id = data['senderId']
         receiver_id = data['message']['receiverId']
