@@ -3,16 +3,36 @@ services:
   web:
     build: .
     ports:
-      - "8086:5000"
+      - "8086:8000"
     container_name: social-context-staging
     environment:
-      - FLASK_ENV= development
+      - FLASK_ENV= production
       - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - FLASK_DEBUG= 0
     env_file:
       - ./dev.env
     volumes:
       - dbvolumestaging:/app/FlaskApp/db
       - dbvolumestaging:/app/FlaskApp/social_context_builder.log
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:6-alpine
+    restart: unless-stopped
+
+  celery_worker:
+    build:
+      context: .
+    image: flask_celery_example_celery_worker
+    command: celery -A FlaskCelery.tasks.celery worker -l INFO
+    restart: always
+    env_file:
+      - ./dev.env
+    environment:
+      - FLASK_APP=app
+    depends_on:
+      - redis
 volumes:
   dbvolumestaging:
 
