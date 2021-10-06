@@ -51,6 +51,7 @@ def async_initialize(user_id):
 def async_social_ties_learning(data):
 
     try:
+        found_relationship = False
         negative_verbs =['reject','report','decline','refuse','ignore']
         type_of_interaction = data['message']['label']
         if type_of_interaction in ['volunteerForTask','acceptVolunteer','AnsweredPickedMessage','AnsweredQuestionMessage']:
@@ -63,21 +64,30 @@ def async_social_ties_learning(data):
         if type_of_interaction in ['negative', 'positive']:
             relationships = get_relationships_from_profile_manager(sender_id)
             print(relationships)
-            if relationships is not None:
-                for relationship in relationships:
-                    if relationship['userId'] == receiver_id:
-                        current_weight = float(relationship.get('weight'))
-                        index = relationships.index(relationship)
-                        new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
-                        print('new weight')
-                        print(new_weight)
-                        if new_weight != current_weight and new_weight>=0 and new_weight<=1:
-                            relationship={}
-                            relationship['userId'] = receiver_id
-                            relationship['type'] = 'friend'
-                            relationship['weight'] = round(float(new_weight), 4)
-                            update_relationship_to_profile_manager(sender_id, relationship, index)
-                            return relationship
+            for relationship in relationships:
+                if relationship.get('userId') == receiver_id:
+                    found_relationship = True
+                    current_weight = float(relationship.get('weight'))
+                    index = relationships.index(relationship)
+                    new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
+                    print('new weight')
+                    print(new_weight)
+                    if new_weight != current_weight and new_weight>=0 and new_weight<=1:
+                        relationship={}
+                        relationship['userId'] = receiver_id
+                        relationship['type'] = 'friend'
+                        relationship['weight'] = round(float(new_weight), 4)
+                        update_relationship_to_profile_manager(sender_id, relationship, index)
+                        return
+            if not found_relationship:
+                current_weight = 0.0
+                new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
+                                                                       first_total_interaction)
+                set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4)})
+
+
+
+
     except:
         pass
 
@@ -192,6 +202,18 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
                    'Content-Type': 'application/json'}
         if relationship['userId']:
             r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/'+ str(index), data=data,
+                              headers=headers)
+    except requests.exceptions.HTTPError as e:
+        print('exception')
+
+def set_relationship_to_profile_manager(user_id, relationship):
+    try:
+        data = json.dumps(relationship)
+        headers = {'connection': 'keep-alive',
+                   'x-wenet-component-apikey': COMP_AUTH_KEY,
+                   'Content-Type': 'application/json'}
+        if relationship['userId']:
+            r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', data=data,
                               headers=headers)
     except requests.exceptions.HTTPError as e:
         print('exception')
