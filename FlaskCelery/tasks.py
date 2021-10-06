@@ -215,6 +215,7 @@ def set_relationship_to_profile_manager(user_id, relationship):
         if relationship['userId']:
             r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', data=data,
                               headers=headers)
+            print(r.status_code)
     except requests.exceptions.HTTPError as e:
         print('exception')
 
