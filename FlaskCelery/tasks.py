@@ -59,6 +59,7 @@ def async_social_ties_learning(data):
             type_of_interaction = 'negative'
         sender_id = data['senderId']
         receiver_id = data['message']['receiverId']
+        print('before getting first lats')
         first_last_total_interaction = get_first_last_total_interaction(sender_id, receiver_id)
         print(first_last_total_interaction)
         if type_of_interaction in ['negative', 'positive']:
@@ -201,7 +202,10 @@ def get_first_last_total_interaction(senderId, receiverID):
         r = requests.get(INTERACTION_PROTOCOL_ENGINE + '/interaction?senderId=' + str(senderId) + '&receiverId=' + str(receiverID) +
                          '&offset=0', headers=headers)
         interactions = r.json()
+        print(r.status_code)
+        print(interactions)
         if interactions.get('total') == 0:
+            print('total=0')
             return {'first': 0, 'last': 0, 'total': 0}
         else:
             total_interactions = interactions.get('total')
@@ -211,6 +215,7 @@ def get_first_last_total_interaction(senderId, receiverID):
                     receiverID) +
                 '&offset=' + str(total_interactions - 1), headers=headers)
             last_interaction = interactions.get('interactions')[0].get('messageTs')
+            print(first_interaction,last_interaction,total_interactions)
             return {'first': first_interaction, 'last': last_interaction, 'total': total_interactions}
     except requests.exceptions.HTTPError as e:
         print('could not calculate interaction', e)
