@@ -181,7 +181,7 @@ def ranking_all(user_id):
     sp_out = []
     for profile in sp:
         app.logger.info(profile.__dict__)
-        sp_out.append({'id': profile.__dict__['userId'], 'openess': profile.__dict__['openess'],'consientiousness': profile.__dict__['consientiousness'],'extraversion': profile.__dict__['extraversion'],'agreeableness': profile.__dict__['agreeableness'],'neuroticism': profile.__dict__['neuroticism'], 'ts': profile.__dict__['ts']})
+        sp_out.append({'id': profile.__dict__['userId'], 'openess': profile.__dict__['openess'],'consientiousness': profile.__dict__['consientiousness'],'extraversion': profile.__dict__['extraversion'],'agreeableness': profile.__dict__['agreeableness'],'neuroticism': profile.__dict__['neuroticism'], 'ts': profile.__dict__['ts'], 'taskId': profile.__dict__['taskId']})
     return jsonify(sp_out)
 
 @app.route("/social/notification/interaction", methods=['POST'])
@@ -198,7 +198,7 @@ def rank_profiles(user_ids):
         ranked = rank_entities(dict_of_entities, MODEL, DIVERSITY_COEFFICIENT)
         return ranked
     else:
-        print('Could not get profiles')
+        app.logger.info('Could not get profiles')
         return False
 
 def get_profiles_from_profile_manager(user_ids):
@@ -215,7 +215,7 @@ def get_profiles_from_profile_manager(user_ids):
                 print('Cannot get entity from  Profile manager', e)
         return entities
     except requests.exceptions.HTTPError as e:
-        print('Something wrong with user list IDs received from Profile Manager', e)
+        app.logger.info('Something wrong with user list IDs received from Profile Manager', e)
         return False
 
 
