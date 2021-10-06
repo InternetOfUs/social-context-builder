@@ -59,17 +59,16 @@ def async_social_ties_learning(data):
             type_of_interaction = 'negative'
         sender_id = data['senderId']
         receiver_id = data['message']['receiverId']
-        print('before getting first lats')
-        first_last_total_interaction = get_first_last_total_interaction(sender_id, receiver_id)
+        first_total_interaction = get_first_total_interaction(sender_id, receiver_id)
         if type_of_interaction in ['negative', 'positive']:
             relationships = get_relationships_from_profile_manager(sender_id)
             print(relationships)
             if relationships is not None:
                 for relationship in relationships:
                     if relationship['userId'] == receiver_id:
-                        current_weight = relationship.get('weight')
+                        current_weight = float(relationship.get('weight'))
                         index = relationships.index(relationship)
-                        new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_last_total_interaction)
+                        new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
                         print('new weight')
                         print(new_weight)
                         if new_weight != current_weight and new_weight>=0 and new_weight<=1:
@@ -197,7 +196,7 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
     except requests.exceptions.HTTPError as e:
         print('exception')
 
-def get_first_last_total_interaction(senderId, receiverID):
+def get_first_total_interaction(senderId, receiverID):
     try:
         headers = {'connection': 'keep-alive',
                    'x-wenet-component-apikey': COMP_AUTH_KEY, }
@@ -216,8 +215,7 @@ def get_first_last_total_interaction(senderId, receiverID):
                 INTERACTION_PROTOCOL_ENGINE + '/interactions?senderId=' + str(senderId) + '&receiverId=' + str(
                     receiverID) +
                 '&offset=' + str(total_interactions - 1), headers=headers)
-            last_interaction = interactions.get('interactions')[0].get('messageTs')
-            print(first_interaction,last_interaction,total_interactions)
-            return {'first': first_interaction, 'last': last_interaction, 'total': total_interactions}
+            print(first_interaction, total_interactions)
+            return {'first': first_interaction, 'total': total_interactions}
     except requests.exceptions.HTTPError as e:
         print('could not calculate interaction', e)
