@@ -199,7 +199,7 @@ def get_first_last_total_interaction(senderId, receiverID):
     try:
         headers = {'connection': 'keep-alive',
                    'x-wenet-component-apikey': COMP_AUTH_KEY, }
-        r = requests.get(INTERACTION_PROTOCOL_ENGINE + '/interaction?senderId=' + str(senderId) + '&receiverId=' + str(receiverID) +
+        r = requests.get(INTERACTION_PROTOCOL_ENGINE + '/interactions?senderId=' + str(senderId) + '&receiverId=' + str(receiverID) +
                          '&offset=0', headers=headers)
         interactions = r.json()
         print(r.status_code)
@@ -211,7 +211,7 @@ def get_first_last_total_interaction(senderId, receiverID):
             total_interactions = interactions.get('total')
             first_interaction = interactions.get('interactions')[0].get('messageTs')
             r = requests.get(
-                INTERACTION_PROTOCOL_ENGINE + '/interaction?senderId=' + str(senderId) + '&receiverId=' + str(
+                INTERACTION_PROTOCOL_ENGINE + '/interactions?senderId=' + str(senderId) + '&receiverId=' + str(
                     receiverID) +
                 '&offset=' + str(total_interactions - 1), headers=headers)
             last_interaction = interactions.get('interactions')[0].get('messageTs')
