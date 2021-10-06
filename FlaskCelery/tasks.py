@@ -13,6 +13,7 @@ celery = make_celery(flask_app)
 PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
 TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
 ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
+INTERACTION_PROTOCOL_ENGINE = 'https://wenet.u-hopper.com/dev/interaction_protocol_engine'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 
 @celery.task()
@@ -56,22 +57,23 @@ def async_social_ties_learning(data):
             type_of_interaction = 'positive'
         if any(x in type_of_interaction.lower() for x in negative_verbs):
             type_of_interaction = 'negative'
-        user_id = data['senderId']
+        sender_id = data['senderId']
         receiver_id = data['message']['receiverId']
-        current_weight = 0.3
+        first_last_total_interaction = get_first_last_total_interaction(sender_id, receiver_id)
         if type_of_interaction in ['negative', 'positive']:
-            relationships = get_relationships_from_profile_manager(user_id)
+            relationships = get_relationships_from_profile_manager(sender_id)
             if relationships is not None:
                 for relationship in relationships:
                     if relationship['userId'] == receiver_id:
+                        current_weight = relationship.get('weight')
                         index = relationships.index(relationship)
-                        new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight)
+                        new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_last_total_interaction)
                         if new_weight != current_weight and new_weight>=0 and new_weight<=1:
                             relationship={}
                             relationship['userId'] = receiver_id
                             relationship['type'] = 'friend'
                             relationship['weight'] = round(float(new_weight), 4)
-                            update_relationship_to_profile_manager(user_id, relationship, index)
+                            update_relationship_to_profile_manager(sender_id, relationship, index)
     except:
         pass
 
@@ -190,4 +192,23 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
     except requests.exceptions.HTTPError as e:
         print('exception')
 
-
+def get_first_last_total_interaction(senderId, receiverID):
+    try:
+        headers = {'connection': 'keep-alive',
+                   'x-wenet-component-apikey': COMP_AUTH_KEY, }
+        r = requests.get(INTERACTION_PROTOCOL_ENGINE + '/interaction?senderId=' + str(senderId) + '&receiverId=' + str(receiverID) +
+                         '&offset=0', headers=headers)
+        interactions = r.json()
+        if interactions.get('total') == 0:
+            return {'first': 0, 'last': 0, 'total': 0}
+        else:
+            total_interactions = interactions.get('total')
+            first_interaction = interactions.get('interactions')[0].get('messageTs')
+            r = requests.get(
+                INTERACTION_PROTOCOL_ENGINE + '/interaction?senderId=' + str(senderId) + '&receiverId=' + str(
+                    receiverID) +
+                '&offset=' + str(total_interactions - 1), headers=headers)
+            last_interaction = interactions.get('interactions')[0].get('messageTs')
+            return {'first': first_interaction, 'last': last_interaction, 'total': total_interactions}
+    except requests.exceptions.HTTPError as e:
+        print('could not calculate interaction', e)
