@@ -61,15 +61,17 @@ def async_social_ties_learning(data):
         receiver_id = data['message']['receiverId']
         print('before getting first lats')
         first_last_total_interaction = get_first_last_total_interaction(sender_id, receiver_id)
-        print(first_last_total_interaction)
         if type_of_interaction in ['negative', 'positive']:
             relationships = get_relationships_from_profile_manager(sender_id)
+            print(relationships)
             if relationships is not None:
                 for relationship in relationships:
                     if relationship['userId'] == receiver_id:
                         current_weight = relationship.get('weight')
                         index = relationships.index(relationship)
                         new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_last_total_interaction)
+                        print('new weight')
+                        print(new_weight)
                         if new_weight != current_weight and new_weight>=0 and new_weight<=1:
                             relationship={}
                             relationship['userId'] = receiver_id
