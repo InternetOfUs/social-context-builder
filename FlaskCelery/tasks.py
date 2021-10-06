@@ -60,6 +60,7 @@ def async_social_ties_learning(data):
         sender_id = data['senderId']
         receiver_id = data['message']['receiverId']
         first_last_total_interaction = get_first_last_total_interaction(sender_id, receiver_id)
+        print(first_last_total_interaction)
         if type_of_interaction in ['negative', 'positive']:
             relationships = get_relationships_from_profile_manager(sender_id)
             if relationships is not None:
@@ -74,6 +75,7 @@ def async_social_ties_learning(data):
                             relationship['type'] = 'friend'
                             relationship['weight'] = round(float(new_weight), 4)
                             update_relationship_to_profile_manager(sender_id, relationship, index)
+                            return relationship
     except:
         pass
 
