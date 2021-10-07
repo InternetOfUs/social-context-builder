@@ -19,7 +19,8 @@ ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 INTERACTION_PROTOCOL_ENGINE = 'https://wenet.u-hopper.com/dev/interaction_protocol_engine'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 
-
+log = logging.getLogger('FlaskApp')
+log.info('Task celery logging initiated')
 @celery.task()
 def async_initialize(user_id):
     try:
@@ -50,14 +51,11 @@ def async_initialize(user_id):
 def async_social_ties_learning(data):
 
     try:
-        log = logging.getLogger('FlaskApp')
-        log.info('Task celery logging initiated')
-        log.info('Received Social learning' )
-        log.log()
         raise Exception
         found_relationship = False
         negative_verbs =['reject','report','decline','refuse','ignore']
         type_of_interaction = data['message']['label']
+        appId = data['message']['appId']
         if type_of_interaction in ['volunteerForTask','acceptVolunteer','AnsweredPickedMessage','AnsweredQuestionMessage']:
             type_of_interaction = 'positive'
         if any(x in type_of_interaction.lower() for x in negative_verbs):
@@ -90,8 +88,8 @@ def async_social_ties_learning(data):
                 set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4)})
 
     except Exception as e:
-        log.logger.exception('Social learning failed for message task ')
-        log.warning('Social learning failed for message ' + e.__str__())
+        write_to_log('Social learning failed for message task '+ str(sender_id) + str(receiver_id_id) + str(type_of_interaction)
+                     + str(appId))
 
 
 @celery.task()
@@ -242,3 +240,10 @@ def get_first_total_interaction(senderId, receiverID):
             return {'first': first_interaction, 'total': total_interactions}
     except requests.exceptions.HTTPError as e:
         print('could not calculate interaction', e)
+
+
+def write_to_log(msg):
+    try:
+        log.info(msg)
+    except requests.exceptions.HTTPError as e:
+        print('could not write to log', e)
