@@ -92,6 +92,8 @@ def async_social_ties_learning(data):
 
     except Exception as e:
         log.exception('Social learning failed for message : %s', data)
+        log.info('Social learning failed for message : %s', data)
+        log.warning('Social learning failed for message : %s', data)
 
 
 @celery.task()
