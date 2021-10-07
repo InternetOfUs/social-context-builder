@@ -179,7 +179,7 @@ def ranking_all(user_id):
     sp_out = []
     for profile in sp:
         app.logger.info(profile.__dict__)
-        sp_out.append({'id': profile.__dict__['userId'], 'openess': profile.__dict__['openess'],'consientiousness': profile.__dict__['consientiousness'],'extraversion': profile.__dict__['extraversion'],'agreeableness': profile.__dict__['agreeableness'],'neuroticism': profile.__dict__['neuroticism'], 'ts': profile.__dict__['ts'], 'taskId': profile.__dict__['taskId'], 'rankingPositivity': profile.__dict__['rankingPositivity']})
+        sp_out.append({'id': profile.__dict__['userId'], 'openess': profile.__dict__['openess'],'consientiousness': profile.__dict__['consientiousness'],'extraversion': profile.__dict__['extraversion'],'agreeableness': profile.__dict__['agreeableness'],'neuroticism': profile.__dict__['neuroticism'], 'ts': profile.__dict__['ts'], 'taskId': profile.__dict__['taskId'], 'answerPositivity': profile.__dict__['answerPositivity']})
     return jsonify(sp_out)
 
 @app.route("/social/notification/interaction", methods=['POST'])
