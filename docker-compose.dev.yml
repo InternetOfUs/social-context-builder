@@ -32,8 +32,6 @@ services:
       - ./dev.env
     environment:
       - FLASK_APP=app
-    volumes:
-      - dbvolume:/app/social-context-builder-celery.log
     depends_on:
       - redis
 volumes:
