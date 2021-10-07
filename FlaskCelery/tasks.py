@@ -51,7 +51,7 @@ def async_initialize(user_id):
 def async_social_ties_learning(data):
 
     try:
-        raise Exception
+
         found_relationship = False
         negative_verbs =['reject','report','decline','refuse','ignore']
         type_of_interaction = data['message']['label']
@@ -63,6 +63,7 @@ def async_social_ties_learning(data):
         sender_id = data['senderId']
         receiver_id = data['message']['receiverId']
         first_total_interaction = get_first_total_interaction(sender_id, receiver_id)
+        raise Exception
         if type_of_interaction in ['negative', 'positive']:
             relationships = get_relationships_from_profile_manager(sender_id)
             print(relationships)
