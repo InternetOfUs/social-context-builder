@@ -18,7 +18,7 @@ Old docker ab94d407b8e4
 
 
 Go into container shell
-docker exec -it facebook-login-dev sh
+docker exec -it c8cf118738ef sh
 
 
 Upload image to docker hub

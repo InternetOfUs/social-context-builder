@@ -19,7 +19,7 @@ ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 INTERACTION_PROTOCOL_ENGINE = 'https://wenet.u-hopper.com/dev/interaction_protocol_engine'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 log = logging.getLogger('FlaskApp')
-log.info('Task manager here')
+log.info('Task celery logging initiated')
 @celery.task()
 def add_together(a, b):
     print(a+b)
@@ -48,13 +48,14 @@ def async_initialize(user_id):
                         print ('PROFILES ADDED')
                     offset = offset + 20
     except Exception as e:
-        print('exception happened!!', e)
+        log.exception('could not initialize relationships for ' + str(user_id), e)
     return {}
 
 @celery.task()
 def async_social_ties_learning(data):
 
     try:
+        raise Exception
         found_relationship = False
         negative_verbs =['reject','report','decline','refuse','ignore']
         type_of_interaction = data['message']['label']
@@ -89,11 +90,9 @@ def async_social_ties_learning(data):
                                                                        first_total_interaction)
                 set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4)})
 
+    except Exception as e:
+        log.exception('Social learning failed for message : %s', data, e)
 
-
-
-    except:
-        pass
 
 @celery.task()
 def async_ranking_learning(user_id, new_model, task_id):
