@@ -26,7 +26,7 @@ services:
     build:
       context: .
     image: flask_celery_example_celery_worker
-    command: celery -A FlaskCelery.tasks.celery worker -l INFO
+    command: celery -A FlaskCelery.tasks.celery worker -l INFO --logfile=celery.log
     restart: always
     env_file:
       - ./dev.env
