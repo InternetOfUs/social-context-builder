@@ -20,7 +20,8 @@ INTERACTION_PROTOCOL_ENGINE = 'https://wenet.u-hopper.com/dev/interaction_protoc
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 
 log = logging.getLogger('FlaskApp')
-log.info('Task celery logging initiated')
+logging.basicConfig(format=f'%(asctime)s Social Context Builder %(levelname)s : %(message)s')
+
 @celery.task()
 def async_initialize(user_id):
     try:
