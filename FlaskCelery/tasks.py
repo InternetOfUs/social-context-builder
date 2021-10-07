@@ -89,7 +89,7 @@ def async_social_ties_learning(data):
                 set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4)})
 
     except Exception as e:
-        write_to_log('Social learning failed for message task '+ str(sender_id) + str(receiver_id_id) + str(type_of_interaction)
+        write_to_log('Social learning failed for message task '+ str(sender_id) + str(receiver_id) + str(type_of_interaction)
                      + str(appId))
 
 
