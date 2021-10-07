@@ -184,9 +184,12 @@ def ranking_all(user_id):
 
 @app.route("/social/notification/interaction", methods=['POST'])
 def social_notification_interaction():
-    data = request.json
-    async_social_ties_learning.delay(data)
-    return{}
+    try:
+        data = request.json
+        async_social_ties_learning.delay(data)
+        return{}
+    except:
+        app.logger.exception('Social learning failed for message ')
 def rank_profiles(user_ids):
     MODEL = [0.5] * 5
     DIVERSITY_COEFFICIENT = 0.4

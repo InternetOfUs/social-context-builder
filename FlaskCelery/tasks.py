@@ -91,8 +91,7 @@ def async_social_ties_learning(data):
                 set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4)})
 
     except Exception as e:
-        log.exception('Social learning failed for message ')
-        log.info('Social learning failed for message : %s'+ data['message'])
+        log.exception('Social learning failed for message task ')
         log.warning('Social learning failed for message ' + e.__str__())
 
 
