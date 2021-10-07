@@ -55,6 +55,7 @@ def async_initialize(user_id):
 def async_social_ties_learning(data):
 
     try:
+        log.info('Received Social learning' )
         raise Exception
         found_relationship = False
         negative_verbs =['reject','report','decline','refuse','ignore']
@@ -230,10 +231,7 @@ def get_first_total_interaction(senderId, receiverID):
         r = requests.get(INTERACTION_PROTOCOL_ENGINE + '/interactions?senderId=' + str(senderId) + '&receiverId=' + str(receiverID) +
                          '&offset=0', headers=headers)
         interactions = r.json()
-        print(r.status_code)
-        print(interactions)
         if interactions.get('total') == 0:
-            print('total=0')
             return {'first': 0, 'last': 0, 'total': 0}
         else:
             total_interactions = interactions.get('total')
