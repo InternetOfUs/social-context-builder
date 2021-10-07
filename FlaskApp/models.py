@@ -108,6 +108,7 @@ class DiversityRanking(db.Model):
     extraversion = db.Column(db.Float, nullable=False)
     agreeableness = db.Column(db.Float, nullable=False)
     neuroticism = db.Column(db.Float, nullable=False)
+    answerPositivity = db.Column(db.Float, nullable=True)
     ts = db.Column(db.Integer, nullable=False)
 
     @staticmethod
@@ -120,6 +121,7 @@ class DiversityRanking(db.Model):
                                            extraversion=round(new_model[2],4),
                                            agreeableness=round(new_model[3],4),
                                            neuroticism=round(new_model[4],4),
+                                           answerPositivity=0,
                                            ts=int(time.time() * 1000))
             try:
                 ranking_already_in_db = DiversityRanking.query.filter((DiversityRanking.userId == new_ranking.userId) &
@@ -134,6 +136,7 @@ class DiversityRanking(db.Model):
                     ranking_already_in_db.agreeableness = new_ranking.agreeableness
                     ranking_already_in_db.neuroticism = new_ranking.neuroticism
                     ranking_already_in_db.ts = new_ranking.ts
+                    ranking_already_in_db.answerPositivity = new_ranking.answerPositivity
             except Exception as error:
                 app.logger.error('exception while trying to query ranking from DB ', error)
             db.session.commit()
