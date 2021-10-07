@@ -15,6 +15,7 @@ services:
       - ./dev.env
     volumes:
       - dbvolume:/app/FlaskApp/db
+      - dbvolume:/app/FlaskApp/social_context_builder.log
     depends_on:
       - redis
 
@@ -32,6 +33,7 @@ services:
       - ./dev.env
     environment:
       - FLASK_APP=app
+      - dbvolume:./social_context_builder.log
     depends_on:
       - redis
 volumes:
