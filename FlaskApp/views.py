@@ -185,7 +185,6 @@ def ranking_all(user_id):
 @app.route("/social/notification/interaction", methods=['POST'])
 def social_notification_interaction():
     try:
-        app.logger.info('received interaction')
         data = request.json
         async_social_ties_learning.delay(data)
         return{}
