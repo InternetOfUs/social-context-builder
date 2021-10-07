@@ -5,6 +5,9 @@ from FlaskCelery.socialties import update_all
 import FlaskCelery.social_ties_learning as social_ties_learning
 import json
 import requests
+import logging
+
+
 import os
 flask_app = Flask(__name__)
 flask_app.config.update(
@@ -15,7 +18,8 @@ TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
 ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 INTERACTION_PROTOCOL_ENGINE = 'https://wenet.u-hopper.com/dev/interaction_protocol_engine'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
-
+log = logging.getLogger('FlaskApp')
+log.info('Task manager here')
 @celery.task()
 def add_together(a, b):
     print(a+b)
