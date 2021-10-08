@@ -172,7 +172,7 @@ def add_profiles_to_profile_manager(relationships, app_ids):
                     log.info(data)
                   # r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
                    #                  data=data, headers=headers)
-                    data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4)})
+                    data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4), 'appId': str(app_id)})
                     #r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
                      #                data=data, headers=headers)
                     log.info(data)
