@@ -13,12 +13,13 @@ flask_app = Flask(__name__)
 flask_app.config.update(
     CELERY_BROKER_URL='redis://redis:6379')
 celery = make_celery(flask_app)
-PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
-TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
-INTERACTION_PROTOCOL_ENGINE = 'https://wenet.u-hopper.com/dev/interaction_protocol_engine'
-COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
-
+INTERACTION_PROTOCOL_ENGINE = os.environ['INTERACTION_PROTOCOL_ENGINE']
+PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
+TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
+COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 log = logging.getLogger('FlaskApp')
+
+
 @celery.task()
 def async_initialize(user_id, app_ids):
     try:
@@ -39,6 +40,7 @@ def async_initialize(user_id, app_ids):
     except Exception as e:
         log.exception('could not initialize relationships for ' + str(user_id), e)
     return {}
+
 
 @celery.task()
 def async_social_ties_learning(data):

@@ -7,10 +7,9 @@ import json
 import requests
 import os
 
-PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
-TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
-COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
-#COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
+PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
+TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
+COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 
 
 
