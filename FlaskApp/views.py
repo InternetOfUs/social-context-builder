@@ -9,7 +9,6 @@ import os
 
 PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
 TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
-ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 #COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 
@@ -66,43 +65,6 @@ def initialize_social_relations(user_id):
     if app_ids:
         result = async_initialize.delay(user_id, app_ids)
     return {}
-
-
-@app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
-def show_social_relations(user_id):
-    try:
-        if request.method == 'POST':
-            print(request.json)
-        data = json.dumps({'relationships': [{'userId': '1', 'type': 'friend'}]})
-        r = requests.put(PROFILE_MANAGER_API+'/profiles/' + str(user_id),
-                         json=data, verify=False)
-    except requests.exceptions.HTTPError as e:
-        print('Issue with Profile manager')
-    try:
-        headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive', 'x-wenet-component-apikey': COMP_AUTH_KEY, }
-        url = ILOGBASE_API + str(user_id) + '?experimentId=wenetTest&from=20200521&to=20200521&properties=socialrelations'
-        r = requests.get(url, headers=headers, verify=False)
-    except requests.Timeout as err:
-        print('TIMEOUT ', err)
-    except requests.RequestException as err:
-        print(err)
-    try:
-        headers = {
-            'content-type': "application/json",
-            'x-wenet-component-apikey': COMP_AUTH_KEY,
-        }
-
-        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers, verify=False, timeout=1)
-        relationships = r.json().get('relationships')
-        if relationships:
-            return jsonify(relationships)
-        else:
-            return 'no relationships'
-    except KeyError as e:
-        return 'no relationships exist'
-    except Exception as e:
-        return 'no relationships found'
-    return 'couldnt get relationships'
 
 
 @app.route("/social/explanations/<user_id>/<task_id>/", methods=['GET'])

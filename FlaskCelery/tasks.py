@@ -6,22 +6,19 @@ import FlaskCelery.social_ties_learning as social_ties_learning
 import json
 import requests
 import logging
-
-
 import os
+
+
 flask_app = Flask(__name__)
 flask_app.config.update(
     CELERY_BROKER_URL='redis://redis:6379')
 celery = make_celery(flask_app)
 PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
 TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
-ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
 INTERACTION_PROTOCOL_ENGINE = 'https://wenet.u-hopper.com/dev/interaction_protocol_engine'
 COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
 
 log = logging.getLogger('FlaskApp')
-logging.basicConfig(format=f'%(asctime)s Social Context Builder %(levelname)s : %(message)s')
-
 @celery.task()
 def async_initialize(user_id, app_ids):
     try:
@@ -31,17 +28,13 @@ def async_initialize(user_id, app_ids):
         more_profiles_left = True
         if new_user:
             while more_profiles_left:
-                print('into the while clause')
                 all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
-                print ('got N profiles')
                 if all_users_in_range is None:
                     more_profiles_left = False
                 else:
-                    print ('going to update relations')
                     relationships = update_all(new_user[0], all_users_in_range)
                     if relationships:
                         add_profiles_to_profile_manager(relationships, app_ids)
-                        print ('PROFILES ADDED')
                     offset = offset + 20
     except Exception as e:
         log.exception('could not initialize relationships for ' + str(user_id), e)
@@ -49,7 +42,6 @@ def async_initialize(user_id, app_ids):
 
 @celery.task()
 def async_social_ties_learning(data):
-
     try:
 
         found_relationship = False
@@ -64,37 +56,29 @@ def async_social_ties_learning(data):
         receiver_id = data['message']['receiverId']
         first_total_interaction = get_first_total_interaction(sender_id, receiver_id)
         if type_of_interaction in ['negative', 'positive'] and appId:
-            #relationships = get_relationships_from_profile_manager(sender_id)
-            relationships = [{'userId': '1', 'type': 'friend', 'weight': 0.1, 'appId': 'sdewrwe'}]
-            log.info(relationships)
+            relationships = get_relationships_from_profile_manager(sender_id)
             for relationship in relationships:
                 if relationship.get('userId') == receiver_id and relationship.get('appId') == appId:
                     found_relationship = True
                     current_weight = float(relationship.get('weight'))
                     index = relationships.index(relationship)
                     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
-                    print('new weight')
-                    print(new_weight)
                     if new_weight != current_weight and new_weight>=0 and new_weight<=1:
                         relationship={}
                         relationship['userId'] = str(receiver_id)
                         relationship['type'] = 'friend'
                         relationship['weight'] = round(float(new_weight), 4)
                         relationship['appId'] = str(appId)
-                        #update_relationship_to_profile_manager(sender_id, relationship, index)
-                        log.info(relationship)
+                        update_relationship_to_profile_manager(sender_id, relationship, index)
                         return
             if not found_relationship and appId:
-                log.info('relationship not found')
                 current_weight = 0.0
                 new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
                                                                        first_total_interaction)
                 set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4),'appId': appId})
 
     except Exception as e:
-        log.info('Social learning failed for message task '+ str(sender_id) + str(receiver_id) + str(type_of_interaction)
-                     + str(appId))
-
+        log.exception('Social learning failed for message async_social_ties_learning ')
 
 def get_profiles_from_profile_manager(user_ids):
     entities = []
@@ -130,11 +114,6 @@ def get_N_profiles_from_profile_manager(offset, number_of_profiles):
 
 
 def add_profiles_to_profile_manager(relationships, app_ids):
-    # [{
-    #     newUserId: "123",
-    #     existingUserId: "456",
-    #     weight: 0.49,
-    # }]
     try:
         headers = { 'Content-Type': 'application/json', 'connection': 'keep-alive',
                    'x-wenet-component-apikey': COMP_AUTH_KEY, }
@@ -183,15 +162,13 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
 
 def set_relationship_to_profile_manager(user_id, relationship):
     try:
-        log.info(relationship)
-        # data = json.dumps(relationship)
-        # headers = {'connection': 'keep-alive',
-        #            'x-wenet-component-apikey': COMP_AUTH_KEY,
-        #            'Content-Type': 'application/json'}
-        # if relationship['userId']:
-        #      r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', data=data,
-        #                        headers=headers)
-        #     print(r.status_code)
+        data = json.dumps(relationship)
+        headers = {'connection': 'keep-alive',
+                   'x-wenet-component-apikey': COMP_AUTH_KEY,
+                   'Content-Type': 'application/json'}
+        if relationship['userId']:
+             r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', data=data,
+                               headers=headers)
     except requests.exceptions.HTTPError as e:
         log.exception('Could not set_relationship_to_profile_manager ' + str(user_id))
 
@@ -211,7 +188,6 @@ def get_first_total_interaction(senderId, receiverID):
                 INTERACTION_PROTOCOL_ENGINE + '/interactions?senderId=' + str(senderId) + '&receiverId=' + str(
                     receiverID) +
                 '&offset=' + str(total_interactions - 1), headers=headers)
-            print(first_interaction, total_interactions)
             return {'first': first_interaction, 'total': total_interactions}
     except requests.exceptions.HTTPError as e:
         log.exception('could not calculate get_first_total_interaction' + str(senderId) + ' ' + str(receiverID))
