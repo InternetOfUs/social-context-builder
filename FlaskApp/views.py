@@ -7,11 +7,9 @@ import json
 import requests
 import os
 
-PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
-TASK_MANAGER_API = 'https://wenet.u-hopper.com/dev/task_manager'
-ILOGBASE_API = 'http://streambase1.disi.unitn.it:8096/data/'
-COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
-#COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
+PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
+TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
+COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 
 
 
@@ -62,45 +60,10 @@ def social_profiles_all():
 
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
-    result = async_initialize.delay(user_id)
+    app_ids = request.json
+    if app_ids:
+        result = async_initialize.delay(user_id, app_ids)
     return {}
-
-
-@app.route("/social/relations/<user_id>", methods=['GET', 'POST'])
-def show_social_relations(user_id):
-    try:
-        if request.method == 'POST':
-            print(request.json)
-        data = json.dumps({'relationships': [{'userId': '1', 'type': 'friend'}]})
-        r = requests.put(PROFILE_MANAGER_API+'/profiles/' + str(user_id),
-                         json=data, verify=False)
-    except requests.exceptions.HTTPError as e:
-        print('Issue with Profile manager')
-    try:
-        headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive', 'x-wenet-component-apikey': COMP_AUTH_KEY, }
-        url = ILOGBASE_API + str(user_id) + '?experimentId=wenetTest&from=20200521&to=20200521&properties=socialrelations'
-        r = requests.get(url, headers=headers, verify=False)
-    except requests.Timeout as err:
-        print('TIMEOUT ', err)
-    except requests.RequestException as err:
-        print(err)
-    try:
-        headers = {
-            'content-type': "application/json",
-            'x-wenet-component-apikey': COMP_AUTH_KEY,
-        }
-
-        r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers, verify=False, timeout=1)
-        relationships = r.json().get('relationships')
-        if relationships:
-            return jsonify(relationships)
-        else:
-            return 'no relationships'
-    except KeyError as e:
-        return 'no relationships exist'
-    except Exception as e:
-        return 'no relationships found'
-    return 'couldnt get relationships'
 
 
 @app.route("/social/explanations/<user_id>/<task_id>/", methods=['GET'])
@@ -176,19 +139,20 @@ def show_social_preferences_selection(user_id, task_id, selection):
 @app.route("/social/preferences/answers/ranking/<user_id>", methods=['GET'])
 def ranking_all(user_id):
     sp = models.DiversityRanking.query.filter(models.DiversityRanking.userId == user_id).all()
-    app.logger.info('User '+str(user_id)+' ranking model is updated')
-
     sp_out = []
     for profile in sp:
         app.logger.info(profile.__dict__)
-        sp_out.append({'id': profile.__dict__['userId'], 'openess': profile.__dict__['openess'],'consientiousness': profile.__dict__['consientiousness'],'extraversion': profile.__dict__['extraversion'],'agreeableness': profile.__dict__['agreeableness'],'neuroticism': profile.__dict__['neuroticism'], 'ts': profile.__dict__['ts']})
+        sp_out.append({'id': profile.__dict__['userId'], 'openess': profile.__dict__['openess'],'consientiousness': profile.__dict__['consientiousness'],'extraversion': profile.__dict__['extraversion'],'agreeableness': profile.__dict__['agreeableness'],'neuroticism': profile.__dict__['neuroticism'], 'ts': profile.__dict__['ts'], 'taskId': profile.__dict__['taskId'], 'answerPositivity': profile.__dict__['answerPositivity']})
     return jsonify(sp_out)
 
 @app.route("/social/notification/interaction", methods=['POST'])
 def social_notification_interaction():
-    data = request.json
-    async_social_ties_learning.delay(data)
-    return{}
+    try:
+        data = request.json
+        async_social_ties_learning.delay(data)
+        return{}
+    except:
+        app.logger.exception('Exception in interaction message')
 def rank_profiles(user_ids):
     MODEL = [0.5] * 5
     DIVERSITY_COEFFICIENT = 0.4
@@ -198,7 +162,7 @@ def rank_profiles(user_ids):
         ranked = rank_entities(dict_of_entities, MODEL, DIVERSITY_COEFFICIENT)
         return ranked
     else:
-        print('Could not get profiles')
+        app.logger.info('Could not get profiles')
         return False
 
 def get_profiles_from_profile_manager(user_ids):
@@ -212,10 +176,10 @@ def get_profiles_from_profile_manager(user_ids):
                 if r.status_code == 200:
                     entities.append(r.json())
             except requests.exceptions.HTTPError as e:
-                print('Cannot get entity from  Profile manager', e)
+                app.logger.info('Cannot get_profiles_from_profile_manager', e)
         return entities
     except requests.exceptions.HTTPError as e:
-        print('Something wrong with user list IDs received from Profile Manager', e)
+        app.logger.info('Something wrong with user list IDs get_profiles_from_profile_manager', e)
         return False
 
 

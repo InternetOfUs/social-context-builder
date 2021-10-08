@@ -10,11 +10,13 @@ services:
     environment:
       - FLASK_ENV= development
       - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - PROFILE_MANAGER_API= https://wenet.u-hopper.com/dev/profile_manager
+      - TASK_MANAGER_API= https://wenet.u-hopper.com/dev/task_manager
+      - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/dev/interaction_protocol_engine
       - FLASK_DEBUG= 1
-    env_file:
-      - ./dev.env
     volumes:
       - dbvolume:/app/FlaskApp/db
+      - dbvolume:/app/FlaskApp/logs
     depends_on:
       - redis
 
@@ -26,12 +28,18 @@ services:
     build:
       context: .
     image: flask_celery_example_celery_worker
-    command: celery -A FlaskCelery.tasks.celery worker -l INFO
+    command: celery -A FlaskCelery.tasks.celery worker -l INFO --logfile=FlaskCelery/social-context-builder-celery.log
     restart: always
     env_file:
       - ./dev.env
     environment:
       - FLASK_APP=app
+      - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - PROFILE_MANAGER_API= https://wenet.u-hopper.com/dev/profile_manager
+      - TASK_MANAGER_API= https://wenet.u-hopper.com/dev/task_manager
+      - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/dev/interaction_protocol_engine
+    volumes:
+      - dbvolume:/app/FlaskCelery/logs
     depends_on:
       - redis
 volumes:
