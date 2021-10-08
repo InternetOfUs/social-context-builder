@@ -65,7 +65,7 @@ def async_social_ties_learning(data):
         first_total_interaction = get_first_total_interaction(sender_id, receiver_id)
         if type_of_interaction in ['negative', 'positive'] and appId:
             #relationships = get_relationships_from_profile_manager(sender_id)
-            relationships = {['userId': '1', 'type': 'friend', 'weight': 0.1, 'appId': 'sdewrwe']}
+            relationships = ['userId': '1', 'type': 'friend', 'weight': 0.1, 'appId': 'sdewrwe']
             log.info(relationships)
             for relationship in relationships:
                 if relationship.get('userId') == receiver_id and relationship.get('appId') == appId:
