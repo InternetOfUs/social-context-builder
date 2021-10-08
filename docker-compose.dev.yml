@@ -16,7 +16,7 @@ services:
       - FLASK_DEBUG= 1
     volumes:
       - dbvolume:/app/FlaskApp/db
-      - dbvolume:/app/social_context_builder.log
+      - dbvolume:/app/FlaskApp/logs
     depends_on:
       - redis
 
