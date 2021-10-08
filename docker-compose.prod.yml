@@ -2,13 +2,41 @@ version: "3"
 services:
   web:
     build: .
-    command: gunicorn --workers 4 --bind 0.0.0.0:5000 FlaskApp:app
     ports:
-      - "8081:5000"
+      - "8080:8000"
     container_name: social-context-prod
     environment:
       - FLASK_ENV= production
       - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
-    env_file:
-      - ./prod.env
+      - PROFILE_MANAGER_API= https://wenet.u-hopper.com/prod/profile_manager
+      - TASK_MANAGER_API= https://wenet.u-hopper.com/prod/task_manager
+      - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/prod/interaction_protocol_engine
+      - FLASK_DEBUG= 0
+    volumes:
+      - dbvolumesprod:/app/FlaskApp/db
+      - dbvolumesprod:/app/FlaskApp/logs
+    depends_on:
+      - redis
 
+  redis:
+    image: redis:6-alpine
+    restart: unless-stopped
+
+  celery_worker:
+    build:
+      context: .
+    image: flask_celery_worker_prod
+    command: celery -A FlaskCelery.tasks.celery worker -l INFO --logfile=FlaskCelery/social-context-builder-celery.log
+    restart: always
+    environment:
+      - FLASK_APP=app
+      - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - PROFILE_MANAGER_API= https://wenet.u-hopper.com/prod/profile_manager
+      - TASK_MANAGER_API= https://wenet.u-hopper.com/prod/task_manager
+      - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/prod/interaction_protocol_engine
+    volumes:
+      - dbvolumesprod:/app/FlaskCelery/logs
+    depends_on:
+      - redis
+volumes:
+  dbvolumesprod:
