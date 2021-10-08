@@ -62,7 +62,9 @@ def social_profiles_all():
 
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
-    result = async_initialize.delay(user_id)
+    app_ids = request.json
+    if app_ids:
+        result = async_initialize.delay(user_id, app_ids)
     return {}
 
 

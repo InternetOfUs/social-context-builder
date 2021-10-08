@@ -23,10 +23,9 @@ log = logging.getLogger('FlaskApp')
 logging.basicConfig(format=f'%(asctime)s Social Context Builder %(levelname)s : %(message)s')
 
 @celery.task()
-def async_initialize(user_id):
+def async_initialize(user_id, app_ids):
     try:
         new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
-        print ('Got the profiles')
         offset = 0
         number_of_profiles = 20
         more_profiles_left = True
@@ -41,7 +40,7 @@ def async_initialize(user_id):
                     print ('going to update relations')
                     relationships = update_all(new_user[0], all_users_in_range)
                     if relationships:
-                        add_profiles_to_profile_manager(relationships)
+                        add_profiles_to_profile_manager(relationships, app_ids)
                         print ('PROFILES ADDED')
                     offset = offset + 20
     except Exception as e:
@@ -94,36 +93,35 @@ def async_social_ties_learning(data):
                      + str(appId))
 
 
-@celery.task()
-def async_ranking_learning(user_id, new_model, task_id):
-    try:
-        new_ranking = DiversityRanking(userId=user_id,
-                                       taskId=task_id,
-                                       openess=round(new_model[0],4),
-                                       consientiousness=round(new_model[1],4),
-                                       extraversion=round(new_model[2],4),
-                                       agreeableness=round(new_model[3],4),
-                                       neuroticism=round(new_model[4],4),
-                                       ts=int(time.time() * 1000))
-        try:
-            ranking_already_in_db = FlaskApp.models.DiversityRanking.query.filter((DiversityRanking.userId == new_ranking.userId) &
-                                                                  (DiversityRanking.taskId == new_ranking.taskId)).first()
-            if not ranking_already_in_db:
-
-                db.session.add(new_ranking)
-            else: #update ranking
-                ranking_already_in_db.openess=new_ranking.openess
-                ranking_already_in_db.consientiousness = new_ranking.consientiousness
-                ranking_already_in_db.extraversion = new_ranking.extraversion
-                ranking_already_in_db.agreeableness = new_ranking.agreeableness
-                ranking_already_in_db.neuroticism = new_ranking.neuroticism
-                ranking_already_in_db.ts = new_ranking.ts
-        except Exception as error:
-            print('exception while trying to query ranking from DB ', error)
-            FlaskApp.db.session.commit()
-    except Exception as error:
-        print('exception , could not add ranking to DB for user ' + str(user_id), error )
-    return {}
+# @celery.task()
+# def async_ranking_learning(user_id, new_model, task_id):
+#     try:
+#         new_ranking = DiversityRanking(userId=user_id,
+#                                        taskId=task_id,
+#                                        openess=round(new_model[0],4),
+#                                        consientiousness=round(new_model[1],4),
+#                                        extraversion=round(new_model[2],4),
+#                                        agreeableness=round(new_model[3],4),
+#                                        neuroticism=round(new_model[4],4),
+#                                        ts=int(time.time() * 1000))
+#         try:
+#             ranking_already_in_db = FlaskApp.models.DiversityRanking.query.filter((DiversityRanking.userId == new_ranking.userId) &
+#                                                                   (DiversityRanking.taskId == new_ranking.taskId)).first()
+#             if not ranking_already_in_db:
+#
+#                 db.session.add(new_ranking)
+#             else: #update ranking
+#                 ranking_already_in_db.openess=new_ranking.openess
+#                 ranking_already_in_db.consientiousness = new_ranking.consientiousness
+#                 ranking_already_in_db.extraversion = new_ranking.extraversion
+#                 ranking_already_in_db.agreeableness = new_ranking.agreeableness
+#                 ranking_already_in_db.neuroticism = new_ranking.neuroticism
+#                 ranking_already_in_db.ts = new_ranking.ts
+#         except Exception as error:
+#             log.info('exception while trying to query ranking from DB ', error)
+#     except Exception as error:
+#         print('exception , could not add ranking to DB for user ' + str(user_id), error )
+#     return {}
 
 def get_profiles_from_profile_manager(user_ids):
     entities = []
@@ -139,7 +137,7 @@ def get_profiles_from_profile_manager(user_ids):
                 print('Cannot get entity from  Profile manager', e)
         return entities
     except requests.exceptions.HTTPError as e:
-        print('Something wrong with user list IDs received from Profile Manager', e)
+        log.exception('Something wrong with user list IDs received from Profile Manager', e)
         return False
 
 def get_N_profiles_from_profile_manager(offset, number_of_profiles):
@@ -151,13 +149,13 @@ def get_N_profiles_from_profile_manager(offset, number_of_profiles):
             r = requests.get(PROFILE_MANAGER_API + '/profiles?offset=' + str(offset) + '&limit=' + str(number_of_profiles), headers=headers)
             entities = r.json().get('profiles')
         except requests.exceptions.HTTPError as e:
-            print('Cannot get entity from  Profile manager', e)
+            log.exception('Cannot get entity from  Profile manager')
         return entities
     except requests.exceptions.HTTPError as e:
-        print('Something wrong with user list IDs received from Profile Manager', e)
+        log.exception('Something wrong with user list IDs received from Profile Manager')
         return False
     
-def add_profiles_to_profile_manager(relationships):
+def add_profiles_to_profile_manager(relationships, app_ids):
     # [{
     #     newUserId: "123",
     #     existingUserId: "456",
@@ -167,17 +165,19 @@ def add_profiles_to_profile_manager(relationships):
         print ('got into add profiles')
         headers = { 'Content-Type': 'application/json', 'connection': 'keep-alive',
                    'x-wenet-component-apikey': COMP_AUTH_KEY, }
-        for relationship in relationships:
-            if str(relationship['existingUserId']) != str(relationship['newUserId']):
-                data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4)})
-                print(data)
-                r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
-                                 data=data, headers=headers)
-                data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4)})
-                r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
-                                 data=data, headers=headers)
+        for app_id in app_ids:
+            for relationship in relationships:
+                if str(relationship['existingUserId']) != str(relationship['newUserId']):
+                    data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4), 'appId': str(app_id)})
+                    print(data)
+                  # r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
+                   #                  data=data, headers=headers)
+                    data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4)})
+                    #r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
+                     #                data=data, headers=headers)
+                    print(data)
     except requests.exceptions.HTTPError as e:
-        print('Issue with Profile manager')
+        log.exception('Issue with Profile manager')
 
 
 def get_relationships_from_profile_manager(user_id):
@@ -190,10 +190,10 @@ def get_relationships_from_profile_manager(user_id):
             relationships = r.json()
             return relationships
         except requests.exceptions.HTTPError as e:
-            print('Cannot get relationships from  Profile manager', e)
+            log.exception('Cannot get relationships from  Profile manager')
         return None
     except requests.exceptions.HTTPError as e:
-        print('Something wrong with user list IDs received from Profile Manager', e)
+        log.exception('Something wrong with user list IDs received from Profile Manager')
         return None
 
 
@@ -207,7 +207,7 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
             r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/'+ str(index), data=data,
                               headers=headers)
     except requests.exceptions.HTTPError as e:
-        print('exception')
+        log.exception('could not update relationship_to_profile_manager' + str(user_id))
 
 def set_relationship_to_profile_manager(user_id, relationship):
     try:
@@ -220,7 +220,7 @@ def set_relationship_to_profile_manager(user_id, relationship):
                               headers=headers)
             print(r.status_code)
     except requests.exceptions.HTTPError as e:
-        print('exception')
+        log.exception('Could not set_relationship_to_profile_manager ' + str(user_id))
 
 def get_first_total_interaction(senderId, receiverID):
     try:
@@ -241,5 +241,5 @@ def get_first_total_interaction(senderId, receiverID):
             print(first_interaction, total_interactions)
             return {'first': first_interaction, 'total': total_interactions}
     except requests.exceptions.HTTPError as e:
-        print('could not calculate interaction', e)
+        log.exception('could not calculate get_first_total_interaction' + str(senderId) + ' ' + str(receiverID))
 
