@@ -80,7 +80,7 @@ def async_social_ties_learning(data):
                         relationship['type'] = 'friend'
                         relationship['weight'] = round(float(new_weight), 4)
                         relationship['appId'] = str(appId)
-                        update_relationship_to_profile_manager(sender_id, relationship, index)
+                        #update_relationship_to_profile_manager(sender_id, relationship, index)
                         log.info(relationship)
                         return
             if not found_relationship and appId:
