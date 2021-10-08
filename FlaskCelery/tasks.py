@@ -63,12 +63,11 @@ def async_social_ties_learning(data):
         sender_id = data['senderId']
         receiver_id = data['message']['receiverId']
         first_total_interaction = get_first_total_interaction(sender_id, receiver_id)
-        raise Exception
-        if type_of_interaction in ['negative', 'positive']:
+        if type_of_interaction in ['negative', 'positive'] and appId:
             relationships = get_relationships_from_profile_manager(sender_id)
-            print(relationships)
+            log.info(relationships)
             for relationship in relationships:
-                if relationship.get('userId') == receiver_id:
+                if relationship.get('userId') == receiver_id and relationship.get('appId') == appId:
                     found_relationship = True
                     current_weight = float(relationship.get('weight'))
                     index = relationships.index(relationship)
@@ -80,48 +79,21 @@ def async_social_ties_learning(data):
                         relationship['userId'] = receiver_id
                         relationship['type'] = 'friend'
                         relationship['weight'] = round(float(new_weight), 4)
+                        relationship['appId'] = str(appId)
                         update_relationship_to_profile_manager(sender_id, relationship, index)
+                        log.info(relationship)
                         return
-            if not found_relationship:
+            if not found_relationship and appId:
+                log.info('relationship not found')
                 current_weight = 0.0
                 new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
                                                                        first_total_interaction)
-                set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4)})
+                set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4),'appId': appId})
 
     except Exception as e:
         log.info('Social learning failed for message task '+ str(sender_id) + str(receiver_id) + str(type_of_interaction)
                      + str(appId))
 
-
-# @celery.task()
-# def async_ranking_learning(user_id, new_model, task_id):
-#     try:
-#         new_ranking = DiversityRanking(userId=user_id,
-#                                        taskId=task_id,
-#                                        openess=round(new_model[0],4),
-#                                        consientiousness=round(new_model[1],4),
-#                                        extraversion=round(new_model[2],4),
-#                                        agreeableness=round(new_model[3],4),
-#                                        neuroticism=round(new_model[4],4),
-#                                        ts=int(time.time() * 1000))
-#         try:
-#             ranking_already_in_db = FlaskApp.models.DiversityRanking.query.filter((DiversityRanking.userId == new_ranking.userId) &
-#                                                                   (DiversityRanking.taskId == new_ranking.taskId)).first()
-#             if not ranking_already_in_db:
-#
-#                 db.session.add(new_ranking)
-#             else: #update ranking
-#                 ranking_already_in_db.openess=new_ranking.openess
-#                 ranking_already_in_db.consientiousness = new_ranking.consientiousness
-#                 ranking_already_in_db.extraversion = new_ranking.extraversion
-#                 ranking_already_in_db.agreeableness = new_ranking.agreeableness
-#                 ranking_already_in_db.neuroticism = new_ranking.neuroticism
-#                 ranking_already_in_db.ts = new_ranking.ts
-#         except Exception as error:
-#             log.info('exception while trying to query ranking from DB ', error)
-#     except Exception as error:
-#         print('exception , could not add ranking to DB for user ' + str(user_id), error )
-#     return {}
 
 def get_profiles_from_profile_manager(user_ids):
     entities = []
@@ -136,7 +108,7 @@ def get_profiles_from_profile_manager(user_ids):
             except requests.exceptions.HTTPError as e:
                 print('Cannot get entity from  Profile manager', e)
         return entities
-    except requests.exceptions.HTTPError as e:
+    except Exception as e:
         log.exception('Something wrong with user list IDs received from Profile Manager', e)
         return False
 
@@ -151,10 +123,11 @@ def get_N_profiles_from_profile_manager(offset, number_of_profiles):
         except requests.exceptions.HTTPError as e:
             log.exception('Cannot get entity from  Profile manager')
         return entities
-    except requests.exceptions.HTTPError as e:
+    except Exception as e:
         log.exception('Something wrong with user list IDs received from Profile Manager')
         return False
-    
+
+
 def add_profiles_to_profile_manager(relationships, app_ids):
     # [{
     #     newUserId: "123",
@@ -162,22 +135,19 @@ def add_profiles_to_profile_manager(relationships, app_ids):
     #     weight: 0.49,
     # }]
     try:
-        print ('got into add profiles')
         headers = { 'Content-Type': 'application/json', 'connection': 'keep-alive',
                    'x-wenet-component-apikey': COMP_AUTH_KEY, }
         for app_id in app_ids:
             for relationship in relationships:
                 if str(relationship['existingUserId']) != str(relationship['newUserId']):
                     data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4), 'appId': str(app_id)})
-                    log.info(data)
-                  # r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
-                   #                  data=data, headers=headers)
+                    r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
+                                     data=data, headers=headers)
                     data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4), 'appId': str(app_id)})
-                    #r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
-                     #                data=data, headers=headers)
-                    log.info(data)
-    except requests.exceptions.HTTPError as e:
-        log.exception('Issue with Profile manager')
+                    r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
+                                     data=data, headers=headers)
+    except Exception as e:
+        log.exception('Could not add_profiles_to_profile_manager from relations initialize for user ')
 
 
 def get_relationships_from_profile_manager(user_id):
@@ -204,21 +174,23 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
                    'x-wenet-component-apikey': COMP_AUTH_KEY,
                    'Content-Type': 'application/json'}
         if relationship['userId']:
-            r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/'+ str(index), data=data,
+            r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/' + str(index), data=data,
                               headers=headers)
     except requests.exceptions.HTTPError as e:
         log.exception('could not update relationship_to_profile_manager' + str(user_id))
 
+
 def set_relationship_to_profile_manager(user_id, relationship):
     try:
-        data = json.dumps(relationship)
-        headers = {'connection': 'keep-alive',
-                   'x-wenet-component-apikey': COMP_AUTH_KEY,
-                   'Content-Type': 'application/json'}
-        if relationship['userId']:
-            r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', data=data,
-                              headers=headers)
-            print(r.status_code)
+        log.info(relationship)
+        # data = json.dumps(relationship)
+        # headers = {'connection': 'keep-alive',
+        #            'x-wenet-component-apikey': COMP_AUTH_KEY,
+        #            'Content-Type': 'application/json'}
+        # if relationship['userId']:
+        #      r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', data=data,
+        #                        headers=headers)
+        #     print(r.status_code)
     except requests.exceptions.HTTPError as e:
         log.exception('Could not set_relationship_to_profile_manager ' + str(user_id))
 

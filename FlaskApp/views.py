@@ -191,7 +191,7 @@ def social_notification_interaction():
         async_social_ties_learning.delay(data)
         return{}
     except:
-        app.logger.exception('Social learning failed for message ')
+        app.logger.exception('Exception in interaction message')
 def rank_profiles(user_ids):
     MODEL = [0.5] * 5
     DIVERSITY_COEFFICIENT = 0.4
@@ -215,10 +215,10 @@ def get_profiles_from_profile_manager(user_ids):
                 if r.status_code == 200:
                     entities.append(r.json())
             except requests.exceptions.HTTPError as e:
-                print('Cannot get entity from  Profile manager', e)
+                app.logger.info('Cannot get_profiles_from_profile_manager', e)
         return entities
     except requests.exceptions.HTTPError as e:
-        app.logger.info('Something wrong with user list IDs received from Profile Manager', e)
+        app.logger.info('Something wrong with user list IDs get_profiles_from_profile_manager', e)
         return False
 
 
