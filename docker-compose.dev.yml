@@ -27,7 +27,7 @@ services:
     build:
       context: .
     image: flask_celery_example_celery_worker
-    command: celery -A FlaskCelery.tasks.celery worker -l INFO --logfile=./social-context-builder-celery.log
+    command: celery -A FlaskCelery.tasks.celery worker -l INFO --logfile=FlaskCelery/social-context-builder-celery.log
     restart: always
     env_file:
       - ./dev.env
@@ -37,7 +37,7 @@ services:
       - PROFILE_MANAGER_API= https://wenet.u-hopper.com/dev/profile_manager
       - TASK_MANAGER_API= https://wenet.u-hopper.com/dev/task_manager
     volumes:
-      - dbvolume:/app/social-context-builder-celery.log
+      - dbvolume:/app/FlaskCelery/logs
     depends_on:
       - redis
 volumes:
