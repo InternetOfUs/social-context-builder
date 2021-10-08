@@ -169,13 +169,13 @@ def add_profiles_to_profile_manager(relationships, app_ids):
             for relationship in relationships:
                 if str(relationship['existingUserId']) != str(relationship['newUserId']):
                     data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4), 'appId': str(app_id)})
-                    print(data)
+                    log.info(data)
                   # r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
                    #                  data=data, headers=headers)
                     data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4)})
                     #r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
                      #                data=data, headers=headers)
-                    print(data)
+                    log.info(data)
     except requests.exceptions.HTTPError as e:
         log.exception('Issue with Profile manager')
 
