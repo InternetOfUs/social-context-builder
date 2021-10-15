@@ -35,6 +35,7 @@ services:
       - PROFILE_MANAGER_API= https://wenet.u-hopper.com/dev/profile_manager
       - TASK_MANAGER_API= https://wenet.u-hopper.com/dev/task_manager
       - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/dev/interaction_protocol_engine
+      - CELERY_BROKER_URL= redis://redis:6379
     volumes:
       - dbvolumestaging:/app/FlaskCelery/logs
     depends_on:
