@@ -1,10 +1,13 @@
 import json
 import math
 import requests
+import os
 
 ##############################
 ### Similarity Computation ###
 ##############################
+PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
+COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 
 def haversine(theta):
     return (1 - math.cos(theta))/2
@@ -192,8 +195,6 @@ def get_related_profiles(user):
 
 def get_profiles_from_profile_manager(user_ids):
     try:
-        PROFILE_MANAGER_API = 'https://wenet.u-hopper.com/dev/profile_manager'
-        COMP_AUTH_KEY = 'zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo'
         entities = []
         try:
             for user_id in user_ids['users_IDs']:

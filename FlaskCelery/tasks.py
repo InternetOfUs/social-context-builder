@@ -3,6 +3,7 @@ from flask import jsonify, request
 from FlaskCelery.flask_celery import make_celery
 from FlaskCelery.socialties import update_all
 import FlaskCelery.social_ties_learning as social_ties_learning
+import FlaskCelery.user_similarity as user_similarity
 import json
 import requests
 import logging
@@ -41,6 +42,28 @@ def async_initialize(user_id, app_ids):
         log.exception('could not initialize relationships for ' + str(user_id), e)
     return {}
 
+
+@celery.task()
+def async_social_ties_profile_update(user_id):
+    try:
+        new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
+        if new_user:
+            relationships = new_user.get('relationships')
+            if relationships:
+                for relationship in relationships:
+                    other_weight = relationship.get('weight')
+                    if float(other_weight) < 0.5:
+                        other_user = relationship.get('userId')
+                        other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})
+                        index = relationships.index(relationship)
+                        new_weight = user_similarity.similarity(new_user, other_user)
+                        if 0 <= round(float(new_weight), 4) <= 1:
+                            if round(float(new_weight), 4) > round(float(other_weight), 4):
+                                relationship['weight'] = round(float(new_weight), 4)
+                                update_relationship_to_profile_manager(str(user_id), relationship, index)
+    except Exception as e:
+        log.exception('could not initialize relationships for ' + str(user_id), e)
+    return {}
 
 @celery.task()
 def async_social_ties_learning(data):
