@@ -12,7 +12,7 @@ import os
 
 flask_app = Flask(__name__)
 flask_app.config.update(
-    CELERY_BROKER_URL='redis://redis:6379')
+    CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL'])
 celery = make_celery(flask_app)
 INTERACTION_PROTOCOL_ENGINE = os.environ['INTERACTION_PROTOCOL_ENGINE']
 PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
