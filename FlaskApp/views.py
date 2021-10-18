@@ -212,19 +212,17 @@ def get_profiles_from_profile_manager(user_ids):
 
 
 def get_app_ids_for_user(user_id):
-    try:
-        app_ids = []
-        headers = {'Content-Type': 'application/json', 'connection': 'keep-alive'}
-        r = requests.get(HUB_API + '/data/user/' + str(user_id) + '/apps', headers=headers)
-        data = r.json
-        if data:
-            for app_id in data:
-                app_ids.append(app_id.get('appId'))
-        return app_ids
+    app_ids = []
+    headers = {'Content-Type': 'application/json', 'connection': 'keep-alive'}
+    r = requests.get(HUB_API + '/data/user/' + str(user_id) + '/apps', headers=headers)
+    data = r.json
+    return data
+    if data:
+        for app_id in data:
+            app_ids.append(app_id.get('appId'))
+    return app_ids
 
-    except Exception as e:
-        app.logger.info('Cannot get_app_Ids_foruser', e)
-        return app_ids
+
 
 
 if __name__ == "__main__":
