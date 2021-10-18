@@ -214,8 +214,8 @@ def get_app_ids_for_user(user_id):
     try:
         try:
             app_ids = []
-            headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
-                       'x-wenet-component-apikey': COMP_AUTH_KEY, }
+            headers = {'connection': 'keep-alive',
+                       'x-wenet-component-apikey': COMP_AUTH_KEY}
             r = requests.get(HUB_API + '/data/user/' + str(user_id) + '/apps', headers=headers)
             data = r.json
             if data:
