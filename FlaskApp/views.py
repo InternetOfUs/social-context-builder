@@ -79,7 +79,7 @@ def initialize_social_relations(user_id):
 def initialize_social_relationstest(user_id):
     try:
         app_ids = get_app_ids_for_user(user_id)
-        return app_ids
+        return jsonify(app_ids)
     except:
         pass
 
