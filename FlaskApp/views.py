@@ -75,10 +75,11 @@ def initialize_social_relations(user_id):
     return {}
 
 
-@app.route("/social/relations/initializetest/<user_id>", methods=['POST'])
+@app.route("/social/relations/initializetest/<user_id>", methods=['GET'])
 def initialize_social_relationstest(user_id):
     try:
         app_ids = get_app_ids_for_user(user_id)
+        print(app_ids)
         return jsonify(app_ids)
     except:
         pass
