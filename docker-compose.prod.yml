@@ -8,6 +8,7 @@ services:
     environment:
       - FLASK_ENV= production
       - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - HUB_API= https://internetofus.u-hopper.com/prod/hub/frontend
       - PROFILE_MANAGER_API= https://wenet.u-hopper.com/prod/profile_manager
       - TASK_MANAGER_API= https://wenet.u-hopper.com/prod/task_manager
       - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/prod/interaction_protocol_engine
@@ -32,6 +33,7 @@ services:
     environment:
       - FLASK_APP=app
       - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - HUB_API= https://internetofus.u-hopper.com/prod/hub/frontend
       - PROFILE_MANAGER_API= https://wenet.u-hopper.com/prod/profile_manager
       - TASK_MANAGER_API= https://wenet.u-hopper.com/prod/task_manager
       - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/prod/interaction_protocol_engine

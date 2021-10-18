@@ -18,6 +18,7 @@ INTERACTION_PROTOCOL_ENGINE = os.environ['INTERACTION_PROTOCOL_ENGINE']
 PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
 TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
 COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
+HUB_API = os.environ['HUB_API']
 log = logging.getLogger('FlaskApp')
 
 
