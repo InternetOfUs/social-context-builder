@@ -213,9 +213,10 @@ def get_profiles_from_profile_manager(user_ids):
 
 def get_app_ids_for_user(user_id):
     app_ids = []
-    headers = {'Content-Type': 'application/json', 'connection': 'keep-alive'}
-    r = requests.get(HUB_API + '/data/user/' + str(user_id) + '/apps', headers=headers)
-    data = r.json
+    headers = {'Content-Type': 'application/json'}
+    url = HUB_API + '/data/user/' + str(user_id) + '/apps'
+    r = requests.get(url, headers=headers)
+    data = url
     return data
     if data:
         for app_id in data:
