@@ -216,6 +216,7 @@ def get_app_ids_for_user(user_id):
             headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
                        'x-wenet-component-apikey': COMP_AUTH_KEY, }
             r = requests.get(HUB_API + '/data/user/' + str(user_id) + '/apps', headers=headers)
+            app.logger.info( r.status_code)
             if r.status_code == 200:
                 data = r.json
                 app.logger.info('success 200 hub api',data)
