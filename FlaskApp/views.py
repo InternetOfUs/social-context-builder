@@ -216,7 +216,7 @@ def get_app_ids_for_user(user_id):
         app_ids = []
         r = requests.get(HUB_API + '/data/user/' + str(user_id) + '/apps')
         data = r.json
-        print(data)
+        return data
         if data:
             for app_id in data:
                 app_ids.append(app_id.get('appId'))
