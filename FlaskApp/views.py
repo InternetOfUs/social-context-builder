@@ -212,20 +212,17 @@ def get_profiles_from_profile_manager(user_ids):
 
 def get_app_ids_for_user(user_id):
     try:
-        try:
-            app_ids = []
-            r = requests.get(HUB_API + '/data/user/' + str(user_id) + '/apps')
-            data = r.json
-            if data:
-                for app_id in data:
-                    app_ids.append(app_id.get('appId'))
-            return app_ids
+        app_ids = []
+        r = requests.get(HUB_API + '/data/user/' + str(user_id) + '/apps')
+        data = r.json
+        print(data)
+        if data:
+            for app_id in data:
+                app_ids.append(app_id.get('appId'))
+        return app_ids
 
-        except Exception as e:
-            app.logger.info('Cannot get_app_Ids_foruser', e)
-            return app_ids
     except Exception as e:
-        app.logger.info('Something wrong with user list IDs get_profiles_from_profile_manager', e)
+        app.logger.info('Cannot get_app_Ids_foruser', e)
         return app_ids
 
 
