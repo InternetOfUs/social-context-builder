@@ -222,7 +222,7 @@ def get_app_ids_for_user(user_id):
                 app.logger.info('success 200 hub api',data)
                 if app_ids:
                     for app_id in data:
-                        app_ids.append(app_id)
+                        app_ids.append(app_id.get('appId'))
             else:
                 app.logger.info('fail hub api',r.status_code)
             return app_ids
