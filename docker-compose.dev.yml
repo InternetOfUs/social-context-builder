@@ -30,7 +30,7 @@ services:
     build:
       context: .
     image: flask_celery_example_celery_worker
-    command: celery -A FlaskCelery.tasks.celery worker -l INFO --logfile=FlaskCelery/social-context-builder-celery.log
+    command: celery -A FlaskCelery.tasks.celery worker -l INFO --logfile=FlaskApp/logs/social-context-builder-celery.log
     restart: always
     env_file:
       - ./dev.env
