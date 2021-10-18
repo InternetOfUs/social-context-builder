@@ -209,6 +209,7 @@ def get_profiles_from_profile_manager(user_ids):
         app.logger.info('Something wrong with user list IDs get_profiles_from_profile_manager', e)
         return False
 
+
 def get_app_ids_for_user(user_id):
     try:
         try:
@@ -216,17 +217,16 @@ def get_app_ids_for_user(user_id):
             headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
                        'x-wenet-component-apikey': COMP_AUTH_KEY, }
             r = requests.get(HUB_API + '/data/user/' + str(user_id) + '/apps', headers=headers)
-            if r.status_code == 200:
-                data = r.json
-                if data:
-                    for app_id in data:
-                        app_ids.append(app_id.get('appId'))
+            data = r.json
+            if data:
+                for app_id in data:
+                    app_ids.append(app_id.get('appId'))
             return app_ids
 
-        except requests.exceptions.HTTPError as e:
+        except Exception as e:
             app.logger.info('Cannot get_app_Ids_foruser', e)
             return app_ids
-    except requests.exceptions.HTTPError as e:
+    except Exception as e:
         app.logger.info('Something wrong with user list IDs get_profiles_from_profile_manager', e)
         return app_ids
 
