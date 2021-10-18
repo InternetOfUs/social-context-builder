@@ -218,9 +218,12 @@ def get_app_ids_for_user(user_id):
             r = requests.get(HUB_API + '/data/user/' + str(user_id) + '/apps', headers=headers)
             if r.status_code == 200:
                 data = r.json
+                app.logger.info('success 200 hub api',data)
                 if app_ids:
                     for app_id in data:
                         app_ids.append(app_id)
+            else:
+                app.logger.info('fail hub api',r.status_code)
             return app_ids
 
         except requests.exceptions.HTTPError as e:
