@@ -8,14 +8,14 @@ services:
     container_name: social-context-dev
     restart: always
     environment:
-      - FLASK_ENV= development
-      - HUB_API= https://wenet.u-hopper.com/dev/hub/frontend
-      - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
-      - PROFILE_MANAGER_API= https://wenet.u-hopper.com/dev/profile_manager
-      - TASK_MANAGER_API= https://wenet.u-hopper.com/dev/task_manager
-      - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/dev/interaction_protocol_engine
+      - FLASK_ENV=development
+      - HUB_API=https://wenet.u-hopper.com/dev/hub/frontend
+      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - PROFILE_MANAGER_API=https://wenet.u-hopper.com/dev/profile_manager
+      - TASK_MANAGER_API=https://wenet.u-hopper.com/dev/task_manager
+      - INTERACTION_PROTOCOL_ENGINE=https://wenet.u-hopper.com/dev/interaction_protocol_engine
       - CELERY_BROKER_URL=redis://redis:6379
-      - FLASK_DEBUG= 1
+      - FLASK_DEBUG=1
     volumes:
       - dbvolume:/app/FlaskApp/db
       - dbvolume:/app/FlaskApp/logs
@@ -36,11 +36,11 @@ services:
       - ./dev.env
     environment:
       - FLASK_APP=app
-      - HUB_API= https://wenet.u-hopper.com/dev/hub/frontend
-      - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
-      - PROFILE_MANAGER_API= https://wenet.u-hopper.com/dev/profile_manager
-      - TASK_MANAGER_API= https://wenet.u-hopper.com/dev/task_manager
-      - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/dev/interaction_protocol_engine
+      - HUB_API=https://wenet.u-hopper.com/dev/hub/frontend
+      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - PROFILE_MANAGER_API=https://wenet.u-hopper.com/dev/profile_manager
+      - TASK_MANAGER_API=https://wenet.u-hopper.com/dev/task_manager
+      - INTERACTION_PROTOCOL_ENGINE=https://wenet.u-hopper.com/dev/interaction_protocol_engine
       - CELERY_BROKER_URL=redis://redis:6379
     volumes:
       - dbvolume:/app/FlaskCelery/logs
