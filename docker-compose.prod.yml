@@ -6,13 +6,14 @@ services:
       - "8080:8000"
     container_name: social-context-prod
     environment:
-      - FLASK_ENV= production
-      - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
-      - PROFILE_MANAGER_API= https://wenet.u-hopper.com/prod/profile_manager
-      - TASK_MANAGER_API= https://wenet.u-hopper.com/prod/task_manager
-      - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/prod/interaction_protocol_engine
-      - CELERY_BROKER_URL= redis://redis:6379
-      - FLASK_DEBUG= 0
+      - FLASK_ENV=production
+      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - HUB_API=https://internetofus.u-hopper.com/prod/hub/frontend
+      - PROFILE_MANAGER_API=https://internetofus.u-hopper.com/prod/profile_manager
+      - TASK_MANAGER_API=https://internetofus.u-hopper.com/prod/task_manager
+      - INTERACTION_PROTOCOL_ENGINE=https://internetofus.u-hopper.com/prod/interaction_protocol_engine
+      - CELERY_BROKER_URL=redis://redis:6379
+      - FLASK_DEBUG=0
     volumes:
       - dbvolumesprod:/app/FlaskApp/db
       - dbvolumesprod:/app/FlaskApp/logs
@@ -31,10 +32,11 @@ services:
     restart: always
     environment:
       - FLASK_APP=app
-      - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
-      - PROFILE_MANAGER_API= https://wenet.u-hopper.com/prod/profile_manager
-      - TASK_MANAGER_API= https://wenet.u-hopper.com/prod/task_manager
-      - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/prod/interaction_protocol_engine
+      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - HUB_API=https://internetofus.u-hopper.com/prod/hub/frontend
+      - PROFILE_MANAGER_API=https://internetofus.u-hopper.com/prod/profile_manager
+      - TASK_MANAGER_API=https://internetofus.u-hopper.com/prod/task_manager
+      - INTERACTION_PROTOCOL_ENGINE=https://internetofus.u-hopper.com/prod/interaction_protocol_engine
       - CELERY_BROKER_URL=redis://redis:6379
     volumes:
       - dbvolumesprod:/app/FlaskCelery/logs

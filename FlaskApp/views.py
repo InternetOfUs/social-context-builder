@@ -10,6 +10,7 @@ import os
 PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
 TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
 COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
+HUB_API = os.environ['HUB_API']
 
 
 
@@ -60,11 +61,30 @@ def social_profiles_all():
 
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
-    app_ids = request.json
-    if app_ids:
-        result = async_initialize.delay(user_id, app_ids)
+    try:
+        app_ids = request.json
+        if app_ids:
+            result = async_initialize.delay(user_id, app_ids)
+        else:
+            app_ids = get_app_ids_for_user(user_id)
+            if app_ids:
+                result = async_initialize.delay(user_id, app_ids)
+    except:
+        pass
+
     return {}
 
+
+@app.route("/social/relations/initializetest/<user_id>", methods=['GET'])
+def initialize_social_relationstest(user_id):
+    try:
+        app_ids = get_app_ids_for_user(user_id)
+        print(app_ids)
+        return jsonify(app_ids)
+    except:
+        pass
+
+    return {}
 
 @app.route("/social/notification/profileUpdate/<user_id>", methods=['POST'])
 def social_notification_profileUpdate(user_id):
@@ -189,6 +209,23 @@ def get_profiles_from_profile_manager(user_ids):
     except requests.exceptions.HTTPError as e:
         app.logger.info('Something wrong with user list IDs get_profiles_from_profile_manager', e)
         return False
+
+
+def get_app_ids_for_user(user_id):
+    try:
+        app_ids = []
+        headers = {'Content-Type': 'application/json'}
+        url = HUB_API + '/data/user/' + str(user_id) + '/apps'
+        r = requests.get(url, headers=headers)
+        data = r.json()
+        if data:
+            for app_id in data:
+                app_ids.append(app_id.get('appId'))
+        return app_ids
+    except:
+        return app_ids
+
+
 
 
 if __name__ == "__main__":

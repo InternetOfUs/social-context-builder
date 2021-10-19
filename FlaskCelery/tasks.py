@@ -18,6 +18,7 @@ INTERACTION_PROTOCOL_ENGINE = os.environ['INTERACTION_PROTOCOL_ENGINE']
 PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
 TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
 COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
+HUB_API = os.environ['HUB_API']
 log = logging.getLogger('FlaskApp')
 
 
@@ -61,6 +62,10 @@ def async_social_ties_profile_update(user_id):
                             if round(float(new_weight), 4) > round(float(other_weight), 4):
                                 relationship['weight'] = round(float(new_weight), 4)
                                 update_relationship_to_profile_manager(str(user_id), relationship, index)
+            else:
+                app_ids = get_app_ids_for_user(user_id)
+                if app_ids:
+                    async_initialize.delay(user_id, app_ids)
     except Exception as e:
         log.exception('could not initialize relationships for ' + str(user_id), e)
     return {}
@@ -216,4 +221,19 @@ def get_first_total_interaction(senderId, receiverID):
             return {'first': first_interaction, 'total': total_interactions}
     except requests.exceptions.HTTPError as e:
         log.exception('could not calculate get_first_total_interaction' + str(senderId) + ' ' + str(receiverID))
+
+
+def get_app_ids_for_user(user_id):
+    try:
+        app_ids = []
+        headers = {'Content-Type': 'application/json'}
+        url = HUB_API + '/data/user/' + str(user_id) + '/apps'
+        r = requests.get(url, headers=headers)
+        data = r.json()
+        if data:
+            for app_id in data:
+                app_ids.append(app_id.get('appId'))
+        return app_ids
+    except:
+        return app_ids
 

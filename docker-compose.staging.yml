@@ -6,13 +6,14 @@ services:
       - "8086:8000"
     container_name: social-context-staging
     environment:
-      - FLASK_ENV= production
-      - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
-      - PROFILE_MANAGER_API= https://wenet.u-hopper.com/dev/profile_manager
-      - TASK_MANAGER_API= https://wenet.u-hopper.com/dev/task_manager
-      - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/dev/interaction_protocol_engine
-      - CELERY_BROKER_URL= redis://redis:6379
-      - FLASK_DEBUG= 0
+      - FLASK_ENV=production
+      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - HUB_API=https://wenet.u-hopper.com/dev/hub/frontend
+      - PROFILE_MANAGER_API=https://wenet.u-hopper.com/dev/profile_manager
+      - TASK_MANAGER_API=https://wenet.u-hopper.com/dev/task_manager
+      - INTERACTION_PROTOCOL_ENGINE=https://wenet.u-hopper.com/dev/interaction_protocol_engine
+      - CELERY_BROKER_URL=redis://redis:6379
+      - FLASK_DEBUG=0
     volumes:
       - dbvolumestaging:/app/FlaskApp/db
       - dbvolumestaging:/app/FlaskApp/logs
@@ -27,15 +28,16 @@ services:
     build:
       context: .
     image: flask_celery_worker
-    command: celery -A FlaskCelery.tasks.celery worker -l INFO --logfile=FlaskCelery/social-context-builder-celery.log
+    command: celery -A FlaskCelery.tasks.celery worker -l INFO --logfile=FlaskCelery/logs/social-context-builder-celery.log
     restart: always
     environment:
       - FLASK_APP=app
-      - COMP_AUTH_KEY= zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
-      - PROFILE_MANAGER_API= https://wenet.u-hopper.com/dev/profile_manager
-      - TASK_MANAGER_API= https://wenet.u-hopper.com/dev/task_manager
-      - INTERACTION_PROTOCOL_ENGINE= https://wenet.u-hopper.com/dev/interaction_protocol_engine
-      - CELERY_BROKER_URL= redis://redis:6379
+      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - HUB_API=https://wenet.u-hopper.com/dev/hub/frontend
+      - PROFILE_MANAGER_API=https://wenet.u-hopper.com/dev/profile_manager
+      - TASK_MANAGER_API=https://wenet.u-hopper.com/dev/task_manager
+      - INTERACTION_PROTOCOL_ENGINE=https://wenet.u-hopper.com/dev/interaction_protocol_engine
+      - CELERY_BROKER_URL=redis://redis:6379
     volumes:
       - dbvolumestaging:/app/FlaskCelery/logs
     depends_on:
