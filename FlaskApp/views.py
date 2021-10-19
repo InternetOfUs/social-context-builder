@@ -22,7 +22,7 @@ def home():
 def celerylog():
     try:
         result = test_log.delay()
-        return result
+        return str(result)
     except:
         app.logger.info(' cannot start celery task')
 
