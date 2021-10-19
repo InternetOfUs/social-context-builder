@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
-from FlaskCelery.tasks import async_initialize, async_social_ties_learning, async_social_ties_profile_update
+from FlaskCelery.tasks import async_initialize, async_social_ties_learning, async_social_ties_profile_update, test_log
 from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
 import requests
@@ -61,7 +61,7 @@ def social_profiles_all():
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
     try:
-        raise Exception
+        test_log.delay()
         app_ids = request.json
         if app_ids:
             result = async_initialize.delay(user_id, app_ids)

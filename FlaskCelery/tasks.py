@@ -25,6 +25,10 @@ log = logging
 
 
 @celery.task()
+def test_log():
+    log.info('test log')
+
+@celery.task()
 def async_initialize(user_id, app_ids):
     try:
         new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
