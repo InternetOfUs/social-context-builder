@@ -37,7 +37,6 @@ def social_relations_streambase():
 
     except Exception as e:
         app.logger.info('exception', data, e)
-
     return {}
 
 
@@ -62,6 +61,7 @@ def social_profiles_all():
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
     try:
+        app.logger.info('new initialize')
         Exception
         app_ids = request.json
         if app_ids:
