@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
-from FlaskCelery.tasks import async_initialize, async_social_ties_learning, async_social_ties_profile_update
+from FlaskCelery.tasks import async_initialize, async_social_ties_learning, async_social_ties_profile_update, test_log
 from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
 import requests
@@ -16,8 +16,15 @@ HUB_API = os.environ['HUB_API']
 
 @app.route("/")
 def home():
-    return 'Wenet Home V3.08'
+    return 'Wenet Home V1.0.3'
 
+@app.route("/celery")
+def celerylog():
+    try:
+        result = test_log.delay()
+        return str(result)
+    except:
+        app.logger.info(' cannot start celery task')
 
 @app.route("/social/profile/streambase", methods=['POST'])
 def social_profile_streambase():
@@ -37,7 +44,6 @@ def social_relations_streambase():
 
     except Exception as e:
         app.logger.info('exception', data, e)
-
     return {}
 
 
@@ -64,13 +70,13 @@ def initialize_social_relations(user_id):
     try:
         app_ids = request.json
         if app_ids:
-            result = async_initialize.delay(user_id, app_ids)
+            async_initialize.delay(user_id, app_ids)
         else:
             app_ids = get_app_ids_for_user(user_id)
             if app_ids:
-                result = async_initialize.delay(user_id, app_ids)
-    except:
-        pass
+                async_initialize.delay(user_id, app_ids)
+    except Exception as e:
+        app.logger.exception('Exception in initializing user relations')
 
     return {}
 
@@ -81,8 +87,8 @@ def initialize_social_relationstest(user_id):
         app_ids = get_app_ids_for_user(user_id)
         print(app_ids)
         return jsonify(app_ids)
-    except:
-        pass
+    except Exception as e:
+        app.logger.exception('Exception in initializing user')
 
     return {}
 
@@ -105,7 +111,7 @@ def show_social_explanations(user_id, task_id):
         print('Issue with Profile manager')
     try:
         r = requests.get(TASK_MANAGER_API + '/tasks/' + str(task_id), verify=False)
-    except requests.exceptions.HTTPError as e:
+    except Exception as e:
         print(e.response.text)
     return jsonify(explanation)
 
@@ -140,7 +146,7 @@ def show_social_preferences_answer(user_id, task_id):
                 return jsonify(request.json)
         else:
             return jsonify(request.json)
-    except requests.exceptions.HTTPError as e:
+    except Exception as e:
         print('Exception social preferences, returning not ranked user list', e)
         return jsonify(request.json)
 
@@ -161,6 +167,7 @@ def show_social_preferences_selection(user_id, task_id, selection):
             # result = async_ranking_learning.delay(user_id, new_model, task_id)
         return jsonify(new_model)
     except:
+        app.logger.exception('Exception at answer selection update')
         return {}
 
 
