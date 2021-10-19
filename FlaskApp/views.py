@@ -16,8 +16,15 @@ HUB_API = os.environ['HUB_API']
 
 @app.route("/")
 def home():
-    return 'Wenet Home V3.08'
+    return 'Wenet Home V1.0.3'
 
+@app.route("/celery")
+def celerylog():
+    try:
+        result = test_log.delay()
+        return result
+    except:
+        app.logger.info(' cannot start celery task')
 
 @app.route("/social/profile/streambase", methods=['POST'])
 def social_profile_streambase():
@@ -139,7 +146,7 @@ def show_social_preferences_answer(user_id, task_id):
                 return jsonify(request.json)
         else:
             return jsonify(request.json)
-    except requests.exceptions.HTTPError as e:
+    except Exception as e:
         print('Exception social preferences, returning not ranked user list', e)
         return jsonify(request.json)
 
@@ -160,6 +167,7 @@ def show_social_preferences_selection(user_id, task_id, selection):
             # result = async_ranking_learning.delay(user_id, new_model, task_id)
         return jsonify(new_model)
     except:
+        app.logger.exception('Exception at answer selection update')
         return {}
 
 
