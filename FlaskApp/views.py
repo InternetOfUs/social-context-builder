@@ -62,6 +62,7 @@ def social_profiles_all():
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
     try:
+        Exception
         app_ids = request.json
         if app_ids:
             result = async_initialize.delay(user_id, app_ids)
@@ -69,8 +70,8 @@ def initialize_social_relations(user_id):
             app_ids = get_app_ids_for_user(user_id)
             if app_ids:
                 result = async_initialize.delay(user_id, app_ids)
-    except:
-        pass
+    except Exception as e:
+        app.logger.exception('Exception in initializing user relations', e)
 
     return {}
 
@@ -81,8 +82,8 @@ def initialize_social_relationstest(user_id):
         app_ids = get_app_ids_for_user(user_id)
         print(app_ids)
         return jsonify(app_ids)
-    except:
-        pass
+    except Exception as e:
+        app.logger.exception('Exception in initializing user')
 
     return {}
 
@@ -105,7 +106,7 @@ def show_social_explanations(user_id, task_id):
         print('Issue with Profile manager')
     try:
         r = requests.get(TASK_MANAGER_API + '/tasks/' + str(task_id), verify=False)
-    except requests.exceptions.HTTPError as e:
+    except Exception as e:
         print(e.response.text)
     return jsonify(explanation)
 
