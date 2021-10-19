@@ -61,8 +61,7 @@ def social_profiles_all():
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
     try:
-        app.logger.info('new initialize')
-        Exception
+        raise Exception
         app_ids = request.json
         if app_ids:
             result = async_initialize.delay(user_id, app_ids)
@@ -71,7 +70,7 @@ def initialize_social_relations(user_id):
             if app_ids:
                 result = async_initialize.delay(user_id, app_ids)
     except Exception as e:
-        app.logger.info('Exception in initializing user relations')
+        app.logger.exception('Exception in initializing user relations')
 
     return {}
 
