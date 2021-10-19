@@ -19,7 +19,6 @@ PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
 TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
 COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 HUB_API = os.environ['HUB_API']
-#log = logging.getLogger('FlaskApp')
 logging.basicConfig(filename='FlaskCelery/logs/social-context-builder-celery.log', level=logging.INFO, format=f'%(asctime)s Social Context Builder %(levelname)s : %(message)s')
 log = logging
 
@@ -28,7 +27,6 @@ log = logging
 def test_log():
     try:
         log.info('test celery')
-        return 'ok'
     except:
         log.info('test celery failed')
 
