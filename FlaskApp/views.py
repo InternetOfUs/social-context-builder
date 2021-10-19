@@ -71,7 +71,7 @@ def initialize_social_relations(user_id):
             if app_ids:
                 result = async_initialize.delay(user_id, app_ids)
     except Exception as e:
-        app.logger.exception('Exception in initializing user relations', e)
+        app.logger.info('Exception in initializing user relations')
 
     return {}
 
