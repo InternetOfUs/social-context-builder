@@ -28,7 +28,22 @@ def test_log():
     try:
         log.info('test celery')
     except:
-        log.info('test celery failed')
+        log.exception('test celery failed')
+
+@celery.task()
+def test_2():
+    try:
+        a = 5 + 5
+        return str(a)
+    except:
+        log.exception('test celery 2 failed')
+
+@celery.task()
+def test_3():
+    try:
+        a = 5 + 5
+    except:
+        log.exception('test celery 3 failed')
 
 @celery.task()
 def async_initialize(user_id, app_ids):
@@ -47,6 +62,7 @@ def async_initialize(user_id, app_ids):
                     if relationships:
                         add_profiles_to_profile_manager(relationships, app_ids)
                     offset = offset + 20
+            log.info('initialized relationships for' + str(user_id))
     except Exception as e:
         log.exception('could not initialize relationships for ' + str(user_id), e)
     return {}
@@ -74,6 +90,7 @@ def async_social_ties_profile_update(user_id):
                 app_ids = get_app_ids_for_user(user_id)
                 if app_ids:
                     async_initialize.delay(user_id, app_ids)
+            log.info('recalculating relationships- Profile update ' + str(user_id))
     except Exception as e:
         log.exception('could not initialize relationships for ' + str(user_id), e)
     return {}
