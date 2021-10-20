@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
-from FlaskCelery.tasks import async_initialize, async_social_ties_learning, async_social_ties_profile_update, test_log
+from FlaskCelery.tasks import async_initialize, async_social_ties_learning, async_social_ties_profile_update, test_log, test_2, test_3
 from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
 import requests
@@ -22,8 +22,18 @@ def home():
 def celerylog():
     try:
         result = test_log.delay()
+        return str(result)
     except:
-        app.logger.info(' cannot start celery task')
+        app.logger.exception(' cannot start celery task')
+
+@app.route("/test")
+def celerylog():
+    try:
+        test_2.delay()
+        test_3.delay()
+        return {}
+    except:
+        app.logger.exception(' cannot start celery task 2 3')
 
 @app.route("/social/profile/streambase", methods=['POST'])
 def social_profile_streambase():
@@ -70,12 +80,14 @@ def initialize_social_relations(user_id):
         app_ids = request.json
         if app_ids:
             async_initialize.delay(user_id, app_ids)
-            return 'initialized'
+            app.logger.info('starting task for initialize relations ' + str(user_id))
+            return {}
         else:
             app_ids = get_app_ids_for_user(user_id)
             if app_ids:
                 async_initialize.delay(user_id, app_ids)
-            return 'initialized'
+                app.logger.info('starting task for initialize relations ' + str(user_id))
+            return {}
     except Exception as e:
         app.logger.exception('Exception in initializing user relations')
 
