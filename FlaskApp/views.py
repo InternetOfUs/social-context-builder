@@ -27,7 +27,7 @@ def celerylog():
         app.logger.exception(' cannot start celery task')
 
 @app.route("/test")
-def celerylog():
+def celerytest():
     try:
         test_2.delay()
         test_3.delay()
