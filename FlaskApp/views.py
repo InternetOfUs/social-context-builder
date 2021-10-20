@@ -22,7 +22,6 @@ def home():
 def celerylog():
     try:
         result = test_log.delay()
-        return str(result)
     except:
         app.logger.info(' cannot start celery task')
 
@@ -71,14 +70,14 @@ def initialize_social_relations(user_id):
         app_ids = request.json
         if app_ids:
             async_initialize.delay(user_id, app_ids)
+            return 'initialized'
         else:
             app_ids = get_app_ids_for_user(user_id)
             if app_ids:
                 async_initialize.delay(user_id, app_ids)
+            return 'initialized'
     except Exception as e:
         app.logger.exception('Exception in initializing user relations')
-
-    return {}
 
 
 @app.route("/social/relations/initializetest/<user_id>", methods=['GET'])

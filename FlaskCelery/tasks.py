@@ -28,7 +28,7 @@ def test_log():
     try:
         log.info('test celery')
     except:
-        log.info('test celery failed')
+        log.exception('test celery failed')
 
 @celery.task()
 def async_initialize(user_id, app_ids):
