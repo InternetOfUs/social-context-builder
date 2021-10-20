@@ -159,6 +159,7 @@ def get_N_profiles_from_profile_manager(offset, number_of_profiles):
             headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
                        'x-wenet-component-apikey': COMP_AUTH_KEY, }
             r = requests.get(PROFILE_MANAGER_API + '/profiles?offset=' + str(offset) + '&limit=' + str(number_of_profiles), headers=headers)
+            r.raise_for_status()
             entities = r.json().get('profiles')
         except requests.exceptions.HTTPError as e:
             log.exception('Cannot get entity from  Profile manager')
@@ -176,11 +177,19 @@ def add_profiles_to_profile_manager(relationships, app_ids):
             for relationship in relationships:
                 if str(relationship['existingUserId']) != str(relationship['newUserId']):
                     data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4), 'appId': str(app_id)})
-                    r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
-                                     data=data, headers=headers)
+                    try:
+                        r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
+                                         data=data, headers=headers)
+                        r.raise_for_status()
+                    except:
+                        log.exception('Post Exception Profile Manager')
                     data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4), 'appId': str(app_id)})
-                    r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
-                                     data=data, headers=headers)
+                    try:
+                        r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
+                                         data=data, headers=headers)
+                        r.raise_for_status()
+                    except:
+                        log.exception('Post Exception Profile Manager')
     except Exception as e:
         log.exception('Could not add_profiles_to_profile_manager from relations initialize for user ')
 
@@ -193,6 +202,7 @@ def get_relationships_from_profile_manager(user_id):
                        'x-wenet-component-apikey': COMP_AUTH_KEY, }
             r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', headers=headers)
             relationships = r.json()
+            r.raise_for_status()
             return relationships
         except requests.exceptions.HTTPError as e:
             log.exception('Cannot get relationships from  Profile manager')
@@ -211,6 +221,7 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
         if relationship['userId']:
             r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/' + str(index), data=data,
                               headers=headers)
+            r.raise_for_status()
     except requests.exceptions.HTTPError as e:
         log.exception('could not update relationship_to_profile_manager' + str(user_id))
 
@@ -222,8 +233,9 @@ def set_relationship_to_profile_manager(user_id, relationship):
                    'x-wenet-component-apikey': COMP_AUTH_KEY,
                    'Content-Type': 'application/json'}
         if relationship['userId']:
-             r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', data=data,
+            r = requests.post(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships', data=data,
                                headers=headers)
+            r.raise_for_status()
     except requests.exceptions.HTTPError as e:
         log.exception('Could not set_relationship_to_profile_manager ' + str(user_id))
 
@@ -243,6 +255,7 @@ def get_first_total_interaction(senderId, receiverID):
                 INTERACTION_PROTOCOL_ENGINE + '/interactions?senderId=' + str(senderId) + '&receiverId=' + str(
                     receiverID) +
                 '&offset=' + str(total_interactions - 1), headers=headers)
+            r.raise_for_status()
             return {'first': first_interaction, 'total': total_interactions}
     except requests.exceptions.HTTPError as e:
         log.exception('could not calculate get_first_total_interaction' + str(senderId) + ' ' + str(receiverID))
@@ -254,11 +267,13 @@ def get_app_ids_for_user(user_id):
         headers = {'Content-Type': 'application/json'}
         url = HUB_API + '/data/user/' + str(user_id) + '/apps'
         r = requests.get(url, headers=headers)
+        r.raise_for_status()
         data = r.json()
         if data:
             for app_id in data:
                 app_ids.append(app_id.get('appId'))
         return app_ids
     except:
+        log.exception('could not get appids ' + str(user_id))
         return app_ids
 

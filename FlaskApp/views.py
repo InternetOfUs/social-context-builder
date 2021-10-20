@@ -96,7 +96,6 @@ def initialize_social_relations(user_id):
 def initialize_social_relationstest(user_id):
     try:
         app_ids = get_app_ids_for_user(user_id)
-        print(app_ids)
         return jsonify(app_ids)
     except Exception as e:
         app.logger.exception('Exception in initializing user')
@@ -219,6 +218,7 @@ def get_profiles_from_profile_manager(user_ids):
                 headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
                            'x-wenet-component-apikey': COMP_AUTH_KEY, }
                 r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers)
+                r.raise_for_status()
                 if r.status_code == 200:
                     entities.append(r.json())
             except requests.exceptions.HTTPError as e:
@@ -235,12 +235,14 @@ def get_app_ids_for_user(user_id):
         headers = {'Content-Type': 'application/json'}
         url = HUB_API + '/data/user/' + str(user_id) + '/apps'
         r = requests.get(url, headers=headers)
+        r.raise_for_status()
         data = r.json()
         if data:
             for app_id in data:
                 app_ids.append(app_id.get('appId'))
         return app_ids
     except:
+        app.logger.info('cannot get appIds for ' + str(user_id))
         return app_ids
 
 
