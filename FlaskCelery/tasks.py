@@ -79,7 +79,7 @@ def async_social_ties_profile_update(user_id):
                     other_weight = relationship.get('weight')
                     if float(other_weight) < 0.5:
                         other_user = relationship.get('userId')
-                        other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})
+                        other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
                         index = relationships.index(relationship)
                         new_weight = user_similarity.similarity(new_user, other_user)
                         if 0 <= round(float(new_weight), 4) <= 1:
@@ -247,6 +247,7 @@ def get_first_total_interaction(senderId, receiverID):
                    'x-wenet-component-apikey': COMP_AUTH_KEY, }
         r = requests.get(INTERACTION_PROTOCOL_ENGINE + '/interactions?senderId=' + str(senderId) + '&receiverId=' + str(receiverID) +
                          '&offset=0', headers=headers)
+        r.raise_for_status()
         interactions = r.json()
         if interactions.get('total') == 0:
             return {'first': 0, 'last': 0, 'total': 0}
@@ -259,7 +260,7 @@ def get_first_total_interaction(senderId, receiverID):
                 '&offset=' + str(total_interactions - 1), headers=headers)
             r.raise_for_status()
             return {'first': first_interaction, 'total': total_interactions}
-    except requests.exceptions.HTTPError as e:
+    except Exception as e:
         log.exception('could not calculate get_first_total_interaction' + str(senderId) + ' ' + str(receiverID))
 
 
