@@ -71,7 +71,7 @@ def async_initialize(user_id, app_ids):
 @celery.task()
 def async_social_ties_profile_update(user_id):
     try:
-        new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
+        new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})[0]
         if new_user:
             relationships = new_user.get('relationships')
             if relationships:
@@ -86,13 +86,14 @@ def async_social_ties_profile_update(user_id):
                             if round(float(new_weight), 4) > round(float(other_weight), 4):
                                 relationship['weight'] = round(float(new_weight), 4)
                                 update_relationship_to_profile_manager(str(user_id), relationship, index)
+                                log.info('recalculating relationships afterProfile update ' + str(user_id))
             else:
                 app_ids = get_app_ids_for_user(user_id)
                 if app_ids:
                     async_initialize.delay(user_id, app_ids)
-            log.info('recalculating relationships- Profile update ' + str(user_id))
+                    log.info('try to initialize relationships afterProfile update did not found relations ' + str(user_id))
     except Exception as e:
-        log.exception('could not initialize relationships for ' + str(user_id), e)
+        log.exception('could not recalculate relationships after Profile update ' + str(user_id), e)
     return {}
 
 @celery.task()
