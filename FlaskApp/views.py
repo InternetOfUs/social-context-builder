@@ -29,6 +29,29 @@ def celerylog():
 @app.route("/test")
 def celerytest():
     try:
+        headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
+                   'x-wenet-component-apikey': COMP_AUTH_KEY, }
+        r = requests.get(PROFILE_MANAGER_API + '/profiles', headers=headers)
+        r.raise_for_status()
+        app.logger.info('Profile manager is ok')
+    except Exception as e:
+        app.logger.exception('Issue with Profile manager')
+    try:
+        headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
+                   'x-wenet-component-apikey': COMP_AUTH_KEY, }
+        r = requests.get(TASK_MANAGER_API + '/help/info', headers=headers)
+        r.raise_for_status()
+        app.logger.info('task manager is ok')
+    except Exception as e:
+        app.logger.exception('Issue with Task manager')
+    try:
+        headers = {'Content-Type': 'application/json'}
+        r = requests.get(HUB_API + '/data/user', headers=headers)
+        r.raise_for_status()
+        app.logger.info('Hub API is ok')
+    except Exception as e:
+        app.logger.exception('Issue with Hub Api')
+    try:
         test_2.delay()
         test_3.delay()
         return {}
