@@ -125,7 +125,7 @@ def async_social_ties_learning(data):
                         relationship['weight'] = round(float(new_weight), 4)
                         relationship['appId'] = str(appId)
                         update_relationship_to_profile_manager(sender_id, relationship, index)
-                        return
+                        return {}
             if not found_relationship and appId:
                 current_weight = 0.0
                 new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
@@ -144,12 +144,13 @@ def get_profiles_from_profile_manager(user_ids):
                 headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
                            'x-wenet-component-apikey': COMP_AUTH_KEY, }
                 r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers)
+                r.raise_for_status()
                 entities.append(r.json())
-            except requests.exceptions.HTTPError as e:
-                print('Cannot get entity from  Profile manager', e)
+            except Exception as e:
+                log.exception('Cannot get profiles from Profile manager')
         return entities
     except Exception as e:
-        log.exception('Something wrong with user list IDs received from Profile Manager', e)
+        log.exception('Invalid user list IDs received', e)
         return False
 
 def get_N_profiles_from_profile_manager(offset, number_of_profiles):
@@ -162,7 +163,7 @@ def get_N_profiles_from_profile_manager(offset, number_of_profiles):
             r.raise_for_status()
             entities = r.json().get('profiles')
         except requests.exceptions.HTTPError as e:
-            log.exception('Cannot get entity from  Profile manager')
+            log.exception('Cannot get N entities from  Profile manager')
         return entities
     except Exception as e:
         log.exception('Something wrong with user list IDs received from Profile Manager')
