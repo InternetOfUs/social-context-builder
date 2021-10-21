@@ -125,7 +125,7 @@ def async_social_ties_learning(data):
                         relationship['weight'] = round(float(new_weight), 4)
                         relationship['appId'] = str(appId)
                         update_relationship_to_profile_manager(sender_id, relationship, index)
-                        return
+                        return {}
             if not found_relationship and appId:
                 current_weight = 0.0
                 new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
