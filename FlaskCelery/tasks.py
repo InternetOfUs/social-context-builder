@@ -138,7 +138,6 @@ def async_social_ties_learning(data):
 
 def get_profiles_from_profile_manager(user_ids):
     entities = []
-    print('started the get profiles')
     try:
         for user_id in user_ids['users_IDs']:
             try:
@@ -182,6 +181,8 @@ def add_profiles_to_profile_manager(relationships, app_ids):
                     try:
                         r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
                                          data=data, headers=headers)
+                        log.info(relationship)
+                        log.info(r.text)
                         r.raise_for_status()
                     except:
                         log.exception('Post Exception Profile Manager')
