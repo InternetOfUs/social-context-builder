@@ -3,8 +3,8 @@ services:
   web:
     build: .
     ports:
-      - "8086:8000"
-    container_name: social-context-staging
+      - "8081:8000"
+    container_name: social-context-beta
     environment:
       - FLASK_ENV=production
       - COMP_AUTH_KEY=pa0th9Qo1SJrPb9x3agmLbIGOxZO4aFuWsvGJzsqAJc
