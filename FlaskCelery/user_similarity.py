@@ -84,17 +84,17 @@ def similarity(x, y, weights=[1/7]*7): # x, y are users as described in the curr
     try:
         similarity_metric = 0.0
         try:
-            if x['gender'] != y['gender']:
+            if x['gender'] == y['gender']:
                 similarity_metric += weights[0] * 1
         except:
             pass
         try:
-            if x['locale'] != y['locale']:
+            if x['locale'] == y['locale']:
                 similarity_metric += weights[1] * 1
         except:
             pass
         try:
-            if x['occupation'] != y['occupation']:
+            if x['occupation'] == y['occupation']:
                 similarity_metric += weights[2] * 1
         except:
             pass
