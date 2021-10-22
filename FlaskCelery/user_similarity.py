@@ -80,6 +80,20 @@ def meanings_distance(x, y): # x and y are meanings lists as described in the cu
         pass
 
 
+def materials_distance(x, y): # x and y are materials arrays as described in the current WeNet API.
+    try:
+        distance = 0.0
+        if len(x) * len(y) == 0:
+            return distance
+        for item in x:
+            for other_item in y:
+                if other_item == item:
+                    distance += 1
+        return distance / (len(x) * len(y))
+    except:
+        pass
+
+
 def similarity(x, y, weights=[1/7]*7): # x, y are users as described in the current WeNet API.
     try:
         similarity_metric = 0.0
@@ -112,6 +126,10 @@ def similarity(x, y, weights=[1/7]*7): # x, y are users as described in the curr
             pass
         try:
             similarity_metric += weights[6] * (1 - meanings_distance(x['meanings'], y['meanings']))
+        except:
+            pass
+        try:
+            similarity_metric += weights[3] * (1 - materials_distance(x['materials'], y['materials']))
         except:
             pass
         return similarity_metric
