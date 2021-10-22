@@ -142,7 +142,7 @@ def get_profiles_from_profile_manager(user_ids):
     try:
         for user_id in user_ids['users_IDs']:
             try:
-                headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
+                headers = {'connection': 'keep-alive',
                            'x-wenet-component-apikey': COMP_AUTH_KEY, }
                 r = requests.get(PROFILE_MANAGER_API + '/profiles/' + str(user_id), headers=headers)
                 r.raise_for_status()
