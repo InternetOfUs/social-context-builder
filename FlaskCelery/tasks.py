@@ -19,7 +19,7 @@ flask_app.config['CELERYBEAT_SCHEDULE'] = {
     # Executes every minute
     'periodic_task-every-minute': {
         'task': 'periodic_task',
-        'schedule': timedelta(minutes=30)
+        'schedule': timedelta(minutes=5)
     }
 }
 celery = make_celery(flask_app)
@@ -74,7 +74,7 @@ def periodic_task():
                             other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
                             index = relationships.index(relationship)
                             new_weight = user_similarity.similarity(user, other_user)
-                            log.info(str(round(float(new_weight), 4)) + 'comparing'+str(user.get('id')), round(float(other_weight), 4))
+                            log.info(str(round(float(new_weight), 4)) + 'comparing'+str(user.get('id')) + round(float(other_weight), 4))
                             if 0 <= round(float(new_weight), 4) <= 1:
                                 if round(float(new_weight), 4) > round(float(other_weight), 4) and not(math.isclose(new_weight, other_weight)):
                                     log.info('New weight', new_weight, 'replacing', other_weight)
