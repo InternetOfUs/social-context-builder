@@ -74,7 +74,7 @@ def periodic_task():
                             other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
                             index = relationships.index(relationship)
                             new_weight = user_similarity.similarity(user, other_user)
-                            log.info(str(round(float(new_weight), 4)) + 'comparing'+str(user.get('id')) + round(float(other_weight), 4))
+                            log.info(str(round(float(new_weight), 4)) + 'comparing'+str(user.get('id')) + str(round(float(other_weight), 4)))
                             if 0 <= round(float(new_weight), 4) <= 1:
                                 if round(float(new_weight), 4) > round(float(other_weight), 4) and not(math.isclose(new_weight, other_weight)):
                                     log.info('New weight', new_weight, 'replacing', other_weight)
@@ -174,6 +174,7 @@ def async_social_ties_learning(data):
                         relationship['type'] = 'friend'
                         relationship['weight'] = round(float(new_weight), 4)
                         relationship['appId'] = str(appId)
+                        log.info('Learning', relationship)
                         update_relationship_to_profile_manager(sender_id, relationship, index)
                         return {}
             # if not found_relationship and appId:
