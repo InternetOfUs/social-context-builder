@@ -82,6 +82,7 @@ def async_social_ties_profile_update(user_id):
                         other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
                         index = relationships.index(relationship)
                         new_weight = user_similarity.similarity(new_user, other_user)
+                        log.info('New weight', new_weight, 'comparing', other_weight)
                         if 0 <= round(float(new_weight), 4) <= 1:
                             if round(float(new_weight), 4) > round(float(other_weight), 4):
                                 log.info('New weight',new_weight,'replacing', other_weight)
