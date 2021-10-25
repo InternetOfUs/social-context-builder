@@ -168,7 +168,7 @@ def async_social_ties_learning(data):
                     current_weight = round(float(relationship.get('weight')), 4)
                     index = relationships.index(relationship)
                     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
-                    log.info(str(current_weight)+'-->'+(new_weight))
+                    log.info(str(current_weight)+'-->'+str(new_weight))
                     log.info((first_total_interaction))
                     if not (math.isclose(round(float(new_weight), 4), current_weight)) and 0 >= new_weight <= 1:
                         relationship={}
