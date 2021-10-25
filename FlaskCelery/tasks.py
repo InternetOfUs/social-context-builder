@@ -74,7 +74,7 @@ def periodic_task():
                             other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
                             index = relationships.index(relationship)
                             new_weight = user_similarity.similarity(user, other_user)
-                            log.info(str(round(float(new_weight), 4)) + 'comparing '+str(user.get('id'))+ +str(relationship.get('userId')) + str(round(float(other_weight), 4)))
+                            log.info(str(round(float(new_weight), 4)) + 'comparing '+str(user.get('id')) + str(relationship.get('userId')) + str(round(float(other_weight), 4)))
                             if 0 <= round(float(new_weight), 4) <= 1:
                                 threshold = 0.5
                                 if (round(float(new_weight), 4) - round(float(other_weight))) > threshold:
