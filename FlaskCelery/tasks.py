@@ -76,7 +76,8 @@ def periodic_task():
                             new_weight = user_similarity.similarity(user, other_user)
                             log.info(str(round(float(new_weight), 4)) + 'comparing'+str(user.get('id')) + str(round(float(other_weight), 4)))
                             if 0 <= round(float(new_weight), 4) <= 1:
-                                if round(float(new_weight), 4) > round(float(other_weight), 4) and not(math.isclose(new_weight, other_weight)):
+                                threshold = 0.5
+                                if (round(float(new_weight), 4) - round(float(other_weight))) > threshold:
                                     log.info('New weight', new_weight, 'replacing', other_weight)
                                     relationship['weight'] = round(float(new_weight), 4)
                                     update_relationship_to_profile_manager(str(user.get('id')), relationship, index)
@@ -170,7 +171,8 @@ def async_social_ties_learning(data):
                     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
                     log.info(str(current_weight)+'-->'+str(new_weight))
                     log.info((first_total_interaction))
-                    if not (math.isclose(round(float(new_weight), 4), current_weight)) and 0 >= new_weight <= 1:
+                    threshold = 0.05
+                    if (new_weight - current_weight) > threshold and 0 >= new_weight <= 1:
                         relationship={}
                         relationship['userId'] = str(receiver_id)
                         relationship['type'] = 'friend'
