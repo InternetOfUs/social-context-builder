@@ -76,7 +76,7 @@ def periodic_task():
                             new_weight = user_similarity.similarity(user, other_user)
                             log.info(str(round(float(new_weight), 4)) + 'comparing '+str(user.get('id')) + str(relationship.get('userId')) + str(round(float(other_weight), 4)))
                             if 0 <= round(float(new_weight), 4) <= 1:
-                                threshold = 0.5
+                                threshold = 0.05
                                 if (round(float(new_weight), 4) - round(float(other_weight))) > threshold:
                                     log.info('New weight', new_weight, 'replacing', other_weight)
                                     relationship['weight'] = round(float(new_weight), 4)
