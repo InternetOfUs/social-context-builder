@@ -172,7 +172,7 @@ def async_social_ties_learning(data):
                     log.info(str(current_weight)+'-->'+str(new_weight))
                     log.info((first_total_interaction))
                     threshold = 0.05
-                    if (new_weight - current_weight) > threshold and 0 >= new_weight <= 1:
+                    if (new_weight - current_weight) > threshold and 0 <= new_weight <= 1:
                         relationship={}
                         relationship['userId'] = str(receiver_id)
                         relationship['type'] = 'friend'
