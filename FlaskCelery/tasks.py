@@ -82,8 +82,6 @@ def periodic_task():
                                     relationship['weight'] = round(float(new_weight), 4)
                                     update_relationship_to_profile_manager(str(user.get('id')), relationship, index)
                                     log.info('recalculating relationships afterProfile update ' + str(user.get('id')))
-                                    log.info('New weight', round(float(new_weight), 4), 'recalculated to',
-                                             round(float(other_weight), 4))
                 # else:
                 #     app_ids = get_app_ids_for_user(user.get('id'))
                 #     if app_ids:
