@@ -56,40 +56,43 @@ def test_3():
 
 @celery.task(name ="periodic_task")
 def periodic_task():
-    offset = 0
-    number_of_profiles = 20
-    more_profiles_left = True
-    while more_profiles_left:
-        all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
-        if all_users_in_range is None:
-            more_profiles_left = False
-        else:
-            for user in all_users_in_range:
-                relationships = user.get('relationships')
-                if relationships:
-                    for relationship in relationships:
-                        other_weight = relationship.get('weight')
-                        if float(other_weight) <= 0.3:
-                            other_user = relationship.get('userId')
-                            other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
-                            index = relationships.index(relationship)
-                            new_weight = user_similarity.similarity(user, other_user)
-                            log.info(str(round(float(new_weight), 4)) + 'comparing '+str(user.get('id')) + str(relationship.get('userId')) + str(round(float(other_weight), 4)))
-                            if 0 <= round(float(new_weight), 4) <= 1:
-                                threshold = 0.05
-                                if (round(float(new_weight), 4) - round(float(other_weight))) > threshold:
-                                    log.info('New weight', new_weight, 'replacing', other_weight)
-                                    relationship['weight'] = round(float(new_weight), 4)
-                                    update_relationship_to_profile_manager(str(user.get('id')), relationship, index)
-                                    log.info('recalculating relationships afterProfile update ' + str(user.get('id')))
-                else:
-                    app_ids = get_app_ids_for_user(str(user.get('id')))
-                    if app_ids:
-                        async_initialize.delay(str(user.get('id')), app_ids)
-                        log.info('try to initialize relationships afterProfile update did not found relations ' + str(
-                            user.get('id')))
-            offset = offset + 20
-    log.info("Period recalculate of relationships")
+    try:
+        offset = 0
+        number_of_profiles = 20
+        more_profiles_left = True
+        while more_profiles_left:
+            all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+            if all_users_in_range is None:
+                more_profiles_left = False
+            else:
+                for user in all_users_in_range:
+                    relationships = user.get('relationships')
+                    if relationships:
+                        for relationship in relationships:
+                            other_weight = relationship.get('weight')
+                            if float(other_weight) <= 0.3:
+                                other_user = relationship.get('userId')
+                                other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
+                                index = relationships.index(relationship)
+                                new_weight = user_similarity.similarity(user, other_user)
+                                log.info(str(round(float(new_weight), 4)) + 'comparing '+str(user.get('id')) + str(relationship.get('userId')) + str(round(float(other_weight), 4)))
+                                if 0 <= round(float(new_weight), 4) <= 1:
+                                    threshold = 0.05
+                                    if (round(float(new_weight), 4) - round(float(other_weight)), 4) > threshold:
+                                        log.info('New weight', new_weight, 'replacing', other_weight)
+                                        relationship['weight'] = round(float(new_weight), 4)
+                                        update_relationship_to_profile_manager(str(user.get('id')), relationship, index)
+                                        log.info('recalculating relationships afterProfile update ' + str(user.get('id')))
+                    else:
+                        app_ids = get_app_ids_for_user(str(user.get('id')))
+                        if app_ids:
+                            async_initialize.delay(str(user.get('id')), app_ids)
+                            log.info('try to initialize relationships afterProfile update did not found relations ' + str(
+                                user.get('id')))
+                offset = offset + 20
+        log.info("Period recalculate of relationships")
+    except Exception:
+        log.exception('Daily recalculate failed')
 
 @celery.task()
 def async_initialize(user_id, app_ids):
