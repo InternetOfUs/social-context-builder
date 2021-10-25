@@ -165,10 +165,10 @@ def async_social_ties_learning(data):
             for relationship in relationships:
                 if relationship.get('userId') == receiver_id and relationship.get('appId') == appId:
                     found_relationship = True
-                    current_weight = float(relationship.get('weight'))
+                    current_weight = round(float(relationship.get('weight')), 4)
                     index = relationships.index(relationship)
                     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
-                    if new_weight != current_weight and new_weight>=0 and new_weight<=1:
+                    if not (math.isclose(round(float(new_weight), 4), current_weight)) and 0 >= new_weight <= 1:
                         relationship={}
                         relationship['userId'] = str(receiver_id)
                         relationship['type'] = 'friend'
@@ -176,11 +176,11 @@ def async_social_ties_learning(data):
                         relationship['appId'] = str(appId)
                         update_relationship_to_profile_manager(sender_id, relationship, index)
                         return {}
-            if not found_relationship and appId:
-                current_weight = 0.0
-                new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
-                                                                       first_total_interaction)
-                set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4),'appId': appId})
+            # if not found_relationship and appId:
+            #     current_weight = 0.0
+            #     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
+            #                                                            first_total_interaction)
+            #     set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4),'appId': appId})
 
     except Exception as e:
         log.exception('Social learning failed for message async_social_ties_learning ')
@@ -243,7 +243,7 @@ def add_profiles_to_profile_manager(relationships, app_ids):
                     except:
                         log.exception('Post Exception Profile Manager')
     except Exception as e:
-        log.exception('Could not add_profiles_to_profile_manager from relations initialize for user ')
+        log.exception('Could not add_profiles_to_profile_manager ' + str(r.text))
 
 
 def get_relationships_from_profile_manager(user_id):
