@@ -41,7 +41,7 @@ services:
       - INTERACTION_PROTOCOL_ENGINE=https://wenet.u-hopper.com/dev/interaction_protocol_engine
       - CELERY_BROKER_URL=redis://redis:6379
     volumes:
-      - dbvolume:/app/FlaskCelery/logs
+      - dbvolumestaging:/app/FlaskCelery/logs
     depends_on:
       - redis
 
