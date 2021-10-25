@@ -8,11 +8,19 @@ import json
 import requests
 import logging
 import os
+from datetime import timedelta
 
 
 flask_app = Flask(__name__)
 flask_app.config.update(
     CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL'])
+flask_app.config['CELERYBEAT_SCHEDULE'] = {
+    # Executes every minute
+    'periodic_task-every-minute': {
+        'task': 'periodic_task',
+        'schedule': timedelta(seconds=30)
+    }
+}
 celery = make_celery(flask_app)
 INTERACTION_PROTOCOL_ENGINE = os.environ['INTERACTION_PROTOCOL_ENGINE']
 PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
@@ -44,6 +52,11 @@ def test_3():
         a = 5 + 5
     except:
         log.exception('test celery 3 failed')
+
+@celery.task(name ="periodic_task")
+def periodic_task():
+    print('Hi! from periodic_task')
+    log.info("Hello! from periodic task")
 
 @celery.task()
 def async_initialize(user_id, app_ids):
