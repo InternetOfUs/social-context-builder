@@ -75,14 +75,16 @@ def periodic_task():
                                 other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
                                 index = relationships.index(relationship)
                                 new_weight = user_similarity.similarity(user, other_user)
-                                log.info(str(round(float(new_weight), 4)) + 'comparing '+str(user.get('id')) + str(relationship.get('userId')) + str(round(float(other_weight), 4)))
                                 if 0 <= round(float(new_weight), 4) <= 1:
                                     threshold = 0.05
                                     if (round(float(new_weight), 4) - round(float(other_weight)), 4) > threshold:
-                                        log.info('New weight', new_weight, 'replacing', other_weight)
                                         relationship['weight'] = round(float(new_weight), 4)
                                         update_relationship_to_profile_manager(str(user.get('id')), relationship, index)
-                                        log.info('recalculating relationships afterProfile update ' + str(user.get('id')))
+                                        try:
+                                            log.info('recalculating relationships' + str(user.get('id'))+
+                                                     str(relationship.get('userId'))+str(round(float(new_weight), 4)))
+                                        except:
+                                            pass
                     # else:
                     #     app_ids = get_app_ids_for_user(str(user.get('id')))
                     #     if app_ids:
@@ -90,7 +92,7 @@ def periodic_task():
                     #         log.info('try to initialize relationships afterProfile update did not found relations ' + str(
                     #             user.get('id')))
                 offset = offset + 20
-        log.info("Period recalculate of relationships")
+        log.info("Period recalculate of relationships finished")
     except Exception:
         log.exception('Daily recalculate failed')
 
