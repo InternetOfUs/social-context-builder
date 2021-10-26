@@ -2,25 +2,25 @@ version: "3"
 services:
   web:
     build: .
-    image: dev:tag
     ports:
       - "8081:8000"
-    container_name: social-context-dev
-    restart: always
+    container_name: social-context-beta
     environment:
-      - FLASK_ENV=development
-      - HUB_API=https://wenet.u-hopper.com/dev/hub/frontend
-      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
-      - PROFILE_MANAGER_API=https://wenet.u-hopper.com/dev/profile_manager
-      - TASK_MANAGER_API=https://wenet.u-hopper.com/dev/task_manager
-      - INTERACTION_PROTOCOL_ENGINE=https://wenet.u-hopper.com/dev/interaction_protocol_engine
+      - FLASK_ENV=production
+      - COMP_AUTH_KEY=pa0th9Qo1SJrPb9x3agmLbIGOxZO4aFuWsvGJzsqAJc
+      - HUB_API=https://wenet.u-hopper.com/beta/hub/frontend
+      - PROFILE_MANAGER_API=https://wenet.u-hopper.com/beta/profile_manager
+      - TASK_MANAGER_API=https://wenet.u-hopper.com/beta/task_manager
+      - INTERACTION_PROTOCOL_ENGINE=https://wenet.u-hopper.com/beta/interaction_protocol_engine
       - CELERY_BROKER_URL=redis://redis:6379
-      - FLASK_DEBUG=1
+      - FLASK_DEBUG=0
     volumes:
-      - dbvolume:/app/FlaskApp/db
-      - dbvolume:/app/FlaskApp/logs
+      - dbvolumestaging:/app/FlaskApp/db
+      - dbvolumestaging:/app/FlaskApp/logs
     depends_on:
       - redis
+      - celery_beat
+      - celery_worker
 
   redis:
     image: redis:6-alpine
@@ -41,31 +41,29 @@ services:
       - INTERACTION_PROTOCOL_ENGINE=https://wenet.u-hopper.com/dev/interaction_protocol_engine
       - CELERY_BROKER_URL=redis://redis:6379
     volumes:
-      - dbvolume:/app/FlaskCelery/logs
+      - dbvolumestaging:/app/FlaskCelery/logs
     depends_on:
       - redis
 
   celery_worker:
     build:
       context: .
-    image: flask_celery_example_celery_worker
+    image: flask_celery_worker
     command: celery -A FlaskCelery.tasks.celery worker -l INFO --logfile=FlaskCelery/logs/social-context-builder-celery.log
     restart: always
-    env_file:
-      - ./dev.env
     environment:
       - FLASK_APP=app
-      - HUB_API=https://wenet.u-hopper.com/dev/hub/frontend
-      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
-      - PROFILE_MANAGER_API=https://wenet.u-hopper.com/dev/profile_manager
-      - TASK_MANAGER_API=https://wenet.u-hopper.com/dev/task_manager
-      - INTERACTION_PROTOCOL_ENGINE=https://wenet.u-hopper.com/dev/interaction_protocol_engine
+      - COMP_AUTH_KEY=pa0th9Qo1SJrPb9x3agmLbIGOxZO4aFuWsvGJzsqAJc
+      - HUB_API=https://wenet.u-hopper.com/beta/hub/frontend
+      - PROFILE_MANAGER_API=https://wenet.u-hopper.com/beta/profile_manager
+      - TASK_MANAGER_API=https://wenet.u-hopper.com/beta/task_manager
+      - INTERACTION_PROTOCOL_ENGINE=https://wenet.u-hopper.com/beta/interaction_protocol_engine
       - CELERY_BROKER_URL=redis://redis:6379
     volumes:
-      - dbvolume:/app/FlaskCelery/logs
+      - dbvolumestaging:/app/FlaskCelery/logs
     depends_on:
       - redis
       - celery_beat
 volumes:
-  dbvolume:
+  dbvolumestaging:
 

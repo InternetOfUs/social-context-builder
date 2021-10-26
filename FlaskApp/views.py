@@ -16,7 +16,7 @@ HUB_API = os.environ['HUB_API']
 
 @app.route("/")
 def home():
-    return 'Wenet Home V1.0.3'
+    return 'Wenet Home V1.0.9'
 
 @app.route("/celery")
 def celerylog():
@@ -128,7 +128,7 @@ def initialize_social_relationstest(user_id):
 @app.route("/social/notification/profileUpdate/<user_id>", methods=['POST'])
 def social_notification_profileUpdate(user_id):
     try:
-        async_social_ties_profile_update.delay(user_id)
+        #async_social_ties_profile_update.delay(user_id)
         return{}
     except:
         app.logger.exception('Exception after profileUpdate')

@@ -8,11 +8,20 @@ import json
 import requests
 import logging
 import os
+from datetime import timedelta
+import math
 
 
 flask_app = Flask(__name__)
 flask_app.config.update(
     CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL'])
+flask_app.config['CELERYBEAT_SCHEDULE'] = {
+    # Executes every minute
+    'periodic_task-every-minute': {
+        'task': 'periodic_task',
+        'schedule': timedelta(hours=24)
+    }
+}
 celery = make_celery(flask_app)
 INTERACTION_PROTOCOL_ENGINE = os.environ['INTERACTION_PROTOCOL_ENGINE']
 PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
@@ -44,6 +53,46 @@ def test_3():
         a = 5 + 5
     except:
         log.exception('test celery 3 failed')
+
+@celery.task(name ="periodic_task")
+def periodic_task():
+    try:
+        offset = 0
+        number_of_profiles = 20
+        more_profiles_left = True
+        while more_profiles_left:
+            all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+            if all_users_in_range is None:
+                more_profiles_left = False
+            else:
+                for user in all_users_in_range:
+                    relationships = user.get('relationships')
+                    if relationships:
+                        for relationship in relationships:
+                            other_weight = relationship.get('weight')
+                            if float(other_weight) <= 0.3:
+                                other_user = relationship.get('userId')
+                                other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
+                                index = relationships.index(relationship)
+                                new_weight = user_similarity.similarity(user, other_user)
+                                log.info(str(round(float(new_weight), 4)) + 'comparing '+str(user.get('id')) + str(relationship.get('userId')) + str(round(float(other_weight), 4)))
+                                if 0 <= round(float(new_weight), 4) <= 1:
+                                    threshold = 0.05
+                                    if (round(float(new_weight), 4) - round(float(other_weight)), 4) > threshold:
+                                        log.info('New weight', new_weight, 'replacing', other_weight)
+                                        relationship['weight'] = round(float(new_weight), 4)
+                                        update_relationship_to_profile_manager(str(user.get('id')), relationship, index)
+                                        log.info('recalculating relationships afterProfile update ' + str(user.get('id')))
+                    # else:
+                    #     app_ids = get_app_ids_for_user(str(user.get('id')))
+                    #     if app_ids:
+                    #         async_initialize.delay(str(user.get('id')), app_ids)
+                    #         log.info('try to initialize relationships afterProfile update did not found relations ' + str(
+                    #             user.get('id')))
+                offset = offset + 20
+        log.info("Period recalculate of relationships")
+    except Exception:
+        log.exception('Daily recalculate failed')
 
 @celery.task()
 def async_initialize(user_id, app_ids):
@@ -82,8 +131,10 @@ def async_social_ties_profile_update(user_id):
                         other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
                         index = relationships.index(relationship)
                         new_weight = user_similarity.similarity(new_user, other_user)
+                        log.info('New weight', new_weight, 'comparing', other_weight)
                         if 0 <= round(float(new_weight), 4) <= 1:
                             if round(float(new_weight), 4) > round(float(other_weight), 4):
+                                log.info('New weight',new_weight,'replacing', other_weight)
                                 relationship['weight'] = round(float(new_weight), 4)
                                 update_relationship_to_profile_manager(str(user_id), relationship, index)
                                 log.info('recalculating relationships afterProfile update ' + str(user_id))
@@ -116,29 +167,32 @@ def async_social_ties_learning(data):
             for relationship in relationships:
                 if relationship.get('userId') == receiver_id and relationship.get('appId') == appId:
                     found_relationship = True
-                    current_weight = float(relationship.get('weight'))
+                    current_weight = round(float(relationship.get('weight')), 4)
                     index = relationships.index(relationship)
                     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
-                    if new_weight != current_weight and new_weight>=0 and new_weight<=1:
+                    log.info(str(current_weight)+'-->'+str(new_weight))
+                    log.info((first_total_interaction))
+                    threshold = 0.05
+                    if (new_weight - current_weight) > threshold and 0 <= new_weight <= 1:
                         relationship={}
                         relationship['userId'] = str(receiver_id)
                         relationship['type'] = 'friend'
                         relationship['weight'] = round(float(new_weight), 4)
                         relationship['appId'] = str(appId)
+                        log.info('Learning', relationship)
                         update_relationship_to_profile_manager(sender_id, relationship, index)
                         return {}
-            if not found_relationship and appId:
-                current_weight = 0.0
-                new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
-                                                                       first_total_interaction)
-                set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4),'appId': appId})
+            # if not found_relationship and appId:
+            #     current_weight = 0.0
+            #     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
+            #                                                            first_total_interaction)
+            #     set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4),'appId': appId})
 
     except Exception as e:
         log.exception('Social learning failed for message async_social_ties_learning ')
 
 def get_profiles_from_profile_manager(user_ids):
     entities = []
-    print('started the get profiles')
     try:
         for user_id in user_ids['users_IDs']:
             try:
@@ -182,6 +236,8 @@ def add_profiles_to_profile_manager(relationships, app_ids):
                     try:
                         r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
                                          data=data, headers=headers)
+                        log.info(relationship)
+                        log.info(r.text)
                         r.raise_for_status()
                     except:
                         log.exception('Post Exception Profile Manager')
@@ -193,7 +249,7 @@ def add_profiles_to_profile_manager(relationships, app_ids):
                     except:
                         log.exception('Post Exception Profile Manager')
     except Exception as e:
-        log.exception('Could not add_profiles_to_profile_manager from relations initialize for user ')
+        log.exception('Could not add_profiles_to_profile_manager ' + str(r.text))
 
 
 def get_relationships_from_profile_manager(user_id):
