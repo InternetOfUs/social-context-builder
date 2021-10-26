@@ -83,12 +83,12 @@ def periodic_task():
                                         relationship['weight'] = round(float(new_weight), 4)
                                         update_relationship_to_profile_manager(str(user.get('id')), relationship, index)
                                         log.info('recalculating relationships afterProfile update ' + str(user.get('id')))
-                    else:
-                        app_ids = get_app_ids_for_user(str(user.get('id')))
-                        if app_ids:
-                            async_initialize.delay(str(user.get('id')), app_ids)
-                            log.info('try to initialize relationships afterProfile update did not found relations ' + str(
-                                user.get('id')))
+                    # else:
+                    #     app_ids = get_app_ids_for_user(str(user.get('id')))
+                    #     if app_ids:
+                    #         async_initialize.delay(str(user.get('id')), app_ids)
+                    #         log.info('try to initialize relationships afterProfile update did not found relations ' + str(
+                    #             user.get('id')))
                 offset = offset + 20
         log.info("Period recalculate of relationships")
     except Exception:
