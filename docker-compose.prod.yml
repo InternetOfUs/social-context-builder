@@ -19,10 +19,31 @@ services:
       - dbvolumesprod:/app/FlaskApp/logs
     depends_on:
       - redis
+      - celery_beat
+      - celery_worker
 
   redis:
     image: redis:6-alpine
     restart: unless-stopped
+
+  celery_beat:
+    build:
+      context: .
+    image: flask_celery_beat
+    command: celery -A FlaskCelery.tasks.celery beat -l INFO --logfile=FlaskCelery/social-context-builder-celery.log
+    restart: always
+    environment:
+      - FLASK_APP=app
+      - HUB_API=https://internetofus.u-hopper.com/prod/hub/frontend
+      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - PROFILE_MANAGER_API=https://internetofus.u-hopper.com/prod/profile_manager
+      - TASK_MANAGER_API=https://internetofus.u-hopper.com/prod/task_manager
+      - INTERACTION_PROTOCOL_ENGINE=https://internetofus.u-hopper.com/prod/interaction_protocol_engine
+      - CELERY_BROKER_URL=redis://redis:6379
+    volumes:
+      - dbvolumesprod:/app/FlaskCelery/logs
+    depends_on:
+      - redis
 
   celery_worker:
     build:
@@ -42,5 +63,6 @@ services:
       - dbvolumesprod:/app/FlaskCelery/logs
     depends_on:
       - redis
+      - celery_beat
 volumes:
   dbvolumesprod:

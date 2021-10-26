@@ -19,7 +19,7 @@ flask_app.config['CELERYBEAT_SCHEDULE'] = {
     # Executes every minute
     'periodic_task-every-minute': {
         'task': 'periodic_task',
-        'schedule': timedelta(minutes=5)
+        'schedule': timedelta(hours=24)
     }
 }
 celery = make_celery(flask_app)
