@@ -7,6 +7,7 @@ services:
     container_name: social-context-staging
     environment:
       - FLASK_ENV=production
+      - SCHEDULE_IN_HOURS=1
       - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
       - HUB_API=https://wenet.u-hopper.com/dev/hub/frontend
       - PROFILE_MANAGER_API=https://wenet.u-hopper.com/dev/profile_manager
@@ -32,6 +33,7 @@ services:
     restart: always
     environment:
       - FLASK_APP=app
+      - SCHEDULE_IN_HOURS=1
       - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
       - HUB_API=https://wenet.u-hopper.com/dev/hub/frontend
       - PROFILE_MANAGER_API=https://wenet.u-hopper.com/dev/profile_manager

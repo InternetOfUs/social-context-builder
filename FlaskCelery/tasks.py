@@ -19,7 +19,7 @@ flask_app.config['CELERYBEAT_SCHEDULE'] = {
     # Executes every minute
     'periodic_task-every-minute': {
         'task': 'periodic_task',
-        'schedule': timedelta(hours=24)
+        'schedule': timedelta(hours=int(os.environ['SCHEDULE_IN_HOURS']))
     }
 }
 celery = make_celery(flask_app)
@@ -58,11 +58,11 @@ def test_3():
 def periodic_task():
     try:
         offset = 0
-        number_of_profiles = 20
+        number_of_profiles = 50
         more_profiles_left = True
         while more_profiles_left:
             all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
-            if all_users_in_range is None:
+            if not all_users_in_range:
                 more_profiles_left = False
             else:
                 for user in all_users_in_range:
@@ -70,7 +70,7 @@ def periodic_task():
                     if relationships:
                         for relationship in relationships:
                             other_weight = relationship.get('weight')
-                            if float(other_weight) <= 0.3:
+                            if float(other_weight) <= 0.2:
                                 other_user = relationship.get('userId')
                                 other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
                                 index = relationships.index(relationship)
@@ -95,6 +95,7 @@ def periodic_task():
         log.info("Period recalculate of relationships finished")
     except Exception:
         log.exception('Daily recalculate failed')
+        return {}
 
 @celery.task()
 def async_initialize(user_id, app_ids):
