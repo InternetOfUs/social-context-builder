@@ -35,11 +35,12 @@ services:
     restart: always
     environment:
       - FLASK_APP=app
-      - HUB_API=https://internetofus.u-hopper.com/prod/hub/frontend
+      - SCHEDULE_IN_HOURS=1
+      - HUB_API=https://internetofus.u-hopper.com/beta/hub/frontend
       - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
-      - PROFILE_MANAGER_API=https://internetofus.u-hopper.com/prod/profile_manager
-      - TASK_MANAGER_API=https://internetofus.u-hopper.com/prod/task_manager
-      - INTERACTION_PROTOCOL_ENGINE=https://internetofus.u-hopper.com/prod/interaction_protocol_engine
+      - PROFILE_MANAGER_API=https://internetofus.u-hopper.com/beta/profile_manager
+      - TASK_MANAGER_API=https://internetofus.u-hopper.com/beta/task_manager
+      - INTERACTION_PROTOCOL_ENGINE=https://internetofus.u-hopper.com/beta/interaction_protocol_engine
       - CELERY_BROKER_URL=redis://redis:6379
     volumes:
       - dbvolumesprod:/app/FlaskCelery/logs
