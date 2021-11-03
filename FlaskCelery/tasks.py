@@ -77,7 +77,7 @@ def periodic_task():
                                 new_weight = user_similarity.similarity(user, other_user)
                                 if 0 <= round(float(new_weight), 4) <= 1:
                                     threshold = 0.05
-                                    if (round(float(new_weight), 4) - round(float(other_weight)), 4) > threshold:
+                                    if (round(float(new_weight), 4) - round((float(other_weight)), 4)) > threshold:
                                         relationship['weight'] = round(float(new_weight), 4)
                                         update_relationship_to_profile_manager(str(user.get('id')), relationship, index)
                                         try:
