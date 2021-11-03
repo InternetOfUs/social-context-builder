@@ -58,7 +58,7 @@ def test_3():
 def periodic_task():
     try:
         offset = 0
-        number_of_profiles = 50
+        number_of_profiles = 20
         more_profiles_left = True
         while more_profiles_left:
             all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
