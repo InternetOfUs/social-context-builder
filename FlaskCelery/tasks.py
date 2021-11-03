@@ -107,7 +107,7 @@ def async_initialize(user_id, app_ids):
         if new_user:
             while more_profiles_left:
                 all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
-                if all_users_in_range is None:
+                if not all_users_in_range:
                     more_profiles_left = False
                 else:
                     relationships = update_all(new_user[0], all_users_in_range)
