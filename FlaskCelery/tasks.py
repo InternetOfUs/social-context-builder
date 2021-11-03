@@ -252,7 +252,7 @@ def add_profiles_to_profile_manager(relationships, app_ids):
                         log.exception(relationship, str(app_id))
                         log.info(r.text)
     except Exception as e:
-        log.exception('Could not add_profiles_to_profile_manager ' + str(r.text))
+        log.exception('Could not add_profiles_to_profile_manager ')
 
 
 def get_relationships_from_profile_manager(user_id):
