@@ -239,18 +239,18 @@ def add_profiles_to_profile_manager(relationships, app_ids):
                     try:
                         r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
                                          data=data, headers=headers)
-                        log.info(relationship)
-                        log.info(r.text)
                         r.raise_for_status()
                     except:
-                        log.exception('Post Exception Profile Manager')
+                        log.exception(relationship, str(app_id))
+                        log.info(r.text)
                     data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4), 'appId': str(app_id)})
                     try:
                         r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
                                          data=data, headers=headers)
                         r.raise_for_status()
                     except:
-                        log.exception('Post Exception Profile Manager')
+                        log.exception(relationship, str(app_id))
+                        log.info(r.text)
     except Exception as e:
         log.exception('Could not add_profiles_to_profile_manager ' + str(r.text))
 
