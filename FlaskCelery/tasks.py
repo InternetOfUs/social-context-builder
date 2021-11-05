@@ -278,9 +278,12 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
                    'x-wenet-component-apikey': COMP_AUTH_KEY,
                    'Content-Type': 'application/json'}
         if relationship['userId']:
-            r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/' + str(index), data=data,
-                              headers=headers)
-            r.raise_for_status()
+            try:
+                r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/' + str(index), data=data,
+                                  headers=headers)
+                r.raise_for_status()
+            except:
+                log.exception(r.text)
     except requests.exceptions.HTTPError as e:
         log.exception('could not update relationship_to_profile_manager' + str(user_id))
 
