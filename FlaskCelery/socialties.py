@@ -164,11 +164,11 @@ def update_all(new_user, all_users):
         weights = []
         if new_user:
             for user in all_users:
-                weight = tie_strength_init(new_user, user, all_users)
+                #weight = tie_strength_init(new_user, user, all_users)
                 weights.append({
                     'newUserId': new_user['id'],
                     'existingUserId': user['id'],
-                    'weight': round(weight, 4),
+                    'weight': 0, #round(weight, 4)
                 })
             return weights
         return None
