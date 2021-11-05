@@ -238,7 +238,7 @@ def add_profiles_to_profile_manager(relationships, app_ids):
                     data = json.dumps({'userId': str(relationship['existingUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4), 'appId': str(app_id)})
                     try:
                         r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
-                                         data=data, headers=headers)
+                                         data=data, headers=headers, timeout=60, retry=2)
                         r.raise_for_status()
                         log.info(r.text)
                     except:
@@ -246,7 +246,7 @@ def add_profiles_to_profile_manager(relationships, app_ids):
                     data = json.dumps({'userId': str(relationship['newUserId']), 'type': 'friend', 'weight': round(float(relationship['weight']),4), 'appId': str(app_id)})
                     try:
                         r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
-                                         data=data, headers=headers)
+                                         data=data, headers=headers, timeout=60, retry=2)
                         r.raise_for_status()
                         log.info(r.text)
                     except:
