@@ -16,7 +16,7 @@ HUB_API = os.environ['HUB_API']
 
 @app.route("/")
 def home():
-    return 'Wenet Home V1.0.10a'
+    return 'Wenet Home V1.0.11'
 
 @app.route("/celery")
 def celerylog():
