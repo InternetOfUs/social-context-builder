@@ -81,8 +81,8 @@ def periodic_task():
                                         relationship['weight'] = round(float(new_weight), 4)
                                         update_relationship_to_profile_manager(str(user.get('id')), relationship, index)
                                         try:
-                                            log.info('recalculating relationships' + str(user.get('id'))+
-                                                     str(relationship.get('userId'))+str(round(float(new_weight), 4)))
+                                            log.info('recalculating relationships ' + str(user.get('id')) + ' ' +
+                                                     str(relationship.get('userId')) + ' ' + str(round(float(new_weight), 4)))
                                         except:
                                             pass
                     # else:
@@ -114,7 +114,7 @@ def async_initialize(user_id, app_ids):
                     if relationships:
                         add_profiles_to_profile_manager(relationships, app_ids)
                     offset = offset + 20
-            log.info('initialized relationships for' + str(user_id))
+            log.info('initialized relationships for user ' + str(user_id))
     except Exception as e:
         log.exception('could not initialize relationships for ' + str(user_id), e)
     return {}
@@ -174,7 +174,6 @@ def async_social_ties_learning(data):
                     index = relationships.index(relationship)
                     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
                     log.info(str(current_weight)+'-->'+str(new_weight))
-                    log.info((first_total_interaction))
                     threshold = 0.05
                     if (new_weight - current_weight) > threshold and 0 <= new_weight <= 1:
                         relationship={}
@@ -182,6 +181,7 @@ def async_social_ties_learning(data):
                         relationship['type'] = 'friend'
                         relationship['weight'] = round(float(new_weight), 4)
                         relationship['appId'] = str(appId)
+                        log.info('Updating ' + str(sender_id))
                         log.info('Learning', relationship)
                         update_relationship_to_profile_manager(sender_id, relationship, index)
                         return {}
@@ -240,6 +240,7 @@ def add_profiles_to_profile_manager(relationships, app_ids):
                         r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['newUserId']) + '/relationships',
                                          data=data, headers=headers, timeout=60)
                         r.raise_for_status()
+                        log.info('POST relationship to ' + str(relationship['newUserId']) )
                         log.info(r.text)
                     except:
                         log.exception(r.text)
@@ -248,6 +249,7 @@ def add_profiles_to_profile_manager(relationships, app_ids):
                         r = requests.post(PROFILE_MANAGER_API+'/profiles/' + str(relationship['existingUserId']) + '/relationships',
                                          data=data, headers=headers, timeout=60)
                         r.raise_for_status()
+                        log.info('POST relationship to ' + str(relationship['existingUserId']) )
                         log.info(r.text)
                     except:
                         log.exception(r.text)
