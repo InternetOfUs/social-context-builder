@@ -30,7 +30,7 @@ COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 HUB_API = os.environ['HUB_API']
 logging.basicConfig(filename='FlaskCelery/logs/social-context-builder-celery.log', level=logging.INFO, format=f'%(asctime)s Social Context Builder %(levelname)s : %(message)s')
 log = logging
-
+processing_ids = []
 
 @celery.task()
 def test_log():
@@ -66,6 +66,9 @@ def periodic_task():
                 more_profiles_left = False
             else:
                 for user in all_users_in_range:
+                    if str(user.get('id')) in processing_ids:
+                        log.info(str(user.get('id'))+' is currently initializing pass')
+                        continue
                     relationships = user.get('relationships')
                     if relationships:
                         for relationship in relationships:
@@ -100,6 +103,7 @@ def periodic_task():
 @celery.task()
 def async_initialize(user_id, app_ids):
     try:
+        processing_ids.append(user_id)
         new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
         offset = 0
         number_of_profiles = 20
@@ -115,6 +119,7 @@ def async_initialize(user_id, app_ids):
                         add_profiles_to_profile_manager(relationships, app_ids)
                     offset = offset + 20
             log.info('initialized relationships for user ' + str(user_id))
+            processing_ids.remove(user_id)
     except Exception as e:
         log.exception('could not initialize relationships for ' + str(user_id), e)
     return {}
