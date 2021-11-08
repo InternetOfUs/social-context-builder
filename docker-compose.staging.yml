@@ -49,7 +49,7 @@ services:
     build:
       context: .
     image: flask_celery_worker
-    command: celery -A FlaskCelery.tasks.celery worker --concurrency=1 -l INFO --logfile=FlaskCelery/logs/social-context-builder-celery.log
+    command: celery -A FlaskCelery.tasks.celery worker --concurrency=3 -l INFO --logfile=FlaskCelery/logs/social-context-builder-celery.log
     restart: always
     environment:
       - FLASK_APP=app
