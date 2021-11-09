@@ -19,7 +19,7 @@ flask_app.config['CELERYBEAT_SCHEDULE'] = {
     # Executes every minute
     'periodic_task-every-minute': {
         'task': 'periodic_task',
-        'schedule': timedelta(hours=int(os.environ['SCHEDULE_IN_HOURS']))
+        'schedule': timedelta(minutes=int(os.environ['SCHEDULE_IN_HOURS']))
     }
 }
 celery = make_celery(flask_app)
@@ -57,6 +57,7 @@ def test_3():
 @celery.task(name ="periodic_task")
 def periodic_task():
     try:
+        skip_user=False
         offset = 0
         number_of_profiles = 20
         more_profiles_left = True
@@ -66,6 +67,10 @@ def periodic_task():
                 more_profiles_left = False
             else:
                 for user in all_users_in_range:
+                    if skip_user:
+                        log.info('skipping user ' + str(user.get('id')))
+                        skip_user = False
+                        continue
                     relationships = user.get('relationships')
                     if relationships:
                         for relationship in relationships:
@@ -79,7 +84,9 @@ def periodic_task():
                                     threshold = 0.05
                                     if (round(float(new_weight), 4) - round((float(other_weight)), 4)) > threshold:
                                         relationship['weight'] = round(float(new_weight), 4)
-                                        update_relationship_to_profile_manager(str(user.get('id')), relationship, index)
+                                        if not (update_relationship_to_profile_manager(str(user.get('id')), relationship, index)):
+                                            skip_user = True
+                                            break
                                         try:
                                             log.info('recalculating relationships ' + str(user.get('id')) + ' ' +
                                                      str(relationship.get('userId')) + ' ' + str(round(float(new_weight), 4)))
@@ -286,8 +293,14 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
                 r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/' + str(index), data=data,
                                   headers=headers)
                 r.raise_for_status()
+                return True
             except:
                 log.exception(r.text)
+                if 'Timed out' in r.text:
+                    log.info('timed out happened')
+                    return False
+                else:
+                    return True
     except requests.exceptions.HTTPError as e:
         log.exception('could not update relationship_to_profile_manager' + str(user_id))
 
