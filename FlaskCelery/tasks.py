@@ -107,7 +107,7 @@ def async_initialize(user_id, app_ids):
         number_of_profiles = 20
         more_profiles_left = True
         if new_user:
-            while more_profiles_left:
+            while more_profiles_left and offset <= 40:
                 all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
                 if not all_users_in_range:
                     more_profiles_left = False

@@ -100,7 +100,8 @@ def social_profiles_all():
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
     try:
-        app_ids = request.json
+        #app_ids = request.json
+        app_ids = ["wJmfVFHlyj"]
         if app_ids:
             async_initialize.delay(user_id, app_ids)
             app.logger.info('starting task for initialize relations-appids received in body ' + str(user_id))
