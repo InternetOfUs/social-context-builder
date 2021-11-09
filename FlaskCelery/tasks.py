@@ -297,6 +297,7 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
             except:
                 log.exception(r.text)
                 if 'Timed out' in r.text:
+                    log.info('timed out happened')
                     return False
                 else:
                     return True
