@@ -67,10 +67,6 @@ def periodic_task():
                 more_profiles_left = False
             else:
                 for user in all_users_in_range:
-                    if skip_user:
-                        log.info('skipping user ' + str(user.get('id')))
-                        skip_user = False
-                        continue
                     relationships = user.get('relationships')
                     if relationships:
                         for relationship in relationships:
@@ -85,7 +81,6 @@ def periodic_task():
                                     if (round(float(new_weight), 4) - round((float(other_weight)), 4)) > threshold:
                                         relationship['weight'] = round(float(new_weight), 4)
                                         if not (update_relationship_to_profile_manager(str(user.get('id')), relationship, index)):
-                                            skip_user = True
                                             break
                                         try:
                                             log.info('recalculating relationships ' + str(user.get('id')) + ' ' +
