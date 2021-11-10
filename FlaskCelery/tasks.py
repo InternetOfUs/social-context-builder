@@ -61,7 +61,10 @@ def periodic_task():
         number_of_profiles = 20
         more_profiles_left = True
         while more_profiles_left:
-            all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+            try:
+                all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+            except:
+                more_profiles_left = False
             if not all_users_in_range:
                 more_profiles_left = False
             else:
@@ -72,7 +75,14 @@ def periodic_task():
                             other_weight = relationship.get('weight')
                             if float(other_weight) <= 0.2:
                                 other_user = relationship.get('userId')
-                                other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
+                                try:
+                                    other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
+<<<<<<< Updated upstream
+                                    
+=======
+>>>>>>> Stashed changes
+                                except:
+                                    continue
                                 index = relationships.index(relationship)
                                 new_weight = user_similarity.similarity(user, other_user)
                                 if 0 <= round(float(new_weight), 4) <= 1:
@@ -108,7 +118,10 @@ def async_initialize(user_id, app_ids):
         more_profiles_left = True
         if new_user:
             while more_profiles_left and offset <= 40:
-                all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+                try:
+                    all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
+                except:
+                    more_profiles_left = False
                 if not all_users_in_range:
                     more_profiles_left = False
                 else:
