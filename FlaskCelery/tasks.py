@@ -196,11 +196,14 @@ def async_social_ties_learning(data):
                         log.info('Learning', relationship)
                         update_relationship_to_profile_manager(sender_id, relationship, index)
                         return {}
-            # if not found_relationship and appId:
-            #     current_weight = 0.0
-            #     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
-            #                                                            first_total_interaction)
-            #     set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4),'appId': appId})
+            try:
+                if not found_relationship and appId:
+                    current_weight = 0.0
+                    new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
+                                                                           first_total_interaction)
+                    set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4),'appId': appId})
+            except:
+                log.exception('Failed to init relation during social_learning for ' + str(sender_id))
 
     except Exception as e:
         log.exception('Social learning failed for message async_social_ties_learning ')
