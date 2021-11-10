@@ -78,6 +78,7 @@ def periodic_task():
                                 try:
                                     other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
                                 except:
+                                    log.info('skipping relation- profile not found' + str(other_user))
                                     continue
                                 index = relationships.index(relationship)
                                 new_weight = user_similarity.similarity(user, other_user)
@@ -86,7 +87,7 @@ def periodic_task():
                                     if (round(float(new_weight), 4) - round((float(other_weight)), 4)) > threshold:
                                         relationship['weight'] = round(float(new_weight), 4)
                                         if not (update_relationship_to_profile_manager(str(user.get('id')), relationship, index)):
-                                            log.info('skipping update for'+str(user.get('id')))
+                                            log.info('skipping update for'+str(user.get('id')),relationship)
                                             break
                                         try:
                                             log.info('recalculating relationships ' + str(user.get('id')) + ' ' +
