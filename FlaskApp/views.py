@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
-from FlaskCelery.tasks import async_initialize, async_social_ties_learning, async_social_ties_profile_update, test_log, test_2, test_3
+from FlaskCelery.tasks import async_initialize, async_social_ties_learning, async_social_ties_profile_update, test_log, test_2, test_3, periodic_task
 from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
 import requests
@@ -19,10 +19,10 @@ APP_ID = os.environ['APP_ID']
 def home():
     return 'Wenet Home V1.0.11a'
 
-@app.route("/celery")
-def celerylog():
+@app.route("/recalculate")
+def recalculate():
     try:
-        result = test_log.delay()
+        result = periodic_task.delay()
         return str(result)
     except:
         app.logger.exception(' cannot start celery task')
