@@ -72,7 +72,11 @@ def periodic_task():
                             other_weight = relationship.get('weight')
                             if float(other_weight) <= 0.2:
                                 other_user = relationship.get('userId')
-                                other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
+                                try:
+                                    other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
+                                    
+                                except:
+                                    continue
                                 index = relationships.index(relationship)
                                 new_weight = user_similarity.similarity(user, other_user)
                                 if 0 <= round(float(new_weight), 4) <= 1:
