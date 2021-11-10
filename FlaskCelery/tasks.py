@@ -57,7 +57,6 @@ def test_3():
 @celery.task(name ="periodic_task")
 def periodic_task():
     try:
-        skip_user=False
         offset = 0
         number_of_profiles = 20
         more_profiles_left = True
