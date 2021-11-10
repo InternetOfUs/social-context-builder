@@ -57,7 +57,6 @@ def test_3():
 @celery.task(name ="periodic_task")
 def periodic_task():
     try:
-        skip_user=False
         offset = 0
         number_of_profiles = 20
         more_profiles_left = True
@@ -81,6 +80,7 @@ def periodic_task():
                                     if (round(float(new_weight), 4) - round((float(other_weight)), 4)) > threshold:
                                         relationship['weight'] = round(float(new_weight), 4)
                                         if not (update_relationship_to_profile_manager(str(user.get('id')), relationship, index)):
+                                            log.info('skipping update for'+str(user.get('id')))
                                             break
                                         try:
                                             log.info('recalculating relationships ' + str(user.get('id')) + ' ' +

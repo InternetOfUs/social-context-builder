@@ -11,6 +11,7 @@ PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
 TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
 COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 HUB_API = os.environ['HUB_API']
+APP_ID = os.environ['APP_ID']
 
 
 
@@ -101,7 +102,7 @@ def social_profiles_all():
 def initialize_social_relations(user_id):
     try:
         #app_ids = request.json
-        app_ids = ["wJmfVFHlyj"]
+        app_ids = [APP_ID]
         if app_ids:
             async_initialize.delay(user_id, app_ids)
             app.logger.info('starting task for initialize relations-appids received in body ' + str(user_id))
