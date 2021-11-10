@@ -77,10 +77,6 @@ def periodic_task():
                                 other_user = relationship.get('userId')
                                 try:
                                     other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
-<<<<<<< Updated upstream
-                                    
-=======
->>>>>>> Stashed changes
                                 except:
                                     continue
                                 index = relationships.index(relationship)
