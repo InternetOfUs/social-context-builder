@@ -81,6 +81,7 @@ def periodic_task():
                                     if (round(float(new_weight), 4) - round((float(other_weight)), 4)) > threshold:
                                         relationship['weight'] = round(float(new_weight), 4)
                                         if not (update_relationship_to_profile_manager(str(user.get('id')), relationship, index)):
+                                            log.info('skipping update for'+str(user.get('id')))
                                             break
                                         try:
                                             log.info('recalculating relationships ' + str(user.get('id')) + ' ' +
