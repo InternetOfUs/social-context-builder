@@ -11,7 +11,12 @@ PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
 TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
 COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 HUB_API = os.environ['HUB_API']
-APP_ID = os.environ['APP_ID']
+APP_ID_1 = os.environ['APP_ID_1']
+APP_ID_2 = os.environ['APP_ID_2']
+APP_ID_3 = os.environ['APP_ID_3']
+APP_ID_4 = os.environ['APP_ID_4']
+APP_ID_5 = os.environ['APP_ID_5']
+APP_ID_6 = os.environ['APP_ID_6']
 
 
 
@@ -101,11 +106,48 @@ def social_profiles_all():
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
     try:
-        #app_ids = request.json
-        app_ids = [APP_ID]
-        if app_ids:
+        app_ids=[]
+        try:
+            if APP_ID:
+            app_ids.append(APP_ID)
+        except:
+            pass
+        try:
+            if APP_ID_2:
+            app_ids.append(APP_ID_2)
+        except:
+            pass
+        try:
+            if APP_ID_3:
+            app_ids.append(APP_ID_3)
+        except:
+            pass
+        try:
+            if APP_ID_4:
+            app_ids.append(APP_ID_4)
+        except:
+            pass
+        try:
+            if APP_ID_5:
+            app_ids.append(APP_ID_5)
+        except:
+            pass
+        try:
+            if APP_ID_6:
+            app_ids.append(APP_ID_6)
+        except:
+            pass
+        if request.json:
+            app_ids=request.json
+            app.logger.info('starting task for initialize relations-appids received in body- following ' + str(user_id))
+            for app_id in app_ids:
+                app.logger.info.info(str(app_id))
+            return {}
+        elif app_ids:
             async_initialize.delay(user_id, app_ids)
-            app.logger.info('starting task for initialize relations-appids received in body ' + str(user_id))
+            app.logger.info('starting task for initialize relations-appids following ' + str(user_id))
+            for app_id in app_ids:
+                app.logger.info.info(str(app_id))
             return {}
         else:
             app_ids = get_app_ids_for_user(user_id)
