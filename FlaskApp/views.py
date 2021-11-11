@@ -148,7 +148,7 @@ def initialize_social_relations(user_id):
             async_initialize.delay(user_id, app_ids)
             app.logger.info('starting task for initialize relations-appids following ' + str(user_id))
             for app_id in app_ids:
-                app.logger.info.info(str(app_id))
+                app.logger.info(str(app_id))
             return {}
         else:
             app_ids = get_app_ids_for_user(user_id)
