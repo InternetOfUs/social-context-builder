@@ -108,8 +108,8 @@ def initialize_social_relations(user_id):
     try:
         app_ids=[]
         try:
-            if APP_ID:
-            app_ids.append(APP_ID)
+            if APP_ID_1:
+            app_ids.append(APP_ID_1)
         except:
             pass
         try:
