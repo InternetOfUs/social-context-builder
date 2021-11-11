@@ -109,34 +109,34 @@ def initialize_social_relations(user_id):
         app_ids=[]
         try:
             if APP_ID_1:
-            app_ids.append(APP_ID_1)
+                app_ids.append(APP_ID_1)
         except:
-            pass
+            app.logger.info('appId 1 not found')
         try:
             if APP_ID_2:
-            app_ids.append(APP_ID_2)
+                app_ids.append(APP_ID_2)
         except:
-            pass
+            app.logger.info('appId 1 not found')
         try:
             if APP_ID_3:
-            app_ids.append(APP_ID_3)
+                app_ids.append(APP_ID_3)
         except:
-            pass
+            app.logger.info('appId 1 not found')
         try:
             if APP_ID_4:
-            app_ids.append(APP_ID_4)
+                app_ids.append(APP_ID_4)
         except:
-            pass
+            app.logger.info('appId 1 not found')
         try:
             if APP_ID_5:
-            app_ids.append(APP_ID_5)
+                app_ids.append(APP_ID_5)
         except:
-            pass
+            app.logger.info('appId 1 not found')
         try:
             if APP_ID_6:
-            app_ids.append(APP_ID_6)
+                app_ids.append(APP_ID_6)
         except:
-            pass
+            app.logger.info('appId 1 not found')
         if request.json:
             app_ids=request.json
             app.logger.info('starting task for initialize relations-appids received in body- following ' + str(user_id))
