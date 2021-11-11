@@ -107,6 +107,7 @@ def social_profiles_all():
 def initialize_social_relations(user_id):
     try:
         app_ids=[]
+        app_idsjson = request.json
         try:
             if APP_ID_1:
                 app_ids.append(APP_ID_1)
@@ -137,11 +138,11 @@ def initialize_social_relations(user_id):
                 app_ids.append(APP_ID_6)
         except:
             app.logger.info('appId 1 not found')
-        if request.json:
-            app_ids=request.json
+        if app_idsjson:
+            async_initialize.delay(user_id, app_idsjson)
             app.logger.info('starting task for initialize relations-appids received in body- following ' + str(user_id))
-            for app_id in app_ids:
-                app.logger.info.info(str(app_id))
+            for app_id in app_idsjson:
+                app.logger.info(str(app_id))
             return {}
         elif app_ids:
             async_initialize.delay(user_id, app_ids)
