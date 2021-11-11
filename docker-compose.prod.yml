@@ -8,6 +8,12 @@ services:
     environment:
       - FLASK_ENV=production
       - SCHEDULE_IN_HOURS=1
+      - APP_ID_1=wJmfVFHlyj
+      - APP_ID_2=
+      - APP_ID_3=
+      - APP_ID_4=
+      - APP_ID_5=
+      - APP_ID_6=
       - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
       - HUB_API=https://internetofus.u-hopper.com/beta/hub/frontend
       - PROFILE_MANAGER_API=https://internetofus.u-hopper.com/beta/profile_manager
@@ -36,6 +42,12 @@ services:
     environment:
       - FLASK_APP=app
       - SCHEDULE_IN_HOURS=1
+      - APP_ID_1=wJmfVFHlyj
+      - APP_ID_2=
+      - APP_ID_3=
+      - APP_ID_4=
+      - APP_ID_5=
+      - APP_ID_6=
       - HUB_API=https://internetofus.u-hopper.com/beta/hub/frontend
       - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
       - PROFILE_MANAGER_API=https://internetofus.u-hopper.com/beta/profile_manager
@@ -56,6 +68,12 @@ services:
     environment:
       - FLASK_APP=app
       - SCHEDULE_IN_HOURS=1
+      - APP_ID_1=wJmfVFHlyj
+      - APP_ID_2=
+      - APP_ID_3=
+      - APP_ID_4=
+      - APP_ID_5=
+      - APP_ID_6=
       - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
       - HUB_API=https://internetofus.u-hopper.com/beta/hub/frontend
       - PROFILE_MANAGER_API=https://internetofus.u-hopper.com/beta/profile_manager
