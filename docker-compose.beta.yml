@@ -41,7 +41,7 @@ services:
     restart: always
     environment:
       - FLASK_APP=app
-      - SCHEDULE_IN_HOURS=1
+      - SCHEDULE_IN_HOURS=24
       - APP_ID_1=OgQBunZBUv
       - APP_ID_2=
       - APP_ID_3=
@@ -68,6 +68,7 @@ services:
     environment:
       - FLASK_APP=app
       - COMP_AUTH_KEY=pa0th9Qo1SJrPb9x3agmLbIGOxZO4aFuWsvGJzsqAJc
+      - SCHEDULE_IN_HOURS=24
       - APP_ID_1=OgQBunZBUv
       - APP_ID_2=
       - APP_ID_3=
