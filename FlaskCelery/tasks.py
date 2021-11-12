@@ -60,13 +60,15 @@ def periodic_task():
         offset = 0
         number_of_profiles = 20
         more_profiles_left = True
-        while more_profiles_left:
+        for i in range(500):
             try:
                 all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
             except:
-                more_profiles_left = False
+                log.info(str(i*20)+' users processed from periodic task')
+                break
             if not all_users_in_range:
-                more_profiles_left = False
+                log.info(str(i*20)+' users processed from periodic task')
+                break
             else:
                 for user in all_users_in_range:
                     relationships = user.get('relationships')
@@ -114,17 +116,20 @@ def async_initialize(user_id, app_ids):
         number_of_profiles = 20
         more_profiles_left = True
         if new_user:
-            while more_profiles_left and offset <= 40:
+            for i in range(500):
                 try:
                     all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
                 except:
-                    more_profiles_left = False
+                    break
                 if not all_users_in_range:
-                    more_profiles_left = False
+                    break
                 else:
-                    relationships = update_all(new_user[0], all_users_in_range)
-                    if relationships:
-                        add_profiles_to_profile_manager(relationships, app_ids)
+                    try:
+                        relationships = update_all(new_user[0], all_users_in_range)
+                        if relationships:
+                            add_profiles_to_profile_manager(relationships, app_ids)
+                    except:
+                        log.info('Failed to add batch of relationships')
                     offset = offset + 20
             log.info('initialized relationships for user ' + str(user_id))
     except Exception as e:
