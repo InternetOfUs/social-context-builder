@@ -22,7 +22,7 @@ APP_ID_6 = os.environ['APP_ID_6']
 
 @app.route("/")
 def home():
-    return 'Wenet Home V1.0.11a'
+    return 'Wenet Home V1.0.12'
 
 @app.route("/recalculate")
 def recalculate():
@@ -117,27 +117,27 @@ def initialize_social_relations(user_id):
             if APP_ID_2:
                 app_ids.append(APP_ID_2)
         except:
-            app.logger.info('appId 1 not found')
+            app.logger.info('appId 2 not found')
         try:
             if APP_ID_3:
                 app_ids.append(APP_ID_3)
         except:
-            app.logger.info('appId 1 not found')
+            app.logger.info('appId 3 not found')
         try:
             if APP_ID_4:
                 app_ids.append(APP_ID_4)
         except:
-            app.logger.info('appId 1 not found')
+            app.logger.info('appId 4 not found')
         try:
             if APP_ID_5:
                 app_ids.append(APP_ID_5)
         except:
-            app.logger.info('appId 1 not found')
+            app.logger.info('appId 5 not found')
         try:
             if APP_ID_6:
                 app_ids.append(APP_ID_6)
         except:
-            app.logger.info('appId 1 not found')
+            app.logger.info('appId 6 not found')
         if app_idsjson:
             async_initialize.delay(user_id, app_idsjson)
             app.logger.info('starting task for initialize relations-appids received in body- following ' + str(user_id))
