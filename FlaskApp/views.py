@@ -11,13 +11,30 @@ PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
 TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
 COMP_AUTH_KEY = os.environ['COMP_AUTH_KEY']
 HUB_API = os.environ['HUB_API']
-APP_ID_1 = os.environ['APP_ID_1']
-APP_ID_2 = os.environ['APP_ID_2']
-APP_ID_3 = os.environ['APP_ID_3']
-APP_ID_4 = os.environ['APP_ID_4']
-APP_ID_5 = os.environ['APP_ID_5']
-APP_ID_6 = os.environ['APP_ID_6']
-
+try:
+    APP_ID_1 = os.environ['APP_ID_1']
+except:
+    app.logger.info('appId 1 not found in compose')
+try:
+    APP_ID_2 = os.environ['APP_ID_2']
+except:
+    app.logger.info('appId 2 not found in compose')
+try:
+    APP_ID_3 = os.environ['APP_ID_3']
+except:
+    app.logger.info('appId 3 not found in compose')
+try:
+    APP_ID_4 = os.environ['APP_ID_4']
+except:
+    app.logger.info('appId 4 not found in compose')
+try:
+    APP_ID_5 = os.environ['APP_ID_5']
+except:
+    app.logger.info('appId 5 not found in compose')
+try:
+    APP_ID_6 = os.environ['APP_ID_6']
+except:
+    app.logger.info('appId 6 not found in compose')
 
 
 @app.route("/")
