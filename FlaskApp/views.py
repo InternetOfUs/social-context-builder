@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
-from FlaskCelery.tasks import async_initialize, async_social_ties_learning, async_social_ties_profile_update, test_log, test_2, test_3, periodic_task
+from FlaskCelery.tasks import async_initialize, async_social_ties_learning, test_log, test_2, test_3, periodic_task
 from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
 import requests
@@ -193,7 +193,6 @@ def initialize_social_relationstest(user_id):
 @app.route("/social/notification/profileUpdate/<user_id>", methods=['POST'])
 def social_notification_profileUpdate(user_id):
     try:
-        #async_social_ties_profile_update.delay(user_id)
         return{}
     except:
         app.logger.exception('Exception after profileUpdate')
