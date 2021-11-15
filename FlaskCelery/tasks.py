@@ -136,37 +136,6 @@ def async_initialize(user_id, app_ids):
         log.exception('could not initialize relationships for ' + str(user_id), e)
     return {}
 
-
-@celery.task()
-def async_social_ties_profile_update(user_id):
-    try:
-        new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})[0]
-        if new_user:
-            relationships = new_user.get('relationships')
-            if relationships:
-                for relationship in relationships:
-                    other_weight = relationship.get('weight')
-                    if float(other_weight) < 0.5:
-                        other_user = relationship.get('userId')
-                        other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
-                        index = relationships.index(relationship)
-                        new_weight = user_similarity.similarity(new_user, other_user)
-                        log.info('New weight', new_weight, 'comparing', other_weight)
-                        if 0 <= round(float(new_weight), 4) <= 1:
-                            if round(float(new_weight), 4) > round(float(other_weight), 4):
-                                log.info('New weight',new_weight,'replacing', other_weight)
-                                relationship['weight'] = round(float(new_weight), 4)
-                                update_relationship_to_profile_manager(str(user_id), relationship, index)
-                                log.info('recalculating relationships afterProfile update ' + str(user_id))
-            else:
-                app_ids = get_app_ids_for_user(user_id)
-                if app_ids:
-                    async_initialize.delay(user_id, app_ids)
-                    log.info('try to initialize relationships afterProfile update did not found relations ' + str(user_id))
-    except Exception as e:
-        log.exception('could not recalculate relationships after Profile update ' + str(user_id), e)
-    return {}
-
 @celery.task()
 def async_social_ties_learning(data):
     try:
