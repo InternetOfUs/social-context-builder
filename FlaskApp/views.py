@@ -39,7 +39,7 @@ except:
 
 @app.route("/")
 def home():
-    return 'Wenet Home V1.0.13'
+    return 'Wenet Home V1.0.14'
 
 @app.route("/recalculate")
 def recalculate():
