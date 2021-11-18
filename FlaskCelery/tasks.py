@@ -60,7 +60,7 @@ def periodic_task():
         offset = 0
         number_of_profiles = 20
         more_profiles_left = True
-        for i in range(500):
+        for i in range(600):
             try:
                 all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
             except:
@@ -116,7 +116,7 @@ def async_initialize(user_id, app_ids):
         number_of_profiles = 20
         more_profiles_left = True
         if new_user:
-            for i in range(500):
+            for i in range(600):
                 try:
                     all_users_in_range = get_N_profiles_from_profile_manager(offset, number_of_profiles)
                 except:
