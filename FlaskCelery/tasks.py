@@ -58,7 +58,7 @@ def test_3():
 def periodic_task():
     try:
         offset = 0
-        number_of_profiles = 20
+        number_of_profiles = 100
         more_profiles_left = True
         for i in range(600):
             try:
@@ -96,13 +96,7 @@ def periodic_task():
                                                      str(relationship.get('userId')) + ' ' + str(round(float(new_weight), 4)))
                                         except:
                                             pass
-                    # else:
-                    #     app_ids = get_app_ids_for_user(str(user.get('id')))
-                    #     if app_ids:
-                    #         async_initialize.delay(str(user.get('id')), app_ids)
-                    #         log.info('try to initialize relationships afterProfile update did not found relations ' + str(
-                    #             user.get('id')))
-                offset = offset + 20
+                offset = offset + 100
         log.info("Period recalculate of relationships finished")
     except Exception:
         log.exception('Daily recalculate failed')
@@ -113,8 +107,8 @@ def async_initialize(user_id, app_ids):
     try:
         new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
         offset = 0
-        number_of_profiles = 20
-        more_profiles_left = True
+        number_of_profiles = 50
+        relationships = []
         if new_user:
             for i in range(600):
                 try:
@@ -124,13 +118,24 @@ def async_initialize(user_id, app_ids):
                 if not all_users_in_range:
                     break
                 else:
-                    try:
-                        relationships = update_all(new_user[0], all_users_in_range)
-                        if relationships:
-                            add_profiles_to_profile_manager(relationships, app_ids)
-                    except:
-                        log.info('Failed to add batch of relationships')
-                    offset = offset + 20
+                    for app_id in app_ids:
+                        for user in all_users_in_range:
+                            try:
+                                if str(user_id) != str(user.get('id')):
+                                    relationships.append({"appId": str(app_id),
+                                                          "userId": str(user.get('id')),
+                                                          "type": "friend",
+                                                          "weight": 0})
+                                    inverse_relation = {"appId": str(app_id),
+                                                          "userId": str(new_user),
+                                                          "type": "friend",
+                                                          "weight": 0}
+                                    set_relationship_to_profile_manager(str(user.get('id')), inverse_relation)
+                            except:
+                                log.info('exception in building relationships for ' + str(user_id))
+                offset = offset + 50
+            if relationships:
+                patch_profiles_to_profile_manager(user_id, relationships)
             log.info('initialized relationships for user ' + str(user_id))
     except Exception as e:
         log.exception('could not initialize relationships for ' + str(user_id), e)
@@ -215,6 +220,17 @@ def get_N_profiles_from_profile_manager(offset, number_of_profiles):
     except Exception as e:
         log.exception('Something wrong with user list IDs received from Profile Manager')
         return False
+
+
+def patch_profiles_to_profile_manager(user_id, relationships):
+    try:
+        headers = { 'Content-Type': 'application/json', 'connection': 'keep-alive',
+                   'x-wenet-component-apikey': COMP_AUTH_KEY, }
+        data = json.dumps({"relationships": relationships})
+        r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id), data=data, headers=headers, timeout=60)
+        r.raise_for_status()
+    except:
+        log.exception('except in patch_profiles_to_profile_manager')
 
 
 def add_profiles_to_profile_manager(relationships, app_ids):
