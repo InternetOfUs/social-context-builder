@@ -15,14 +15,15 @@ import math
 flask_app = Flask(__name__)
 flask_app.config.update(
     CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL'])
+celery = make_celery(flask_app)
+cron = celery.schedules.crontab
 flask_app.config['CELERYBEAT_SCHEDULE'] = {
     # Executes every minute
     'periodic_task-every-minute': {
         'task': 'periodic_task',
-        'schedule': timedelta(hours=int(os.environ['SCHEDULE_IN_HOURS']))
+        'schedule': cron(hour=12, minute=00, day_of_week=2) #timedelta(hours=int(os.environ['SCHEDULE_IN_HOURS']))
     }
 }
-celery = make_celery(flask_app)
 INTERACTION_PROTOCOL_ENGINE = os.environ['INTERACTION_PROTOCOL_ENGINE']
 PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
 TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
@@ -75,7 +76,7 @@ def periodic_task():
                     if relationships:
                         for relationship in relationships:
                             other_weight = relationship.get('weight')
-                            if float(other_weight) <= 0.2:
+                            if float(other_weight) < 0.1:
                                 other_user = relationship.get('userId')
                                 try:
                                     other_user = get_profiles_from_profile_manager({'users_IDs': [str(other_user)]})[0]
@@ -105,7 +106,7 @@ def periodic_task():
 @celery.task()
 def async_initialize(user_id, app_ids):
     try:
-        new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})
+        new_user = get_profiles_from_profile_manager({'users_IDs': [str(user_id)]})[0]
         offset = 0
         number_of_profiles = 50
         relationships = []
@@ -122,14 +123,15 @@ def async_initialize(user_id, app_ids):
                         for user in all_users_in_range:
                             try:
                                 if str(user_id) != str(user.get('id')):
+                                    new_weight = user_similarity.similarity(new_user, user)
                                     relationships.append({"appId": str(app_id),
                                                           "userId": str(user.get('id')),
                                                           "type": "friend",
-                                                          "weight": 0})
+                                                          "weight": round(new_weight, 4)})
                                     inverse_relation = {"appId": str(app_id),
-                                                          "userId": str(new_user),
+                                                          "userId": str(user_id),
                                                           "type": "friend",
-                                                          "weight": 0}
+                                                          "weight": round(new_weight, 4)}
                                     set_relationship_to_profile_manager(str(user.get('id')), inverse_relation)
                             except:
                                 log.info('exception in building relationships for ' + str(user_id))
