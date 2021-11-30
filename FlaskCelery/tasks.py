@@ -15,15 +15,14 @@ import math
 flask_app = Flask(__name__)
 flask_app.config.update(
     CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL'])
-celery = make_celery(flask_app)
-cron = celery.schedules.crontab
 flask_app.config['CELERYBEAT_SCHEDULE'] = {
     # Executes every minute
     'periodic_task-every-minute': {
         'task': 'periodic_task',
-        'schedule': cron(hour=12, minute=00, day_of_week=2) #timedelta(hours=int(os.environ['SCHEDULE_IN_HOURS']))
+        'schedule': timedelta(hours=int(os.environ['SCHEDULE_IN_HOURS']))
     }
 }
+celery = make_celery(flask_app)
 INTERACTION_PROTOCOL_ENGINE = os.environ['INTERACTION_PROTOCOL_ENGINE']
 PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
 TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
@@ -132,7 +131,7 @@ def async_initialize(user_id, app_ids):
                                                           "userId": str(user_id),
                                                           "type": "friend",
                                                           "weight": round(new_weight, 4)}
-                                    set_relationship_to_profile_manager(str(user.get('id')), inverse_relation)
+                                    #set_relationship_to_profile_manager(str(user.get('id')), inverse_relation)
                             except:
                                 log.info('exception in building relationships for ' + str(user_id))
                 offset = offset + 50
