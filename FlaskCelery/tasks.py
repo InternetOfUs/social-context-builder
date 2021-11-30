@@ -15,15 +15,14 @@ import math
 flask_app = Flask(__name__)
 flask_app.config.update(
     CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL'])
-celery = make_celery(flask_app)
-cron = celery.schedules.crontab
 flask_app.config['CELERYBEAT_SCHEDULE'] = {
     # Executes every minute
     'periodic_task-every-minute': {
         'task': 'periodic_task',
-        'schedule': cron(hour=12, minute=00, day_of_week=2) #timedelta(hours=int(os.environ['SCHEDULE_IN_HOURS']))
+        'schedule': timedelta(hours=int(os.environ['SCHEDULE_IN_HOURS']))
     }
 }
+celery = make_celery(flask_app)
 INTERACTION_PROTOCOL_ENGINE = os.environ['INTERACTION_PROTOCOL_ENGINE']
 PROFILE_MANAGER_API = os.environ['PROFILE_MANAGER_API']
 TASK_MANAGER_API = os.environ['TASK_MANAGER_API']
