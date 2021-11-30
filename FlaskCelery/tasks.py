@@ -131,7 +131,7 @@ def async_initialize(user_id, app_ids):
                                                           "userId": str(user_id),
                                                           "type": "friend",
                                                           "weight": round(new_weight, 4)}
-                                    set_relationship_to_profile_manager(str(user.get('id')), inverse_relation)
+                                    #set_relationship_to_profile_manager(str(user.get('id')), inverse_relation)
                             except:
                                 log.info('exception in building relationships for ' + str(user_id))
                 offset = offset + 50
