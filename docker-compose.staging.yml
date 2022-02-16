@@ -14,7 +14,7 @@ services:
       - APP_ID_4=
       - APP_ID_5=
       - APP_ID_6=
-      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - COMP_AUTH_KEY=
       - HUB_API=https://wenet.u-hopper.com/dev/hub/frontend
       - PROFILE_MANAGER_API=https://ardid.iiia.csic.es/wenet/profile-manager
       - TASK_MANAGER_API=https://wenet.u-hopper.com/dev/task_manager
@@ -47,7 +47,7 @@ services:
       - APP_ID_5=
       - APP_ID_6=
       - HUB_API=https://wenet.u-hopper.com/dev/hub/frontend
-      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - COMP_AUTH_KEY=
       - PROFILE_MANAGER_API=https://ardid.iiia.csic.es/wenet/profile-manager
       - TASK_MANAGER_API=https://wenet.u-hopper.com/dev/task_manager
       - INTERACTION_PROTOCOL_ENGINE=https://ardid.iiia.csic.es/wenet/interaction-protocol-engine
@@ -72,7 +72,7 @@ services:
       - APP_ID_4=
       - APP_ID_5=
       - APP_ID_6=
-      - COMP_AUTH_KEY=zJ9fwKb1CzeJT7zik_2VYpIBc_yclwX4Vd7_lO9sDlo
+      - COMP_AUTH_KEY=
       - HUB_API=https://wenet.u-hopper.com/dev/hub/frontend
       - PROFILE_MANAGER_API=https://ardid.iiia.csic.es/wenet/profile-manager
       - TASK_MANAGER_API=https://wenet.u-hopper.com/dev/task_manager
