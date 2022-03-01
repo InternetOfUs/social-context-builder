@@ -39,7 +39,7 @@ except:
 
 @app.route("/")
 def home():
-    return 'Wenet Home V1.0.14'
+    return 'Wenet Home V1.0.15'
 
 @app.route("/recalculate")
 def recalculate():
@@ -123,6 +123,7 @@ def social_profiles_all():
 @app.route("/social/relations/initialize/<user_id>", methods=['POST'])
 def initialize_social_relations(user_id):
     try:
+        return {} #removing initialize of social relations
         app_ids=[]
         app_idsjson = request.json
         try:

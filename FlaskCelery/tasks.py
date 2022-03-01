@@ -57,6 +57,7 @@ def test_3():
 @celery.task(name ="periodic_task")
 def periodic_task():
     try:
+        return {} #periodic task on pause
         offset = 0
         number_of_profiles = 100
         more_profiles_left = True
