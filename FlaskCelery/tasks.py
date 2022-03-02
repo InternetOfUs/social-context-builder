@@ -159,31 +159,31 @@ def async_social_ties_learning(data):
         receiver_id = data['message']['receiverId']
         first_total_interaction = get_first_total_interaction(sender_id, receiver_id)
         if type_of_interaction in ['negative', 'positive'] and appId:
-            relationships = get_relationships_from_profile_manager(sender_id)
+            relationships = get_relationships_from_profile_manager_service(sender_id, appId)
             for relationship in relationships:
-                if relationship.get('userId') == receiver_id and relationship.get('appId') == appId:
+                if relationship.get('targetId') == receiver_id and relationship.get('appId') == appId:
                     found_relationship = True
                     current_weight = round(float(relationship.get('weight')), 4)
-                    index = relationships.index(relationship)
                     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
                     log.info(str(current_weight)+'-->'+str(new_weight))
                     threshold = 0.05
                     if (new_weight - current_weight) > threshold and 0 <= new_weight <= 1:
-                        relationship={}
-                        relationship['userId'] = str(receiver_id)
+                        relationship = {}
+                        relationship['targetId'] = str(receiver_id)
+                        relationship['sourceId'] = str(sender_id)
                         relationship['type'] = 'friend'
                         relationship['weight'] = round(float(new_weight), 4)
                         relationship['appId'] = str(appId)
                         log.info('Updating ' + str(sender_id))
                         log.info('Learning', relationship)
-                        update_relationship_to_profile_manager(sender_id, relationship, index)
+                        update_relationship_to_profile_manager_service(relationship)
                         return {}
             try:
                 if not found_relationship and appId:
                     current_weight = 0.0
                     new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight,
                                                                            first_total_interaction)
-                    set_relationship_to_profile_manager(sender_id, {'userId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4),'appId': appId})
+                    update_relationship_to_profile_manager_service({'sourceId': sender_id, 'targetId': receiver_id, 'type': 'friend', 'weight': round(float(new_weight), 4), 'appId': appId})
             except:
                 log.exception('Failed to init relation during social_learning for ' + str(sender_id))
 
@@ -282,6 +282,24 @@ def get_relationships_from_profile_manager(user_id):
         return None
 
 
+def get_relationships_from_profile_manager_service(sourceId, appId):
+    entities = []
+    try:
+        try:
+            headers = {'Authorization': 'test:wenet', 'connection': 'keep-alive',
+                       'x-wenet-component-apikey': COMP_AUTH_KEY, }
+            r = requests.get(PROFILE_MANAGER_API + '/relationships/?sourceId=' + str(sourceId) + '&appId='+appId, headers=headers)
+            relationships = r.json()
+            r.raise_for_status()
+            return relationships.get('relationships')
+        except requests.exceptions.HTTPError as e:
+            log.exception('Cannot get relationships from  Profile manager')
+        return None
+    except requests.exceptions.HTTPError as e:
+        log.exception('Something wrong with user list IDs received from Profile Manager')
+        return None
+
+
 def update_relationship_to_profile_manager(user_id, relationship, index):
     try:
         data = json.dumps(relationship)
@@ -291,6 +309,29 @@ def update_relationship_to_profile_manager(user_id, relationship, index):
         if relationship['userId']:
             try:
                 r = requests.patch(PROFILE_MANAGER_API + '/profiles/' + str(user_id) + '/relationships/' + str(index), data=data,
+                                  headers=headers)
+                r.raise_for_status()
+                return True
+            except:
+                log.exception(r.text)
+                if 'Timed out' in r.text:
+                    log.info('timed out happened')
+                    return False
+                else:
+                    return True
+    except requests.exceptions.HTTPError as e:
+        log.exception('could not update relationship_to_profile_manager' + str(user_id))
+
+
+def update_relationship_to_profile_manager_service(relationship):
+    try:
+        data = json.dumps(relationship)
+        headers = {'connection': 'keep-alive',
+                   'x-wenet-component-apikey': COMP_AUTH_KEY,
+                   'Content-Type': 'application/json'}
+        if relationship['sourceId']:
+            try:
+                r = requests.put(PROFILE_MANAGER_API + '/relationships/', data=data,
                                   headers=headers)
                 r.raise_for_status()
                 return True
