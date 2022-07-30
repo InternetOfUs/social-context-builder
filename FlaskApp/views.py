@@ -1,6 +1,7 @@
 from flask import jsonify, request
 from FlaskApp import app, models, db
 from Ranking.ranking import parser, rank_entities, file_parser, order_answers
+from shuffling.diversity_shuffling import shuffle2
 from FlaskCelery.tasks import async_initialize, async_social_ties_learning, test_log, test_2, test_3, periodic_task
 from FlaskCelery.ranking_learning import ranking_model, jsonparser
 import json
@@ -286,6 +287,25 @@ def social_notification_interaction():
         return{}
     except:
         app.logger.exception('Exception in interaction message')
+
+@app.route("/social/shuffle", methods=['POST'])
+def social_shuffle():
+    try:
+        if request.method == "POST":
+            users_to_shuffle = get_profiles_from_profile_manager(request.json)
+            cut_off = 5
+            n = 10
+            sample_users = users_to_shuffle[:n]
+            d_max = 2
+            crisp_ranking = [x["id"] for x in sample_users]
+            shuffled_ranking = shuffle2(sample_users, d_max, crisp_ranking, cut_off)
+            return jsonify({"users_IDs": shuffled_ranking})
+        else:
+            return jsonify(request.json)
+    except requests.exceptions.HTTPError as e:
+        print('Exception social preferences, returning not ranked user list', e)
+        return jsonify(request.json)
+
 def rank_profiles(user_ids):
     MODEL = [0.5] * 5
     DIVERSITY_COEFFICIENT = 0.4

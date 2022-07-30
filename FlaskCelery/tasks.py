@@ -379,7 +379,7 @@ def get_first_total_interaction(senderId, receiverID):
             r.raise_for_status()
             return {'first': first_interaction, 'total': total_interactions}
     except Exception as e:
-        log.exception('could not calculate get_first_total_interaction' + str(senderId) + ' ' + str(receiverID))
+        log.exception('could not calculate get_first_total_interactions' + str(senderId) + ' ' + str(receiverID))
 
 
 def get_app_ids_for_user(user_id):
