@@ -86,7 +86,7 @@ While (front != empty && len(X) > len(muRank)):
         front += sortBy(mu, D_mu, X \ muRank)
 """
 
-def shuffle2(X, d_max, crisp_ranking, cut_off, diversity_metric = diversity_metrics.multidimensional_diversity, attributes = ['meanings']): # NON-recursive version of Shuffle2 algorithm
+def shuffle2(X, d_max, crisp_ranking, cut_off, diversity_metric = diversity_metrics.multidimensional_diversity, attributes = ['gender']): # NON-recursive version of Shuffle2 algorithm
     d_div = [1.0] * cut_off
     mu_rank = []
     front = [None]
