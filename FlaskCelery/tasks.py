@@ -160,24 +160,25 @@ def async_social_ties_learning(data):
         first_total_interaction = get_first_total_interaction(sender_id, receiver_id)
         if type_of_interaction in ['negative', 'positive'] and appId:
             relationships = get_relationships_from_profile_manager_service(sender_id, appId)
-            for relationship in relationships:
-                if relationship.get('targetId') == receiver_id and relationship.get('appId') == appId:
-                    found_relationship = True
-                    current_weight = round(float(relationship.get('weight')), 4)
-                    new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
-                    log.info(str(current_weight)+'-->'+str(new_weight))
-                    threshold = 0.05
-                    if (new_weight - current_weight) > threshold and 0 <= new_weight <= 1:
-                        relationship = {}
-                        relationship['targetId'] = str(receiver_id)
-                        relationship['sourceId'] = str(sender_id)
-                        relationship['type'] = 'friend'
-                        relationship['weight'] = round(float(new_weight), 4)
-                        relationship['appId'] = str(appId)
-                        log.info('Updating ' + str(sender_id))
-                        log.info('Learning', relationship)
-                        update_relationship_to_profile_manager_service(relationship)
-                        return {}
+            if relationships:
+                for relationship in relationships:
+                    if relationship.get('targetId') == receiver_id and relationship.get('appId') == appId:
+                        found_relationship = True
+                        current_weight = round(float(relationship.get('weight')), 4)
+                        new_weight = social_ties_learning.compute_tie_strength(data, type_of_interaction, current_weight, first_total_interaction)
+                        log.info(str(current_weight)+'-->'+str(new_weight))
+                        threshold = 0.05
+                        if (new_weight - current_weight) > threshold and 0 <= new_weight <= 1:
+                            relationship = {}
+                            relationship['targetId'] = str(receiver_id)
+                            relationship['sourceId'] = str(sender_id)
+                            relationship['type'] = 'friend'
+                            relationship['weight'] = round(float(new_weight), 4)
+                            relationship['appId'] = str(appId)
+                            log.info('Updating ' + str(sender_id))
+                            log.info('Learning', relationship)
+                            update_relationship_to_profile_manager_service(relationship)
+                            return {}
             try:
                 if not found_relationship and appId:
                     current_weight = 0.0
